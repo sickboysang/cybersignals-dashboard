@@ -308,6 +308,8 @@ st.sidebar.markdown("##### Threat Category")
 st.sidebar.selectbox("Threat Type",
     ["All","Ransomware","Social Engineering","Vulnerability Exploitation",
      "Data Theft","Supply Chain","Denial of Service"])
+# indicate that these extra pickers are currently placeholders
+st.sidebar.markdown("<em>Other filters are decorative — only sector selection is wired up.</em>", unsafe_allow_html=True)
 st.sidebar.info(
     "**Source:** Verizon 2025 DBIR\n\n"
     "22,052 incidents · 12,195 confirmed breaches\n\n"
@@ -367,15 +369,27 @@ m5.metric("Third-Party Breaches",   "30%",     "↑100% YoY", delta_color="inver
 # SECTION 1 — RADAR + INCIDENT PRESSURE
 # ─────────────────────────────────────────
 st.markdown("## Dashboard Overview")
+# apply sector filter up front so both charts can react
+filtered = df_industry[df_industry["Industry"].isin(selected_sectors)]
+if selected_sectors and filtered.empty:
+    st.warning("No sectors selected – sidebar filter returned no rows. Showing all sectors instead.")
+
 col1, col2 = st.columns(2, gap="large")
 
 with col1:
     st.markdown("### Sector Risk Radar")
     st.caption("Normalized breach exposure — 2025 DBIR confirmed breach volume")
+    # rebuild radar data based on filter (fall back to all if nothing selected)
+    df_radar_plot = filtered if not filtered.empty else df_industry
+    radar_sectors_plot = df_radar_plot["Industry"].tolist()
+    radar_breaches_plot = df_radar_plot["Breaches"].tolist()
+    radar_norm_plot = [round(b / max(radar_breaches_plot) * 10, 1) if radar_breaches_plot else 0
+                       for b in radar_breaches_plot]
+
     fig_radar = go.Figure()
     fig_radar.add_trace(go.Scatterpolar(
-        r=radar_norm + [radar_norm[0]],
-        theta=radar_sectors + [radar_sectors[0]],
+        r=radar_norm_plot + ([radar_norm_plot[0]] if radar_norm_plot else []),
+        theta=radar_sectors_plot + ([radar_sectors_plot[0]] if radar_sectors_plot else []),
         fill="toself",
         fillcolor="rgba(255,61,90,0.12)",
         line=dict(color=RED, width=2.5),
@@ -397,9 +411,7 @@ with col1:
 with col2:
     st.markdown("### Incident Pressure by Sector")
     st.caption("Incidents vs confirmed breaches — sidebar sector filter applies here")
-    df_plot = df_industry[df_industry["Industry"].isin(selected_sectors)] if selected_sectors else df_industry
-    if df_plot.empty:
-        df_plot = df_industry
+    df_plot = filtered if not filtered.empty else df_industry
     fig_pressure = go.Figure()
     fig_pressure.add_trace(go.Bar(
         y=df_plot["Industry"], x=df_plot["Incidents"],
@@ -417,7 +429,9 @@ with col2:
     ))
     layout = dark_layout(height=420)
     layout.update({
-        "barmode": "overlay",
+        "barmode": "group",
+        "bargap": 0.15,
+        "yaxis": dict(automargin=True),
         "xaxis": dict(title="Count", gridcolor=BORDER, tickfont=dict(color=MUTED,size=10)),
         "legend": dict(orientation="h", y=-0.16, font=dict(size=10,color=MUTED)),
     })
@@ -433,8 +447,10 @@ with col3:
     st.markdown("### Vulnerability Signals")
     st.caption("Exploitation speed vs remediation timelines — the gap is the danger zone")
     fig_vuln = go.Figure()
+    # switch to horizontal bars so long metric labels are readable
     fig_vuln.add_trace(go.Bar(
-        x=df_vuln["Metric"], y=df_vuln["Days"],
+        y=df_vuln["Metric"], x=df_vuln["Days"],
+        orientation="h",
         marker_color=df_vuln["Color"],
         marker_line=dict(color="rgba(0,0,0,0.3)", width=1),
         text=df_vuln["Days"].apply(lambda d: f"{d}d" if d > 0 else "0d — same day!"),
@@ -442,14 +458,15 @@ with col3:
         textfont=dict(size=10, color=TEXT),
         showlegend=False,
     ))
-    fig_vuln.add_hline(y=5, line_dash="dot", line_color=RED, line_width=1.5,
+    # horizontal threshold line moves to x=5
+    fig_vuln.add_vline(x=5, line_dash="dot", line_color=RED, line_width=1.5,
                        annotation_text="5-day mass exploit window",
                        annotation_font=dict(color=RED, size=10),
                        annotation_position="top right")
     layout = dark_layout(height=400, show_legend=False)
     layout.update({
-        "yaxis": dict(title="Days", range=[0,46], gridcolor=BORDER, tickfont=dict(color=MUTED,size=10)),
-        "xaxis": dict(tickangle=-8, tickfont=dict(color=MUTED,size=10)),
+        "xaxis": dict(title="Days", range=[0,46], gridcolor=BORDER, tickfont=dict(color=MUTED,size=10)),
+        "yaxis": dict(automargin=True, tickfont=dict(color=MUTED,size=10)),
     })
     fig_vuln.update_layout(**layout)
     st.plotly_chart(fig_vuln, use_container_width=True)
@@ -512,8 +529,8 @@ with col5:
     layout = dark_layout(height=380)
     layout.update({
         "barmode": "group",
-        "yaxis": dict(title="Count", type="log", gridcolor=BORDER),
-        "xaxis": dict(tickangle=-18),
+        "yaxis": dict(title="Count", type="log", gridcolor=BORDER, automargin=True),
+        "xaxis": dict(tickangle=-18, automargin=True),
         "legend": dict(orientation="h", y=-0.3, font=dict(size=10,color=MUTED)),
     })
     fig_pat.update_layout(**layout)
@@ -560,8 +577,8 @@ with col7:
                      annotation_position="top right")
     layout = dark_layout(height=380, show_legend=False)
     layout.update({
-        "xaxis": dict(title="% of Breaches with Ransomware", range=[0,100], gridcolor=BORDER),
-        "yaxis": dict(tickfont=dict(color=TEXT,size=10)),
+        "xaxis": dict(title="% of Breaches with Ransomware", range=[0,100], gridcolor=BORDER, automargin=True),
+        "yaxis": dict(tickfont=dict(color=TEXT,size=10), automargin=True),
     })
     fig_rs.update_layout(**layout)
     st.plotly_chart(fig_rs, use_container_width=True)
@@ -676,8 +693,8 @@ for (name, vals), color in zip(vuln_series.items(), vuln_colors):
 
 layout = dark_layout(height=440, legend_y=-0.12)
 layout.update({
-    "xaxis": dict(gridcolor=BORDER, tickfont=dict(color=MUTED,size=10)),
-    "yaxis": dict(title="Incidents / Week", gridcolor=BORDER, tickfont=dict(color=MUTED,size=10)),
+    "xaxis": dict(gridcolor=BORDER, tickfont=dict(color=MUTED,size=10), automargin=True),
+    "yaxis": dict(title="Incidents / Week", gridcolor=BORDER, tickfont=dict(color=MUTED,size=10), automargin=True),
     "hovermode": "x unified",
 })
 fig_trends.update_layout(**layout)
