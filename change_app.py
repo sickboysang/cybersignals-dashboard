@@ -58,42 +58,55 @@ html, body, [class*="css"] {{
 }}
 
 h1 {{
-    font-family: 'Syne', sans-serif !important;
-    font-weight: 800 !important;
-    font-size: 2.8rem !important;
+    font-family: 'Inter', sans-serif !important;
+    font-weight: 700 !important;
+    font-size: 2.4rem !important;
     color: {TEXT} !important;
-    letter-spacing: -0.02em !important;
-    line-height: 1.1 !important;
-    margin-bottom: 0.4rem !important;
+    letter-spacing: 0 !important;
+    line-height: 1.25 !important;
+    margin-bottom: 0.5rem !important;
 }}
 h2 {{
-    font-family: 'Syne', sans-serif !important;
-    font-weight: 700 !important;
-    font-size: 1.5rem !important;
+    font-family: 'Inter', sans-serif !important;
+    font-weight: 600 !important;
+    font-size: 1.35rem !important;
     color: {TEXT} !important;
-    margin-top: 2.5rem !important;
-    margin-bottom: 1rem !important;
-    padding-bottom: 0.6rem !important;
-    border-bottom: 2px solid {BORDER2} !important;
-    letter-spacing: 0.01em !important;
+    margin-top: 3rem !important;
+    margin-bottom: 1.2rem !important;
+    padding-bottom: 0.7rem !important;
+    border-bottom: 1px solid {BORDER2} !important;
+    letter-spacing: 0 !important;
 }}
-h3, h4 {{
-    font-family: 'Syne', sans-serif !important;
-    font-weight: 700 !important;
+h3 {{
+    font-family: 'Inter', sans-serif !important;
+    font-weight: 600 !important;
     font-size: 1.05rem !important;
     color: {TEXT} !important;
     margin-top: 0 !important;
+    margin-bottom: 0.5rem !important;
+    letter-spacing: 0 !important;
+}}
+h4 {{
+    font-family: 'Inter', sans-serif !important;
+    font-weight: 600 !important;
+    font-size: 0.95rem !important;
+    color: {MUTED} !important;
+    margin-top: 0 !important;
     margin-bottom: 0.4rem !important;
+    letter-spacing: 0 !important;
+    text-transform: uppercase !important;
+    font-size: 0.72rem !important;
 }}
 p, .stMarkdown p {{
     font-family: 'Inter', sans-serif !important;
     color: {TEXT} !important;
-    font-size: 0.92rem !important;
-    line-height: 1.7 !important;
+    font-size: 0.95rem !important;
+    line-height: 1.75 !important;
 }}
 [data-testid="stCaptionContainer"] p {{
     color: {MUTED} !important;
-    font-size: 0.84rem !important;
+    font-size: 0.86rem !important;
+    line-height: 1.6 !important;
 }}
 
 /* ── CHART CARD SHADOW ── */
@@ -141,6 +154,40 @@ p, .stMarkdown p {{
     border: 1px solid {BORDER2} !important;
     border-radius: 6px !important;
     color: {TEXT} !important;
+}}
+/* multiselect selected tags (chips) */
+[data-testid="stSidebar"] [data-baseweb="tag"] {{
+    background-color: rgba(37,99,235,0.1) !important;
+    border: 1px solid rgba(37,99,235,0.3) !important;
+    border-radius: 4px !important;
+    color: {ACCENT} !important;
+}}
+[data-testid="stSidebar"] [data-baseweb="tag"] span {{
+    color: {ACCENT} !important;
+    font-size: 0.78rem !important;
+}}
+[data-testid="stSidebar"] [data-baseweb="tag"] svg {{
+    fill: {ACCENT} !important;
+}}
+/* dropdown popup list */
+[data-baseweb="popover"] ul {{
+    background-color: {BG} !important;
+    border: 1px solid {BORDER2} !important;
+}}
+[data-baseweb="popover"] li {{
+    background-color: {BG} !important;
+    color: {TEXT} !important;
+    font-family: 'Inter', sans-serif !important;
+    font-size: 0.85rem !important;
+}}
+[data-baseweb="popover"] li:hover {{
+    background-color: {SURFACE} !important;
+}}
+/* multiselect input text */
+[data-testid="stSidebar"] [data-baseweb="input"] input {{
+    color: {TEXT} !important;
+    font-family: 'Inter', sans-serif !important;
+    background-color: transparent !important;
 }}
 [data-testid="stSidebar"] [data-testid="stNotificationContentInfo"] {{
     background-color: rgba(37,99,235,0.06) !important;
@@ -228,7 +275,7 @@ def source_badge(extra=""):
     return f"""
 <div style="
     display:flex;align-items:center;gap:10px;
-    margin:2px 0 20px 0;
+    margin:2px 0 12px 0;
     padding:9px 16px;
     background:#eff6ff;
     border-left:4px solid {ACCENT};
@@ -236,9 +283,26 @@ def source_badge(extra=""):
 ">
   <span style="font-size:16px;">📊</span>
   <span style="font-family:'Inter',sans-serif;font-size:0.88rem;font-weight:600;color:{TEXT};">
-    Source: <strong style="color:{ACCENT};">Verizon 2025 Data Breach Investigations Report (DBIR)</strong>
+    Source: <a href="https://www.verizon.com/business/resources/reports/dbir/" target="_blank"
+      style="color:{ACCENT};text-decoration:none;">Verizon 2025 Data Breach Investigations Report (DBIR)</a>
     <span style="color:{MUTED};font-weight:400;"> · Nov 2023 – Oct 2024{detail}</span>
   </span>
+</div>"""
+
+def insight_box(headline, body):
+    """Renders a short insight callout below a chart."""
+    return f"""
+<div style="
+    margin:0 0 28px 0;
+    padding:14px 18px;
+    background:#f8fafc;
+    border:1px solid {BORDER};
+    border-left:4px solid {ACCENT2};
+    border-radius:0 8px 8px 0;
+    font-family:'Inter',sans-serif;
+">
+  <p style="margin:0 0 5px 0;font-size:0.9rem;font-weight:600;color:{TEXT};">💡 {headline}</p>
+  <p style="margin:0;font-size:0.86rem;color:{MUTED};line-height:1.75;">{body}</p>
 </div>"""
 
 # ─────────────────────────────────────────
@@ -327,24 +391,23 @@ st.sidebar.info(
 # HEADER
 # ─────────────────────────────────────────
 st.markdown(f"""
-<div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;flex-wrap:wrap;">
+<div style="display:flex;align-items:center;gap:10px;margin-bottom:20px;flex-wrap:wrap;">
   <div style="display:inline-flex;align-items:center;gap:8px;
-              font-size:11px;letter-spacing:0.12em;text-transform:uppercase;font-weight:600;
-              color:{ACCENT};border:1.5px solid rgba(37,99,235,0.3);
-              padding:6px 14px;border-radius:6px;background:rgba(37,99,235,0.05);">
-    <span style="width:7px;height:7px;border-radius:50%;background:{ACCENT};display:inline-block;flex-shrink:0;
-                 box-shadow:0 0 6px {ACCENT};"></span>
-    LIVE THREAT INTELLIGENCE
+              font-size:13px;font-weight:600;letter-spacing:0;
+              color:{ACCENT};border:1.5px solid rgba(37,99,235,0.25);
+              padding:7px 16px;border-radius:8px;background:rgba(37,99,235,0.05);">
+    <span style="width:8px;height:8px;border-radius:50%;background:{ACCENT};display:inline-block;flex-shrink:0;"></span>
+    Live Threat Intelligence
   </div>
-  <div style="display:inline-flex;align-items:center;gap:6px;
-              font-size:11px;letter-spacing:0.1em;text-transform:uppercase;font-weight:500;
-              color:{MUTED};border:1px solid {BORDER2};padding:6px 14px;border-radius:6px;background:{SURFACE};">
-    VERIZON DBIR 2025
+  <div style="display:inline-flex;align-items:center;
+              font-size:13px;font-weight:500;letter-spacing:0;
+              color:{MUTED};border:1px solid {BORDER2};padding:7px 16px;border-radius:8px;background:{SURFACE};">
+    Verizon DBIR 2025
   </div>
-  <div style="display:inline-flex;align-items:center;gap:6px;
-              font-size:11px;letter-spacing:0.1em;text-transform:uppercase;font-weight:500;
-              color:{MUTED};border:1px solid {BORDER2};padding:6px 14px;border-radius:6px;background:{SURFACE};">
-    TEAM N5 · USI4280
+  <div style="display:inline-flex;align-items:center;
+              font-size:13px;font-weight:500;letter-spacing:0;
+              color:{MUTED};border:1px solid {BORDER2};padding:7px 16px;border-radius:8px;background:{SURFACE};">
+    Team N5 · USI4280
   </div>
 </div>
 """, unsafe_allow_html=True)
@@ -373,7 +436,7 @@ m5.metric("Third-Party Breaches",   "30%",     "↑100% YoY", delta_color="inver
 # ─────────────────────────────────────────
 # SECTION 1 — RADAR + INCIDENT PRESSURE
 # ─────────────────────────────────────────
-st.markdown("## Dashboard Overview")
+st.markdown("## Which Sectors Are Most at Risk?")
 filtered = df_industry[df_industry["Industry"].isin(selected_sectors)]
 if selected_sectors and filtered.empty:
     st.warning("No sectors selected – showing all sectors instead.")
@@ -381,8 +444,8 @@ if selected_sectors and filtered.empty:
 col1, col2 = st.columns(2, gap="large")
 
 with col1:
-    st.markdown("### Sector Risk Radar")
-    st.caption("Normalized breach exposure — 2025 DBIR confirmed breach volume")
+    st.markdown("### Breach Exposure by Sector")
+    st.caption("Each spoke shows how hard a sector was hit — normalized across 12,195 confirmed breaches")
     df_radar_plot = filtered if not filtered.empty else df_industry
     radar_sectors_plot  = df_radar_plot["Industry"].tolist()
     radar_breaches_plot = df_radar_plot["Breaches"].tolist()
@@ -411,10 +474,14 @@ with col1:
     )
     st.plotly_chart(fig_radar, use_container_width=True)
     st.markdown(source_badge("22,052 incidents · 12,195 confirmed breaches"), unsafe_allow_html=True)
+    st.markdown(insight_box(
+        "Why does Manufacturing score so high?",
+        "Manufacturing topped confirmed breaches in 2025 for the first time. Ransomware groups deliberately target industrial operations because any production downtime creates immediate financial pressure to pay. Healthcare follows closely — patient records fetch 10× the price of credit card data on criminal markets, making hospitals a permanent high-value target."
+    ), unsafe_allow_html=True)
 
 with col2:
-    st.markdown("### Incident Pressure by Sector")
-    st.caption("Incidents vs confirmed breaches — sidebar sector filter applies here")
+    st.markdown("### Incidents vs Confirmed Breaches")
+    st.caption("Not every incident becomes a breach — this shows which sectors cross that line most often")
     df_plot = filtered if not filtered.empty else df_industry
     fig_pressure = go.Figure()
     fig_pressure.add_trace(go.Bar(
@@ -442,6 +509,10 @@ with col2:
     fig_pressure.update_layout(**layout)
     st.plotly_chart(fig_pressure, use_container_width=True)
     st.markdown(source_badge("15 industries · Nov 2023 – Oct 2024"), unsafe_allow_html=True)
+    st.markdown(insight_box(
+        "Incident ≠ breach — the gap matters",
+        "A large gap between the blue and red bars means a sector detects and stops attacks before data is compromised. Finance has many incidents but strong containment. Manufacturing and Healthcare show the smallest gaps — nearly every incident they experience ends in a confirmed breach, signalling weaker response capabilities or harder-to-patch systems."
+    ), unsafe_allow_html=True)
 
 # ─────────────────────────────────────────
 # SECTION 2 — FORECAST OUTLOOK
@@ -449,8 +520,8 @@ with col2:
 _, col_fore, _ = st.columns([1, 2, 1], gap="large")
 
 with col_fore:
-    st.markdown("### Forecast Outlook")
-    st.caption("Ransomware 3-year trajectory — 44% of breaches now involve ransomware")
+    st.markdown("### Ransomware Is Rising Every Year")
+    st.caption("44% of all confirmed breaches in 2024 involved ransomware — up from 25% in 2022")
     fig_fore = go.Figure()
     fig_fore.add_trace(go.Scatter(
         x=df_ransom["Year"], y=df_ransom["In Breaches (%)"],
@@ -478,17 +549,21 @@ with col_fore:
     fig_fore.update_layout(**layout)
     st.plotly_chart(fig_fore, use_container_width=True)
     st.markdown(source_badge("Ransomware trajectory 2022–2024"), unsafe_allow_html=True)
+    st.markdown(insight_box(
+        "More ransomware, but victims are fighting back",
+        "Ransomware's share of breaches has nearly doubled in three years. However, the rising refusal-to-pay rate (now 64%) shows organisations are learning — paying rarely guarantees full data recovery and often funds the next attack. The DBIR notes that median ransom demands grew to $115,000 in 2024, making prevention far cheaper than recovery."
+    ), unsafe_allow_html=True)
 
 # ─────────────────────────────────────────
 # SECTION 3 — THREAT TYPE TRENDS
 # ─────────────────────────────────────────
-st.markdown("## Threat Type Trends")
-st.caption("Attack patterns driving the most incidents and confirmed breaches")
+st.markdown("## How Attacks Happen")
+st.caption("The most common attack patterns — and how many of those incidents turn into real breaches")
 
 col5, col6 = st.columns([3,2], gap="large")
 
 with col5:
-    st.markdown("#### Incident Classification Patterns")
+    st.markdown("#### Most Common Attack Patterns")
     fig_pat = go.Figure()
     fig_pat.add_trace(go.Bar(
         x=df_patterns["Pattern"], y=df_patterns["Incidents"],
@@ -516,35 +591,49 @@ with col5:
     fig_pat.update_layout(**layout)
     st.plotly_chart(fig_pat, use_container_width=True)
     st.markdown(source_badge("7 VERIS incident classification patterns"), unsafe_allow_html=True)
+    st.markdown(insight_box(
+        "Why does Denial of Service have 6,520 incidents but only 2 breaches?",
+        "This is not a data error — it reflects how a breach is defined. The DBIR counts a breach only when data confidentiality is violated (something is stolen or exposed). DoS and DDoS attacks disrupt <em>availability</em> — they knock systems offline — but they do not steal data. Because nothing is taken, they almost never qualify as breaches. System Intrusion sits at the opposite extreme: it is purpose-built for exfiltration, converting almost every incident into a confirmed breach."
+    ), unsafe_allow_html=True)
 
 with col6:
-    st.markdown("#### Initial Access Vectors")
+    st.markdown("#### How Attackers Get In")
     fig_pie = go.Figure(go.Pie(
-        labels=df_access["Vector"], values=df_access["Pct"], hole=0.52,
+        labels=df_access["Vector"], values=df_access["Pct"], hole=0.50,
         marker=dict(colors=[C_AMBER, C_RED, C_BLUE, C_PURP], line=dict(color="white", width=3)),
-        textinfo="label+percent",
-        textfont=dict(size=12, color=TEXT, family="Inter, sans-serif"),
-        insidetextorientation="radial",
-        pull=[0.04, 0.04, 0.02, 0.04],
+        textinfo="percent",
+        textposition="inside",
+        textfont=dict(size=13, color="white", family="Inter, sans-serif"),
+        pull=[0.05, 0.05, 0.03, 0.05],
+        showlegend=True,
     ))
-    fig_pie.update_layout(
-        **chart_layout(height=400, show_legend=False),
-        annotations=[dict(text="Access<br>Vectors", x=0.5, y=0.5,
-                          font=dict(size=13, color=TEXT, family="Syne, sans-serif"),
-                          showarrow=False)],
-    )
+    layout_pie = chart_layout(height=430, show_legend=True, legend_y=-0.18)
+    layout_pie.update({
+        "legend": dict(orientation="h", y=-0.18,
+                       font=dict(size=12, color=TEXT, family="Inter, sans-serif"),
+                       bgcolor="rgba(0,0,0,0)"),
+        "annotations": [dict(text="How they<br>get in", x=0.5, y=0.5,
+                             font=dict(size=12, color=MUTED, family="Inter, sans-serif"),
+                             showarrow=False)],
+        "margin": dict(l=24, r=24, t=36, b=80),
+    })
+    fig_pie.update_layout(**layout_pie)
     st.plotly_chart(fig_pie, use_container_width=True)
     st.markdown(source_badge("Top initial access vectors in confirmed breaches"), unsafe_allow_html=True)
+    st.markdown(insight_box(
+        "Edge devices and VPNs now tied with stolen credentials",
+        "Credential theft has led initial access for years, but Edge Device/VPN exploitation jumped 34% YoY to draw level. Attackers now scan for unpatched firewalls and VPN appliances — no phishing email needed, just a known CVE and an exposed IP. Organisations with long patch cycles are particularly exposed, especially if they use EOL network appliances."
+    ), unsafe_allow_html=True)
 
 # ─────────────────────────────────────────
 # SECTION 4 — RANSOMWARE + THREAT ACTORS
 # ─────────────────────────────────────────
-st.markdown("## Ransomware & Threat Actor Intelligence")
+st.markdown("## Ransomware & Who Is Behind Attacks")
 col7, col8 = st.columns(2, gap="large")
 
 with col7:
-    st.markdown("#### Ransomware Prevalence by Sector")
-    st.caption("Green < 40% · Orange 40–60% · Red > 60%")
+    st.markdown("#### How Often Does Ransomware Appear, by Sector?")
+    st.caption("Green = below average risk · Orange = elevated · Red = high exposure")
     bar_colors = [C_GREEN if v < 40 else (C_AMBER if v < 60 else C_RED)
                   for v in df_ransom_sector["Ransomware (%)"]]
     fig_rs = go.Figure(go.Bar(
@@ -554,9 +643,12 @@ with col7:
         text=[f"{v}%" for v in df_ransom_sector["Ransomware (%)"]],
         textposition="outside", textfont=dict(size=11, color=TEXT, family="Inter, sans-serif"),
     ))
-    fig_rs.add_vline(x=44, line_dash="dot", line_color=MUTED, line_width=1.5,
-                     annotation_text="Global avg 44%",
-                     annotation_font=dict(color=MUTED, size=11),
+    fig_rs.add_vline(x=44, line_dash="dash", line_color=ACCENT, line_width=2,
+                     annotation_text="Global avg: 44%",
+                     annotation_font=dict(color=BG, size=11, family="Inter, sans-serif"),
+                     annotation_bgcolor=ACCENT,
+                     annotation_bordercolor=ACCENT,
+                     annotation_borderpad=5,
                      annotation_position="top right")
     layout = chart_layout(height=400, show_legend=False)
     layout.update({
@@ -567,10 +659,14 @@ with col7:
     fig_rs.update_layout(**layout)
     st.plotly_chart(fig_rs, use_container_width=True)
     st.markdown(source_badge("Ransomware involvement across sectors"), unsafe_allow_html=True)
+    st.markdown(insight_box(
+        "Why are small businesses hit hardest at 88%?",
+        "SMBs rarely have dedicated security teams, offline backups, or the leverage to negotiate. Ransomware groups increasingly use automated tooling to target thousands of small organisations simultaneously — a volume play. Manufacturing plants are difficult to patch because taking OT systems offline disrupts production, so attackers exploit that reluctance. Public sector's lower rate partly reflects government policies restricting ransom payments."
+    ), unsafe_allow_html=True)
 
 with col8:
-    st.markdown("#### Threat Actor Breakdown")
-    st.caption("External actors surged 163% in espionage-motivated breaches")
+    st.markdown("#### Who Is Behind the Attacks?")
+    st.caption("External actors rose 163% in espionage-driven breaches — the biggest shift in the 2025 report")
     actor_labels = ["External","Internal","Partner/3rd-party","State-sponsored"]
     actor_vals   = [80,20,30,15]
     actor_colors = [C_RED, C_AMBER, C_PURP, "#6b7280"]
@@ -595,16 +691,20 @@ with col8:
     fig_act.update_layout(**layout)
     st.plotly_chart(fig_act, use_container_width=True)
     st.markdown(source_badge("Threat actor categories across all breaches"), unsafe_allow_html=True)
+    st.markdown(insight_box(
+        "The 163% spike in espionage is the report's starkest shift",
+        "Nation-state actors — primarily linked to Russia, China, Iran and North Korea — dramatically increased targeting of intellectual property and critical infrastructure in 2024. The boundary between organised crime and state-sponsored hacking is blurring: some groups operate freely in exchange for intelligence-sharing with their governments. For organisations, this means attacks are better-resourced, more patient, and harder to detect than purely financial attacks."
+    ), unsafe_allow_html=True)
 
 # ─────────────────────────────────────────
 # SECTION 5 — DATA TYPES + MFA BYPASS
 # ─────────────────────────────────────────
-st.markdown("## Data Exposure & Social Engineering")
+st.markdown("## What Gets Stolen and How Attackers Get Past Security")
 col9, col10 = st.columns(2, gap="large")
 
 with col9:
-    st.markdown("#### Data Types Compromised")
-    st.caption("Relative prevalence across all confirmed breach incidents (2025 DBIR)")
+    st.markdown("#### Most Commonly Stolen Data")
+    st.caption("Ranked by how often each data type appears in confirmed breach incidents")
     data_colors = [C_BLUE if v >= 7 else (C_PURP if v >= 5 else "#94a3b8")
                    for v in df_data["Relative Prevalence"]]
     fig_dt = go.Figure(go.Bar(
@@ -623,44 +723,58 @@ with col9:
     fig_dt.update_layout(**layout)
     st.plotly_chart(fig_dt, use_container_width=True)
     st.markdown(source_badge("Data categories stolen in confirmed breaches"), unsafe_allow_html=True)
+    st.markdown(insight_box(
+        "Internal documents overtook personal data — ransomware's 'double extortion' is why",
+        "Ransomware operators now exfiltrate files before encrypting them, threatening to publish sensitive internal documents if the ransom isn't paid. This 'double extortion' tactic made internal documents the most stolen category for the first time. Credentials rank highly because a single set of stolen logins can be resold dozens of times and used across multiple organisations."
+    ), unsafe_allow_html=True)
 
 with col10:
-    st.markdown("#### MFA Bypass Methods")
-    st.caption("Three equally dominant bypass techniques — each ~31% (2025 DBIR)")
+    st.markdown("#### How Attackers Bypass MFA")
+    st.caption("Three techniques, each accounting for roughly one-third of MFA bypass incidents")
     fig_mfa = go.Figure(go.Pie(
         labels=["Token Theft","MFA Prompt Bombing","Adversary-in-the-Middle"],
         values=[31,31,31], hole=0.52,
         marker=dict(colors=[C_RED, C_AMBER, C_PURP], line=dict(color="white", width=3)),
-        textinfo="label+percent",
-        textfont=dict(size=12, color=TEXT, family="Inter, sans-serif"),
-        insidetextorientation="radial",
+        textinfo="percent",
+        textposition="inside",
+        textfont=dict(size=14, color="white", family="Inter, sans-serif"),
         pull=[0.04, 0.04, 0.04],
+        showlegend=True,
     ))
-    fig_mfa.update_layout(
-        **chart_layout(height=360, show_legend=False),
-        annotations=[dict(text="MFA<br>Bypass", x=0.5, y=0.5,
-                          font=dict(size=13, color=TEXT, family="Syne, sans-serif"),
-                          showarrow=False)],
-    )
+    layout_mfa = chart_layout(height=400, show_legend=True, legend_y=-0.18)
+    layout_mfa.update({
+        "legend": dict(orientation="h", y=-0.18,
+                       font=dict(size=12, color=TEXT, family="Inter, sans-serif"),
+                       bgcolor="rgba(0,0,0,0)"),
+        "annotations": [dict(text="MFA<br>Bypass", x=0.5, y=0.5,
+                             font=dict(size=13, color=MUTED, family="Inter, sans-serif"),
+                             showarrow=False)],
+        "margin": dict(l=24, r=24, t=36, b=80),
+    })
+    fig_mfa.update_layout(**layout_mfa)
     st.plotly_chart(fig_mfa, use_container_width=True)
     st.markdown(source_badge("Social engineering & MFA bypass tactics"), unsafe_allow_html=True)
+    st.markdown(insight_box(
+        "Three equal bypass techniques means no single fix is sufficient",
+        "Token Theft steals the session cookie after a successful login — MFA was passed, then hijacked. Prompt Bombing floods a user's phone with approval requests until one is accidentally accepted. Adversary-in-the-Middle intercepts the real authentication flow in real time. The equal split signals attackers rapidly switch methods when one is defended, which is why MFA alone is no longer a complete control — session protection and phishing-resistant MFA (FIDO2) are the next step."
+    ), unsafe_allow_html=True)
 
     st.markdown(f"""
-<div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:4px;">
-  <div style="background:{SURFACE};border:1px solid {BORDER2};border-radius:10px;padding:12px 18px;
-              box-shadow:0 1px 3px rgba(0,0,0,0.06);">
-    <span style="color:{MUTED};font-size:10px;display:block;letter-spacing:0.1em;text-transform:uppercase;font-weight:600;">BEC Losses 2024</span>
-    <span style="color:{RED};font-family:'Syne',sans-serif;font-size:22px;font-weight:800;">$6.3B</span>
+<div style="display:flex;flex-wrap:wrap;gap:12px;margin-top:8px;">
+  <div style="background:{SURFACE};border:1px solid {BORDER2};border-radius:10px;padding:14px 20px;
+              box-shadow:0 1px 3px rgba(0,0,0,0.06);flex:1;min-width:110px;">
+    <span style="color:{MUTED};font-size:12px;display:block;font-weight:500;margin-bottom:4px;">BEC Losses 2024</span>
+    <span style="color:{RED};font-family:'Inter',sans-serif;font-size:24px;font-weight:700;">$6.3B</span>
   </div>
-  <div style="background:{SURFACE};border:1px solid {BORDER2};border-radius:10px;padding:12px 18px;
-              box-shadow:0 1px 3px rgba(0,0,0,0.06);">
-    <span style="color:{MUTED};font-size:10px;display:block;letter-spacing:0.1em;text-transform:uppercase;font-weight:600;">AI-Written Lures</span>
-    <span style="color:{ORANGE};font-family:'Syne',sans-serif;font-size:22px;font-weight:800;">~10%</span>
+  <div style="background:{SURFACE};border:1px solid {BORDER2};border-radius:10px;padding:14px 20px;
+              box-shadow:0 1px 3px rgba(0,0,0,0.06);flex:1;min-width:110px;">
+    <span style="color:{MUTED};font-size:12px;display:block;font-weight:500;margin-bottom:4px;">AI-Written Lures</span>
+    <span style="color:{ORANGE};font-family:'Inter',sans-serif;font-size:24px;font-weight:700;">~10%</span>
   </div>
-  <div style="background:{SURFACE};border:1px solid {BORDER2};border-radius:10px;padding:12px 18px;
-              box-shadow:0 1px 3px rgba(0,0,0,0.06);">
-    <span style="color:{MUTED};font-size:10px;display:block;letter-spacing:0.1em;text-transform:uppercase;font-weight:600;">Espionage Motive</span>
-    <span style="color:{PINK};font-family:'Syne',sans-serif;font-size:22px;font-weight:800;">52%</span>
+  <div style="background:{SURFACE};border:1px solid {BORDER2};border-radius:10px;padding:14px 20px;
+              box-shadow:0 1px 3px rgba(0,0,0,0.06);flex:1;min-width:110px;">
+    <span style="color:{MUTED};font-size:12px;display:block;font-weight:500;margin-bottom:4px;">Espionage Motive</span>
+    <span style="color:{PINK};font-family:'Inter',sans-serif;font-size:24px;font-weight:700;">52%</span>
   </div>
 </div>
 """, unsafe_allow_html=True)
@@ -668,8 +782,8 @@ with col10:
 # ─────────────────────────────────────────
 # SECTION 6 — VULNERABILITY EXPLOITATION THEMES
 # ─────────────────────────────────────────
-st.markdown("## Vulnerability Exploitation Themes")
-st.caption("12-week weekly incident trend by exploitation category — hover for details")
+st.markdown("## How Exploitation Trends Have Shifted Over 12 Weeks")
+st.caption("Weekly incident volume by exploitation type — hover over the chart to compare categories")
 
 fig_trends = go.Figure()
 for (name, vals), color in zip(vuln_series.items(), vuln_colors):
@@ -685,16 +799,30 @@ for (name, vals), color in zip(vuln_series.items(), vuln_colors):
         hovertemplate=f"<b>{name}</b><br>%{{x}}: %{{y}} incidents<extra></extra>",
     ))
 
-layout = chart_layout(height=460, legend_y=-0.11)
+layout = chart_layout(height=460, show_legend=True)
 layout.update({
     "xaxis": dict(gridcolor="#f1f5f9", tickfont=dict(color=MUTED, size=11), automargin=True),
     "yaxis": dict(title="Incidents / Week", gridcolor="#f1f5f9",
                   tickfont=dict(color=MUTED, size=11), automargin=True),
     "hovermode": "x unified",
+    "legend": dict(
+        orientation="v",
+        x=1.01, y=1,
+        xanchor="left", yanchor="top",
+        font=dict(size=12, color=TEXT, family="Inter, sans-serif"),
+        bgcolor="rgba(248,250,252,0.95)",
+        bordercolor=BORDER2,
+        borderwidth=1,
+    ),
+    "margin": dict(l=56, r=160, t=36, b=56),
 })
 fig_trends.update_layout(**layout)
 st.plotly_chart(fig_trends, use_container_width=True)
 st.markdown(source_badge("Weekly incident trend by exploitation theme — 12-week window"), unsafe_allow_html=True)
+st.markdown(insight_box(
+    "Remote Access and Vendor Risk are growing — Phishing is surprisingly stable",
+    "Remote Access exploitation is rising because hybrid work permanently expanded the VPN and RDP attack surface. Vendor Risk is climbing as attackers pivot to MSPs and third-party integrations — compromising one supplier grants access to dozens of clients simultaneously (the MOVEit and SolarWinds playbook). Phishing staying flat reflects a grim truth: despite years of awareness training, humans remain a consistent and reliable target."
+), unsafe_allow_html=True)
 
 # ─────────────────────────────────────────
 # FOOTER
