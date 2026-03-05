@@ -1,4 +1,5 @@
 import streamlit as st
+import streamlit.components.v1 as components
 import plotly.graph_objects as go
 import pandas as pd
 
@@ -255,12 +256,62 @@ hr {{
     white-space: nowrap;
     pointer-events: none;
 }}
-/* keep Streamlit's own toolbar buttons visible */
+/* keep Streamlit's own toolbar buttons visible and white against dark bar */
 [data-testid="stHeader"] button,
 [data-testid="stHeader"] a,
 [data-testid="stHeader"] [data-testid="stDecoration"] {{
     position: relative;
     z-index: 1;
+    color: #ffffff !important;
+}}
+[data-testid="stHeader"] button svg,
+[data-testid="stHeader"] a svg,
+[data-testid="stHeader"] [data-testid="stToolbar"] svg,
+[data-testid="stHeader"] [data-testid="stToolbar"] button,
+[data-testid="stHeader"] [data-testid="stStatusWidget"] svg,
+[data-testid="stHeader"] [data-testid="stStatusWidget"] span,
+[data-testid="stHeader"] [data-testid="stStatusWidget"] p {{
+    color: #ffffff !important;
+    fill: #ffffff !important;
+    stroke: #ffffff !important;
+}}
+[data-testid="stHeader"] button:hover {{
+    background: rgba(255,255,255,0.12) !important;
+    border-radius: 6px;
+}}
+/* ── SIDEBAR COLLAPSE / EXPAND TOGGLE BUTTON ── */
+/* ── SIDEBAR COLLAPSE CONTROL (floats on white bg when sidebar is closed) ── */
+[data-testid="stSidebarCollapsedControl"] {{
+    background-color: #0f172a !important;
+    border-radius: 0 10px 10px 0 !important;
+    border-right: 3px solid #2563eb !important;
+    border-top: 1px solid #2563eb !important;
+    border-bottom: 1px solid #2563eb !important;
+    padding: 6px 4px !important;
+    min-width: 36px !important;
+}}
+[data-testid="stSidebarCollapsedControl"] button {{
+    color: #ffffff !important;
+    background: transparent !important;
+    border: none !important;
+    border-radius: 6px !important;
+    min-width: 32px !important;
+    min-height: 32px !important;
+}}
+[data-testid="stSidebarCollapsedControl"] button:hover {{
+    background: rgba(37,99,235,0.40) !important;
+}}
+[data-testid="stSidebarCollapsedControl"] button span {{
+    font-family: 'Material Icons', 'Material Symbols Outlined' !important;
+    font-size: 22px !important;
+    color: #ffffff !important;
+    display: inline-block !important;
+    -webkit-font-feature-settings: 'liga' !important;
+    font-feature-settings: 'liga' !important;
+}}
+[data-testid="stSidebarCollapsedControl"] button svg {{
+    fill: #ffffff !important;
+    color: #ffffff !important;
 }}
 
 /* ── FORCE LIGHT MODE ON ALL REMAINING DARK ELEMENTS ── */
@@ -359,6 +410,37 @@ button[kind="primary"]:hover {{
 }}
 </style>
 """, unsafe_allow_html=True)
+
+# Inject JS via iframe so it actually executes (st.markdown strips <script> tags)
+components.html("""
+<script>
+(function() {
+    function clean() {
+        var parentDoc = window.parent.document;
+        // Remove ugly "keyboard_double_arrow_*" title tooltips
+        parentDoc.querySelectorAll('button[title]').forEach(function(btn) {
+            if (btn.getAttribute('title') && btn.getAttribute('title').toLowerCase().includes('keyboard')) {
+                btn.removeAttribute('title');
+                btn.setAttribute('aria-label', 'Toggle sidebar');
+            }
+        });
+        // Force Material Icons font on sidebar span icons so they render as icons not text
+        parentDoc.querySelectorAll(
+            '[data-testid="stSidebarCollapsedControl"] button span, ' +
+            'section[data-testid="stSidebar"] header button span'
+        ).forEach(function(span) {
+            span.style.fontFamily = "'Material Icons', 'Material Symbols Outlined'";
+            span.style.fontSize   = '22px';
+            span.style.color      = '#ffffff';
+            span.style.display    = 'inline-block';
+        });
+    }
+    clean();
+    var obs = new MutationObserver(clean);
+    obs.observe(window.parent.document.body, { childList: true, subtree: true });
+})();
+</script>
+""", height=0)
 
 # ─────────────────────────────────────────
 # CHART BASE LAYOUT
@@ -611,12 +693,13 @@ st.markdown(
 # KPI ROW
 # ─────────────────────────────────────────
 st.markdown("## Key Risk Metrics")
+st.caption("Each percentage is an independent risk factor — a single breach can involve ransomware, a vulnerability, and a third party at the same time, which is why the figures do not total 100%.")
 m1,m2,m3,m4,m5 = st.columns(5)
-m1.metric("Total Incidents",        "22,052",  "Nov'23–Oct'24")
-m2.metric("Confirmed Breaches",     "12,195",  "DBIR 2025")
-m3.metric("Ransomware in Breaches", "44%",     "↑37% Year-over-Year",  delta_color="inverse")
-m4.metric("Vulnerability Exploitation",    "20%",     "↑34% Year-over-Year",  delta_color="inverse")
-m5.metric("Third-Party Breaches",   "30%",     "↑100% Year-over-Year", delta_color="inverse")
+m1.metric("Total Incidents Reported",  "22,052",  "Nov 2023 – Oct 2024")
+m2.metric("Confirmed Data Breaches",   "12,195",  "55% of all incidents")
+m3.metric("Breaches Involved Ransomware", "44%",  "↑37% Year-over-Year",  delta_color="inverse")
+m4.metric("Breaches via Vulnerability",   "20%",  "↑34% Year-over-Year",  delta_color="inverse")
+m5.metric("Breaches via Third Party",     "30%",  "↑100% Year-over-Year", delta_color="inverse")
 
 # ─────────────────────────────────────────
 # SECTION 1 — RADAR + INCIDENT PRESSURE
