@@ -895,7 +895,7 @@ _TIPS = {
         "risk_color": "#991b1b",
         "summary": (
             "October is Cybersecurity Awareness Month — but also one of the highest-risk months for ransomware. "
-            "Threat actors ramp up campaigns ahead of the holiday season knowing organisations are distracted. "
+            "Threat actors ramp up campaigns ahead of the holiday season knowing organizations are distracted. "
             "Credential stuffing attacks spike as attackers test leaked username-password pairs against streaming, "
             "retail, and banking sites ahead of Black Friday."
         ),
@@ -934,7 +934,7 @@ _TIPS = {
         "summary": (
             "December is consistently the most dangerous month of the year for cyber attacks. Ransomware "
             "attacks hit their annual peak — a 30% surge above the monthly average — as attackers know "
-            "IT teams are on leave and organisations are reluctant to disrupt operations during the holiday "
+            "IT teams are on leave and organizations are reluctant to disrupt operations during the holiday "
             "period. Charity donation scams, fake shipping notifications, and e-gift fraud also peak sharply."
         ),
         "prevention": [
@@ -1246,7 +1246,7 @@ with col_fore:
     _src_fore = "Ransomware trajectory 2022–2024"
     _hl_fore  = "More ransomware, but victims are fighting back"
     _bd_fore  = ("Ransomware's share of breaches has nearly doubled in three years — from 1 in 4 breaches in 2022 "
-                 "to nearly 1 in 2 by 2024. However, the rising refusal-to-pay rate (now 64%) shows organisations "
+                 "to nearly 1 in 2 by 2024. However, the rising refusal-to-pay rate (now 64%) shows organizations "
                  "are learning: paying rarely guarantees full data recovery and often funds the next attack. The DBIR "
                  "notes that median ransom demands grew to $115,000 in 2024, making prevention far cheaper than recovery.")
     _ext_fore = ("The refusal-to-pay trend is significant for the entire ecosystem. When victims pay, they validate "
@@ -1282,6 +1282,7 @@ with col5:
         marker=dict(color=C_BLUE, opacity=0.80, line=dict(color="white", width=0.5)),
         text=[f"{v:,}" for v in df_patterns["Incidents"]],
         textposition="outside",
+        cliponaxis=False,
         textfont=dict(size=10, color=TEXT, family="Inter, sans-serif"),
         hovertemplate="<b>%{y}</b><br>Incidents: <b>%{x:,}</b><extra></extra>",
     ))
@@ -1292,6 +1293,7 @@ with col5:
         marker=dict(color=C_RED, opacity=0.88, line=dict(color="white", width=0.5)),
         text=[f"{v:,}" for v in df_patterns["Breaches"]],
         textposition="outside",
+        cliponaxis=False,
         textfont=dict(size=10, color=TEXT, family="Inter, sans-serif"),
         hovertemplate="<b>%{y}</b><br>Confirmed Breaches: <b>%{x:,}</b><extra></extra>",
     ))
@@ -1300,7 +1302,7 @@ with col5:
         y="Denial of Service", x=400,
         text="★ Only 2 confirmed breaches",
         showarrow=True, arrowhead=2, arrowcolor=C_RED, arrowwidth=1.5,
-        ax=160, ay=28,
+        ax=160, ay=-40,
         font=dict(size=10, color=RED, family="Inter, sans-serif"),
         bgcolor="rgba(255,240,240,0.95)", bordercolor=C_RED, borderwidth=1, borderpad=5,
         xanchor="left",
@@ -1322,7 +1324,7 @@ with col5:
             gridcolor="#f1f5f9",
         ),
         "legend": dict(orientation="h", y=-0.16, font=dict(size=11, color=TEXT)),
-        "margin": dict(l=56, r=80, t=36, b=56),
+        "margin": dict(l=56, r=140, t=36, b=56),
     })
     fig_pat.update_layout(**layout)
     st.plotly_chart(fig_pat, use_container_width=True,
@@ -1382,7 +1384,7 @@ with col6:
     _ext_pie = ("Each slice represents a different attack philosophy. Stolen credentials require the least technical "
                 "skill — credentials are bought cheaply on criminal marketplaces and tried at scale (credential "
                 "stuffing). Vulnerability exploitation is increasingly automated; scanning tools identify exposed "
-                "appliances within minutes of a patch being published, and many organisations take weeks to apply "
+                "appliances within minutes of a patch being published, and many organizations take weeks to apply "
                 "updates. Phishing remains reliable because it targets human judgement, not technical controls — "
                 "even security-aware employees can be deceived under time pressure or with convincing pretexts. "
                 "The near-equal split across all four vectors is a warning: defenders cannot afford to fix only "
@@ -1477,14 +1479,14 @@ with col8:
     _bd_act  = ("Nation-state actors — primarily linked to Russia, China, Iran and North Korea — dramatically "
                 "increased targeting of intellectual property and critical infrastructure in 2024. The boundary "
                 "between organised crime and state-sponsored hacking is blurring: some groups operate freely in "
-                "exchange for intelligence-sharing with their governments. For organisations, this means attacks "
+                "exchange for intelligence-sharing with their governments. For organizations, this means attacks "
                 "are better-resourced, more patient, and harder to detect than purely financial attacks.")
     _ext_act = ("External actors dominate breaches because they have the greatest motivation, resources, and "
                 "scale. However, the 20% internal figure is deceptively significant — insider threats cause "
                 "disproportionate damage because insiders already have authorised access and can bypass perimeter "
                 "controls entirely. Malicious insiders are often motivated by financial gain (selling data to "
                 "competitors or criminal groups) or grievance. Partner and third-party breaches are the fastest-"
-                "growing category: supply chain compromises give attackers access to dozens of organisations "
+                "growing category: supply chain compromises give attackers access to dozens of organizations "
                 "through a single point of entry — one compromised vendor credential can open doors across an "
                 "entire partner ecosystem. State-sponsored actors at 15% are often the hardest to detect and "
                 "remove — they operate with long time horizons, prioritise stealth over speed, and are backed "
@@ -1524,7 +1526,7 @@ with col9:
     _bd_dt  = ("Ransomware operators now exfiltrate files before encrypting them, threatening to publish sensitive "
                "internal documents if the ransom is not paid. This 'double extortion' tactic made internal documents "
                "the most stolen category for the first time. Credentials rank highly because a single set of stolen "
-               "logins can be resold dozens of times and used across multiple organisations.")
+               "logins can be resold dozens of times and used across multiple organizations.")
     _ext_dt = ("Understanding what attackers steal reveals what they value most. Internal documents (contracts, "
                "M&A plans, strategic roadmaps) are highly prized by both financial criminals and nation-state actors "
                "— publishing them creates regulatory, reputational, and competitive damage independent of any ransom "
@@ -1657,11 +1659,11 @@ _bd_tr  = ("Remote Access exploitation is rising because hybrid work permanently
            "dozens of clients simultaneously (the MOVEit and SolarWinds playbook). Phishing staying flat reflects "
            "a grim truth: despite years of awareness training, humans remain a consistent and reliable target.")
 _ext_tr = ("The 12-week window reveals trajectory, not just snapshot. Remote Access exploitation will likely "
-           "continue rising as more organisations extend Virtual Private Network access to contractors and "
+           "continue rising as more organizations extend Virtual Private Network access to contractors and "
            "remote workers without enforcing the same security controls applied to full-time employees. "
            "Legacy and Unpatched Systems are climbing steadily — this reflects a structural problem: "
            "as software libraries age and vendors end support, the pool of unpatched, exploitable systems "
-           "grows faster than organisations can remediate. Misconfiguration is declining slightly — cloud "
+           "grows faster than organizations can remediate. Misconfiguration is declining slightly — cloud "
            "providers are improving default-secure configurations and tooling that automatically flags "
            "exposed storage buckets and open ports. Phishing's stability near 20–25 incidents per week "
            "despite widespread training investment is a reminder that it is a people problem as much as "
