@@ -1,0 +1,16 @@
+Metric,Category,Q1_2025_Pct,Q2_2025_Pct,Quarterly_Change_pp
+Global ICS computers attacked,Overall,21.9,20.5,-1.4
+Malicious scripts and phishing pages (JS/HTML),Threat Category,7.16,6.49,-0.67
+Denylisted internet resources,Threat Category,5.12,5.91,0.79
+Spy Trojans backdoors and keyloggers,Threat Category,4.2,3.84,-0.36
+Malicious documents (MSOffice + PDF),Threat Category,1.85,1.97,0.12
+Viruses,Threat Category,1.53,1.29,-0.24
+Worms,Threat Category,1.31,1.22,-0.09
+Miners (executable files for Windows),Threat Category,0.78,0.63,-0.15
+Web miners running in browsers,Threat Category,0.53,0.3,-0.23
+Malware for AutoCAD,Threat Category,0.34,0.29,-0.05
+Ransomware,Threat Category,0.16,0.14,-0.02
+Internet,Threat Source,10.11,9.76,-0.35
+Email clients,Threat Source,2.81,3.06,0.25
+Removable media,Threat Source,0.52,0.37,-0.15
+Network folders,Threat Source,0.07,0.05,-0.02

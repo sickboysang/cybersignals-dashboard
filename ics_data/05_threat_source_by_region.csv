@@ -1,0 +1,57 @@
+Region,Threat_Source,Q1_2025_Pct,Q2_2025_Pct,Q2_Change_pp
+World,Internet,10.11,9.76,-0.35
+Africa,Internet,12.76,11.88,-0.88
+South-East Asia,Internet,12.32,11.28,-1.04
+South Asia,Internet,10.83,10.4,-0.43
+Middle East,Internet,10.56,9.75,-0.81
+Eastern Europe,Internet,9.78,9.74,-0.04
+Latin America,Internet,9.99,9.43,-0.56
+Russia,Internet,9.34,9.37,0.03
+Central Asia,Internet,9.5,8.8,-0.7
+Southern Europe,Internet,9.24,8.35,-0.89
+Australia and New Zealand,Internet,8.06,8.34,0.28
+Western Europe,Internet,6.6,6.82,0.22
+Northern Europe,Internet,5.24,6.57,1.33
+East Asia,Internet,6.71,6.35,-0.36
+World,Email Clients,2.81,3.06,0.25
+Southern Europe,Email Clients,6.76,7.23,0.47
+Latin America,Email Clients,3.54,4.55,1.01
+Middle East,Email Clients,5.17,5.47,0.3
+Africa,Email Clients,3.89,4.54,0.65
+South-East Asia,Email Clients,3.97,4.53,0.56
+Eastern Europe,Email Clients,4.0,4.1,0.1
+Australia and New Zealand,Email Clients,2.8,3.3,0.5
+South Asia,Email Clients,2.08,2.25,0.17
+Western Europe,Email Clients,1.65,1.89,0.24
+East Asia,Email Clients,1.55,1.62,0.07
+Central Asia,Email Clients,1.42,1.45,0.03
+Northern Europe,Email Clients,1.06,1.13,0.07
+Russia,Email Clients,0.88,0.8,-0.08
+World,Removable Media,0.52,0.37,-0.15
+Africa,Removable Media,2.44,1.77,-0.67
+East Asia,Removable Media,1.01,0.83,-0.18
+Middle East,Removable Media,0.89,0.67,-0.22
+South Asia,Removable Media,1.08,0.65,-0.43
+Central Asia,Removable Media,0.78,0.58,-0.2
+South-East Asia,Removable Media,0.73,0.51,-0.22
+Eastern Europe,Removable Media,0.34,0.23,-0.11
+Russia,Removable Media,0.24,0.17,-0.07
+Latin America,Removable Media,0.16,0.12,-0.04
+Southern Europe,Removable Media,0.17,0.11,-0.06
+Northern Europe,Removable Media,0.09,0.1,0.01
+Western Europe,Removable Media,0.13,0.07,-0.06
+Australia and New Zealand,Removable Media,0.06,0.04,-0.02
+World,Network Folders,0.07,0.05,-0.013
+East Asia,Network Folders,0.27,0.25,-0.016
+South-East Asia,Network Folders,0.16,0.11,-0.049
+South Asia,Network Folders,0.11,0.07,-0.039
+Middle East,Network Folders,0.07,0.057,-0.014
+Africa,Network Folders,0.08,0.043,-0.039
+Russia,Network Folders,0.03,0.037,0.004
+Central Asia,Network Folders,0.08,0.031,-0.047
+Latin America,Network Folders,0.022,0.016,-0.006
+Western Europe,Network Folders,0.03,0.015,-0.015
+Southern Europe,Network Folders,0.035,0.015,-0.02
+Australia and New Zealand,Network Folders,0.01,0.01,0.001
+Eastern Europe,Network Folders,0.04,0.01,-0.031
+Northern Europe,Network Folders,0.015,0.01,-0.005

@@ -1,0 +1,141 @@
+Region,Threat_Category,Q1_2025_Pct,Q2_2025_Pct,Q2_Change_pp
+World,Denylisted Internet Resources,5.12,5.91,0.79
+Africa,Denylisted Internet Resources,,6.98,0.77
+Russia,Denylisted Internet Resources,5.6,6.78,1.18
+Eastern Europe,Denylisted Internet Resources,5.11,6.07,0.96
+Central Asia,Denylisted Internet Resources,5.5,5.65,0.15
+South Asia,Denylisted Internet Resources,4.66,5.64,0.98
+South-East Asia,Denylisted Internet Resources,5.23,5.62,0.39
+Middle East,Denylisted Internet Resources,4.62,5.19,0.57
+Southern Europe,Denylisted Internet Resources,3.95,4.52,0.57
+Western Europe,Denylisted Internet Resources,3.31,4.31,1.0
+Northern Europe,Denylisted Internet Resources,2.65,4.26,1.61
+Latin America,Denylisted Internet Resources,4.19,4.23,0.04
+Australia and New Zealand,Denylisted Internet Resources,2.78,3.7,0.92
+East Asia,Denylisted Internet Resources,3.14,3.28,0.14
+World,Malicious Documents (MSOffice+PDF),1.85,1.97,0.12
+Southern Europe,Malicious Documents (MSOffice+PDF),4.02,4.39,0.37
+Latin America,Malicious Documents (MSOffice+PDF),3.3,3.26,-0.04
+Middle East,Malicious Documents (MSOffice+PDF),2.7,3.16,0.46
+Africa,Malicious Documents (MSOffice+PDF),2.36,2.85,0.49
+Eastern Europe,Malicious Documents (MSOffice+PDF),2.43,2.76,0.33
+South-East Asia,Malicious Documents (MSOffice+PDF),1.98,2.35,0.37
+South Asia,Malicious Documents (MSOffice+PDF),1.33,1.64,0.31
+Australia and New Zealand,Malicious Documents (MSOffice+PDF),1.35,1.61,0.26
+East Asia,Malicious Documents (MSOffice+PDF),1.46,1.46,0.0
+Central Asia,Malicious Documents (MSOffice+PDF),1.05,1.17,0.12
+Western Europe,Malicious Documents (MSOffice+PDF),0.9,0.98,0.08
+Russia,Malicious Documents (MSOffice+PDF),0.77,0.77,0.0
+Northern Europe,Malicious Documents (MSOffice+PDF),0.6,0.64,0.04
+World,Malicious Scripts and Phishing Pages,7.16,6.49,-0.67
+Latin America,Malicious Scripts and Phishing Pages,9.33,9.18,-0.15
+Southern Europe,Malicious Scripts and Phishing Pages,10.31,8.78,-1.53
+Middle East,Malicious Scripts and Phishing Pages,9.58,8.76,-0.82
+Africa,Malicious Scripts and Phishing Pages,10.14,8.6,-1.54
+South-East Asia,Malicious Scripts and Phishing Pages,9.34,8.05,-1.29
+Australia and New Zealand,Malicious Scripts and Phishing Pages,7.19,7.24,0.05
+Eastern Europe,Malicious Scripts and Phishing Pages,7.68,6.83,-0.85
+South Asia,Malicious Scripts and Phishing Pages,7.77,6.42,-1.35
+Central Asia,Malicious Scripts and Phishing Pages,5.4,4.77,-0.63
+Russia,Malicious Scripts and Phishing Pages,4.56,4.17,-0.39
+Western Europe,Malicious Scripts and Phishing Pages,4.6,4.15,-0.45
+East Asia,Malicious Scripts and Phishing Pages,4.34,4.05,-0.29
+Northern Europe,Malicious Scripts and Phishing Pages,3.07,3.06,-0.01
+World,Spyware (Spy Trojans/Backdoors/Keyloggers),4.2,3.84,-0.36
+Africa,Spyware (Spy Trojans/Backdoors/Keyloggers),7.05,6.82,-0.23
+Southern Europe,Spyware (Spy Trojans/Backdoors/Keyloggers),6.52,5.88,-0.64
+South-East Asia,Spyware (Spy Trojans/Backdoors/Keyloggers),5.93,5.76,-0.17
+Middle East,Spyware (Spy Trojans/Backdoors/Keyloggers),6.25,5.71,-0.54
+Latin America,Spyware (Spy Trojans/Backdoors/Keyloggers),4.33,4.73,0.4
+Eastern Europe,Spyware (Spy Trojans/Backdoors/Keyloggers),5.15,4.4,-0.75
+East Asia,Spyware (Spy Trojans/Backdoors/Keyloggers),4.81,4.2,-0.61
+Central Asia,Spyware (Spy Trojans/Backdoors/Keyloggers),4.7,3.74,-0.96
+South Asia,Spyware (Spy Trojans/Backdoors/Keyloggers),2.9,2.71,-0.19
+Russia,Spyware (Spy Trojans/Backdoors/Keyloggers),2.65,2.2,-0.45
+Australia and New Zealand,Spyware (Spy Trojans/Backdoors/Keyloggers),1.72,1.92,0.2
+Northern Europe,Spyware (Spy Trojans/Backdoors/Keyloggers),1.71,1.44,-0.27
+Western Europe,Spyware (Spy Trojans/Backdoors/Keyloggers),1.62,1.38,-0.24
+World,Ransomware,0.16,0.14,-0.02
+Africa,Ransomware,0.25,0.31,0.06
+Middle East,Ransomware,0.3,0.26,-0.04
+Central Asia,Ransomware,0.2,0.2,0.0
+South Asia,Ransomware,0.18,0.19,0.01
+Southern Europe,Ransomware,0.24,0.19,-0.05
+East Asia,Ransomware,,0.13,
+Australia and New Zealand,Ransomware,0.1,0.12,0.02
+South-East Asia,Ransomware,0.12,0.1,-0.02
+Latin America,Ransomware,0.11,0.1,-0.01
+Northern Europe,Ransomware,0.08,0.1,0.01
+Russia,Ransomware,0.11,0.09,-0.02
+Eastern Europe,Ransomware,0.15,0.09,-0.06
+Western Europe,Ransomware,0.08,0.07,-0.02
+World,Miners (Windows Executables),0.78,0.63,-0.15
+Central Asia,Miners (Windows Executables),1.72,1.2,-0.52
+Russia,Miners (Windows Executables),1.04,0.79,-0.25
+Africa,Miners (Windows Executables),0.81,0.78,-0.03
+Eastern Europe,Miners (Windows Executables),0.85,0.66,-0.19
+Latin America,Miners (Windows Executables),0.5,0.51,0.01
+South Asia,Miners (Windows Executables),0.66,0.51,-0.15
+Middle East,Miners (Windows Executables),0.61,0.49,-0.12
+South-East Asia,Miners (Windows Executables),0.74,0.42,-0.32
+Western Europe,Miners (Windows Executables),0.2,0.33,0.13
+Northern Europe,Miners (Windows Executables),0.28,0.31,0.03
+Southern Europe,Miners (Windows Executables),0.31,0.25,-0.06
+Australia and New Zealand,Miners (Windows Executables),0.3,0.21,-0.09
+East Asia,Miners (Windows Executables),0.22,0.19,-0.03
+World,Web Miners,0.53,0.3,-0.23
+Africa,Web Miners,0.81,0.54,-0.27
+Latin America,Web Miners,0.71,0.42,-0.29
+South-East Asia,Web Miners,0.8,0.35,-0.45
+Middle East,Web Miners,0.66,0.33,-0.33
+Eastern Europe,Web Miners,0.76,0.32,-0.44
+South Asia,Web Miners,0.71,0.31,-0.4
+Western Europe,Web Miners,0.5,0.27,-0.23
+Russia,Web Miners,0.33,0.23,-0.1
+Australia and New Zealand,Web Miners,0.48,0.2,-0.28
+Southern Europe,Web Miners,0.41,0.19,-0.22
+Central Asia,Web Miners,0.41,0.18,-0.23
+Northern Europe,Web Miners,0.24,0.18,-0.06
+East Asia,Web Miners,0.18,0.11,-0.07
+World,Worms,1.31,1.22,-0.09
+Africa,Worms,3.65,3.13,-0.52
+Central Asia,Worms,2.79,2.26,-0.53
+Middle East,Worms,1.99,1.82,-0.17
+South-East Asia,Worms,1.56,1.49,-0.07
+Eastern Europe,Worms,1.6,1.43,-0.17
+East Asia,Worms,1.39,1.35,-0.04
+South Asia,Worms,1.44,1.24,-0.2
+Russia,Worms,1.0,0.98,-0.02
+Southern Europe,Worms,0.95,0.78,-0.17
+Latin America,Worms,0.74,0.75,0.01
+Western Europe,Worms,0.31,0.27,-0.04
+Northern Europe,Worms,0.3,0.25,-0.05
+Australia and New Zealand,Worms,0.28,0.22,-0.06
+World,Viruses,1.53,1.29,-0.24
+South-East Asia,Viruses,8.68,7.1,-1.58
+Africa,Viruses,3.87,3.34,-0.53
+East Asia,Viruses,2.85,2.66,-0.19
+Middle East,Viruses,1.99,1.85,-0.14
+South Asia,Viruses,1.83,1.47,-0.36
+Central Asia,Viruses,1.3,1.0,-0.3
+Latin America,Viruses,0.8,0.71,-0.09
+Eastern Europe,Viruses,0.59,0.43,-0.16
+Southern Europe,Viruses,0.38,0.31,-0.07
+Russia,Viruses,0.34,0.27,-0.07
+Northern Europe,Viruses,0.21,0.21,0.0
+Western Europe,Viruses,0.22,0.16,-0.06
+Australia and New Zealand,Viruses,0.19,0.13,-0.06
+World,AutoCAD Malware,0.34,0.29,-0.05
+South-East Asia,AutoCAD Malware,2.65,2.3,-0.35
+East Asia,AutoCAD Malware,1.19,1.07,-0.12
+Africa,AutoCAD Malware,0.51,0.42,-0.09
+South Asia,AutoCAD Malware,0.3,0.24,-0.06
+Middle East,AutoCAD Malware,0.25,0.23,-0.02
+Latin America,AutoCAD Malware,0.08,0.07,-0.01
+Eastern Europe,AutoCAD Malware,0.1,0.06,-0.04
+Southern Europe,AutoCAD Malware,0.08,0.06,-0.02
+Central Asia,AutoCAD Malware,0.09,0.06,-0.03
+Australia and New Zealand,AutoCAD Malware,0.06,0.04,-0.02
+Russia,AutoCAD Malware,0.02,0.02,0.0
+Western Europe,AutoCAD Malware,0.02,0.01,-0.01
+Northern Europe,AutoCAD Malware,0.01,0.01,0.0

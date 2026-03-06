@@ -1,3 +1,5 @@
+import os
+import datetime
 import streamlit as st
 import streamlit.components.v1 as components
 import plotly.graph_objects as go
@@ -477,7 +479,20 @@ def chart_layout(height=420, show_legend=True, legend_y=-0.2):
 # ─────────────────────────────────────────
 # CITATION BADGE helper
 # ─────────────────────────────────────────
-def source_badge(extra=""):
+def source_badge(extra="", url=None, label=None):
+    """Render a source citation badge.
+    Pass url + label to override the default DBIR source with a custom link.
+    Pass extra="" with no url/label to use DBIR (backward-compatible default).
+    """
+    if url and label:
+        source_link = (f'<a href="{url}" target="_blank" '
+                       f'style="color:{ACCENT};text-decoration:none;">{label}</a>')
+        date_str = ""
+    else:
+        source_link = (f'<a href="https://www.verizon.com/business/resources/reports/dbir/" '
+                       f'target="_blank" style="color:{ACCENT};text-decoration:none;">'
+                       f'Verizon 2025 Data Breach Investigations Report (DBIR)</a>')
+        date_str = " · Nov 2023 – Oct 2024"
     detail = f" · {extra}" if extra else ""
     return f"""
 <div style="
@@ -490,9 +505,8 @@ def source_badge(extra=""):
 ">
   <span style="font-size:16px;">📊</span>
   <span style="font-family:'Inter',sans-serif;font-size:0.88rem;font-weight:600;color:{TEXT};">
-    Source: <a href="https://www.verizon.com/business/resources/reports/dbir/" target="_blank"
-      style="color:{ACCENT};text-decoration:none;">Verizon 2025 Data Breach Investigations Report (DBIR)</a>
-    <span style="color:{MUTED};font-weight:400;"> · Nov 2023 – Oct 2024{detail}</span>
+    Source: {source_link}
+    <span style="color:{MUTED};font-weight:400;">{date_str}{detail}</span>
   </span>
 </div>"""
 
@@ -643,9 +657,14 @@ st.sidebar.selectbox("Threat Type",
      "Data Theft","Supply Chain Attack","Denial of Service"])
 st.sidebar.markdown("<em>Other filters are decorative — only sector selection is wired up.</em>", unsafe_allow_html=True)
 st.sidebar.info(
-    "**Source:** Verizon 2025 DBIR\n\n"
+    "**Source 1:** Verizon 2025 DBIR\n\n"
     "22,052 incidents · 12,195 confirmed breaches\n\n"
     "Nov 2023 – Oct 2024"
+)
+st.sidebar.info(
+    "**Source 2:** Kaspersky ICS-CERT\n\n"
+    "Threat Landscape for Industrial Automation Systems\n\n"
+    "Q2 2025 (April – June 2025)"
 )
 
 # ─────────────────────────────────────────
@@ -686,6 +705,306 @@ st.markdown(
     f'<p style="font-size:0.8rem;color:{MUTED};font-family:\'Inter\',sans-serif;margin-top:-8px;">'
     "💡 <strong>Tip:</strong> Hover over any chart and click the <strong>⤢ expand icon</strong> "
     "in the top-right corner to view it full screen.</p>",
+    unsafe_allow_html=True,
+)
+
+# ─────────────────────────────────────────
+# TIP OF THE MONTH
+# ─────────────────────────────────────────
+_TIPS = {
+    1: {
+        "month":   "January",
+        "threat":  "Tax Season Phishing",
+        "icon":    "🎯",
+        "risk":    "HIGH",
+        "risk_color": "#dc2626",
+        "summary": (
+            "Attackers flood inboxes in January impersonating tax authorities (such as the Canada Revenue Agency "
+            "or the Internal Revenue Service) with fake refund notices, T4/W-2 requests, and \"account verification\" "
+            "links. Credential harvesting and identity theft are the primary goals."
+        ),
+        "prevention": [
+            "Go directly to your tax authority's official website — never click links in unsolicited emails.",
+            "Enable Multi-Factor Authentication on your tax filing and financial accounts.",
+            "File your return early to prevent fraudsters from filing in your name first.",
+            "Shred any physical tax documents before disposal.",
+        ],
+    },
+    2: {
+        "month":   "February",
+        "threat":  "Romance Scams and Valentine's Day Phishing",
+        "icon":    "💌",
+        "risk":    "MEDIUM",
+        "risk_color": "#d97706",
+        "summary": (
+            "February sees a sharp spike in romance scams and brand-impersonation phishing using Valentine's Day "
+            "themes. Attackers create fake dating profiles to build trust over weeks before requesting money or "
+            "personal information. Phishing emails mimic florist, jewellery, and gift card brands."
+        ),
+        "prevention": [
+            "Reverse image-search profile photos on dating apps to detect stolen identities.",
+            "Never send money or gift cards to someone you have not met in person.",
+            "Hover over links before clicking — check the actual destination URL.",
+            "Report suspicious profiles to the platform immediately.",
+        ],
+    },
+    3: {
+        "month":   "March",
+        "threat":  "Tax Deadline Phishing and Human Resources Scams",
+        "icon":    "📋",
+        "risk":    "HIGH",
+        "risk_color": "#dc2626",
+        "summary": (
+            "March marks peak tax filing season alongside a rise in Human Resources-themed phishing. Attackers "
+            "impersonate payroll teams requesting direct deposit changes, send fake T4 slips with malicious "
+            "attachments, and exploit employees distracted by year-end financial planning. Business Email "
+            "Compromise targeting finance teams also peaks."
+        ),
+        "prevention": [
+            "Verify any payroll or direct deposit change requests by calling the requester directly using a known number.",
+            "Never open unexpected tax document attachments — download statements only from official portals.",
+            "Train staff to recognise Business Email Compromise — urgent wire transfer requests are a red flag.",
+            "Check your credit report for unexpected accounts opened in your name.",
+        ],
+    },
+    4: {
+        "month":   "April",
+        "threat":  "Tax Deadline Scams and Travel Booking Fraud",
+        "icon":    "✈️",
+        "risk":    "HIGH",
+        "risk_color": "#dc2626",
+        "summary": (
+            "Late tax filing deadlines drive a final wave of tax-themed phishing in April. Simultaneously, "
+            "spring break and early summer travel bookings attract fraudulent hotel, airline, and vacation "
+            "rental scams. Fake booking confirmation emails deliver malware or harvest credit card details."
+        ),
+        "prevention": [
+            "Book travel exclusively through official airline or hotel websites, not third-party links in emails.",
+            "Use a credit card (not debit) for travel bookings — it offers better fraud protection.",
+            "File your tax return on time to eliminate the window attackers use for late-filer fraud.",
+            "Enable travel alerts on your bank account before any trip.",
+        ],
+    },
+    5: {
+        "month":   "May",
+        "threat":  "Benefits Enrolment Phishing and Job Offer Scams",
+        "icon":    "📑",
+        "risk":    "MEDIUM",
+        "risk_color": "#d97706",
+        "summary": (
+            "May coincides with mid-year benefits review periods and an influx of spring job postings. Attackers "
+            "send phishing emails impersonating Human Resources or benefits providers asking employees to \"re-verify\" "
+            "enrolment. Fraudulent job offers — particularly remote positions — are used to harvest personal "
+            "information or deliver malware via fake onboarding documents."
+        ),
+        "prevention": [
+            "Access benefits portals only by typing the address directly into your browser.",
+            "Verify job offers through the company's official careers page, not just the recruiter's email.",
+            "Never provide your Social Insurance or Social Security Number during early recruitment stages.",
+            "Report suspicious Human Resources emails to your IT or security team immediately.",
+        ],
+    },
+    6: {
+        "month":   "June",
+        "threat":  "Credential Theft and Public Wi-Fi Attacks",
+        "icon":    "📶",
+        "risk":    "MEDIUM",
+        "risk_color": "#d97706",
+        "summary": (
+            "Summer travel season begins in June, increasing reliance on public Wi-Fi at airports, hotels, and "
+            "cafes. Attackers deploy \"evil twin\" rogue access points to intercept traffic and steal credentials. "
+            "Spam email rates also peak in June, with e-commerce fraud rising alongside summer shopping activity."
+        ),
+        "prevention": [
+            "Use a Virtual Private Network on all public Wi-Fi connections.",
+            "Avoid accessing banking or sensitive accounts over public networks.",
+            "Enable Multi-Factor Authentication so stolen passwords alone are not enough to access your accounts.",
+            "Verify the exact Wi-Fi network name with venue staff before connecting.",
+        ],
+    },
+    7: {
+        "month":   "July",
+        "threat":  "Vacation-Themed Phishing and Out-of-Office Exploitation",
+        "icon":    "🏖️",
+        "risk":    "MEDIUM",
+        "risk_color": "#d97706",
+        "summary": (
+            "Attackers exploit reduced staffing and out-of-office replies in July to launch Business Email "
+            "Compromise attacks, knowing approvals may be rushed or delegated to less experienced staff. "
+            "Travel phishing peaks with fake airline refund notices, accommodation scams, and fraudulent "
+            "luggage claim links."
+        ),
+        "prevention": [
+            "Avoid including too many details in out-of-office replies — do not reveal your exact return date or backup contact's email.",
+            "Set up approval workflows that require two people for financial transactions over a set threshold.",
+            "Brief any colleagues covering your role on how to spot social engineering attempts.",
+            "Monitor your accounts more frequently when travelling.",
+        ],
+    },
+    8: {
+        "month":   "August",
+        "threat":  "Back-to-School Scams and Educational Malware",
+        "icon":    "🎒",
+        "risk":    "MEDIUM",
+        "risk_color": "#d97706",
+        "summary": (
+            "August sees a surge in scams targeting parents and students — fake school supply deals, fraudulent "
+            "scholarship offers, and malicious educational apps. Universities face increased credential phishing "
+            "as students log in to new systems. Attackers also distribute malware disguised as textbook PDF "
+            "downloads."
+        ),
+        "prevention": [
+            "Download educational apps only from official app stores and verify publisher names carefully.",
+            "Obtain textbooks through your institution's library or verified legal sources.",
+            "Students: use your institution's official email and Multi-Factor Authentication from day one.",
+            "Parents: set up parental controls and educate children about phishing before the school year begins.",
+        ],
+    },
+    9: {
+        "month":   "September",
+        "threat":  "Mobile Malware and One-Time Password Stealers",
+        "icon":    "📱",
+        "risk":    "HIGH",
+        "risk_color": "#dc2626",
+        "summary": (
+            "September marks the beginning of a surge in mobile malware — particularly Android trojans designed "
+            "to intercept one-time passwords and bypass Multi-Factor Authentication. Fraudsters begin preparing "
+            "infrastructure for the upcoming holiday shopping season, and SIM-swapping attacks targeting "
+            "high-value individuals increase."
+        ),
+        "prevention": [
+            "Use an authenticator app (not SMS) for Multi-Factor Authentication wherever possible.",
+            "Contact your mobile carrier to add a port freeze or account PIN to prevent SIM swapping.",
+            "Keep your phone operating system and all apps fully updated.",
+            "Only install apps from official stores and review permissions before granting access.",
+        ],
+    },
+    10: {
+        "month":   "October",
+        "threat":  "Ransomware Campaigns and Credential Stuffing",
+        "icon":    "🔐",
+        "risk":    "CRITICAL",
+        "risk_color": "#991b1b",
+        "summary": (
+            "October is Cybersecurity Awareness Month — but also one of the highest-risk months for ransomware. "
+            "Threat actors ramp up campaigns ahead of the holiday season knowing organisations are distracted. "
+            "Credential stuffing attacks spike as attackers test leaked username-password pairs against streaming, "
+            "retail, and banking sites ahead of Black Friday."
+        ),
+        "prevention": [
+            "Test and verify your backup restoration process — ransomware is only defeated if backups actually work.",
+            "Use unique passwords for every account; a password manager makes this practical.",
+            "Run a tabletop ransomware incident response exercise with your team this month.",
+            "Patch all internet-facing systems — ransomware actors actively scan for unpatched vulnerabilities.",
+        ],
+    },
+    11: {
+        "month":   "November",
+        "threat":  "Black Friday and Cyber Monday Shopping Fraud",
+        "icon":    "🛒",
+        "risk":    "CRITICAL",
+        "risk_color": "#991b1b",
+        "summary": (
+            "Gift card fraud spikes up to 300% in November. Fake retailer websites, lookalike brand emails, "
+            "and malicious browser extensions designed to steal payment card data all peak around Black Friday "
+            "and Cyber Monday. Ransomware groups deliberately time attacks to hit retailers when their security "
+            "teams are stretched thin and revenue impact is highest."
+        ),
+        "prevention": [
+            "Shop only on retailer websites you navigate to directly — not links from emails or social media ads.",
+            "Check the website address bar carefully for subtle misspellings (e.g., amaz0n.com).",
+            "Use a virtual or single-use credit card number for online purchases.",
+            "Watch for unsolicited gift card requests — a common scam targeting both individuals and businesses.",
+        ],
+    },
+    12: {
+        "month":   "December",
+        "threat":  "Holiday Ransomware, Charity Fraud and Phishing (Peak Month)",
+        "icon":    "🎄",
+        "risk":    "CRITICAL",
+        "risk_color": "#991b1b",
+        "summary": (
+            "December is consistently the most dangerous month of the year for cyber attacks. Ransomware "
+            "attacks hit their annual peak — a 30% surge above the monthly average — as attackers know "
+            "IT teams are on leave and organisations are reluctant to disrupt operations during the holiday "
+            "period. Charity donation scams, fake shipping notifications, and e-gift fraud also peak sharply."
+        ),
+        "prevention": [
+            "Ensure at least one security team member is on call throughout the holiday break.",
+            "Donate to charities only through their official websites — search directly, do not click donation links.",
+            "Verify shipping notification emails against your actual order confirmation before clicking any links.",
+            "Set up transaction alerts on all financial accounts so you are notified of any unusual activity instantly.",
+        ],
+    },
+}
+
+_now   = datetime.datetime.now()
+_month = _now.month
+_tip   = _TIPS[_month]
+
+# Build prevention list HTML outside the f-string (backslashes not allowed inside f-string expressions)
+_tip_prevention_html = "".join(
+    '<p style="margin:0.35rem 0 0 0;font-size:0.875rem;color:#334155;'
+    'font-family:\'Inter\',sans-serif;line-height:1.55;">&#10004;&nbsp;' + t + '</p>'
+    for t in _tip["prevention"]
+)
+
+st.markdown("## 💡 Tip of the Month")
+st.markdown(
+    f"""
+<div style="
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-left: 6px solid {_tip['risk_color']};
+    border-radius: 12px;
+    padding: 1.4rem 1.6rem 1.2rem 1.6rem;
+    margin-bottom: 1.2rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+">
+  <!-- header row -->
+  <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:0.9rem;">
+    <div style="display:flex;align-items:center;gap:10px;">
+      <span style="font-size:2rem;line-height:1;">{_tip['icon']}</span>
+      <div>
+        <p style="margin:0;font-size:0.72rem;font-weight:600;letter-spacing:0.08em;
+                  color:#64748b;font-family:'Inter',sans-serif;text-transform:uppercase;">
+          Threat Focus · {_tip['month']} {_now.year}
+        </p>
+        <p style="margin:0;font-size:1.15rem;font-weight:700;color:#0f172a;font-family:'Inter',sans-serif;line-height:1.25;">
+          {_tip['threat']}
+        </p>
+      </div>
+    </div>
+    <span style="
+        padding:4px 14px;border-radius:20px;font-size:0.72rem;font-weight:700;
+        letter-spacing:0.06em;font-family:'Inter',sans-serif;
+        background:{_tip['risk_color']};color:#ffffff;">
+      {_tip['risk']} RISK
+    </span>
+  </div>
+
+  <!-- body -->
+  <p style="margin:0 0 1rem 0;font-size:0.9rem;line-height:1.7;color:#334155;
+            font-family:'Inter',sans-serif;">
+    {_tip['summary']}
+  </p>
+
+  <!-- prevention list -->
+  <div style="background:#f1f5f9;border-radius:8px;padding:0.9rem 1.1rem;border:1px solid #e2e8f0;">
+    <p style="margin:0 0 0.5rem 0;font-size:0.75rem;font-weight:700;letter-spacing:0.06em;
+              color:#2563eb;font-family:'Inter',sans-serif;text-transform:uppercase;">
+      🛡️ How to Protect Yourself
+    </p>
+    {_tip_prevention_html}
+  </div>
+
+  <!-- footer note -->
+  <p style="margin:0.8rem 0 0 0;font-size:0.72rem;color:#94a3b8;
+            font-family:'Inter',sans-serif;text-align:right;">
+    This tip updates automatically each month &nbsp;·&nbsp; Based on seasonal threat intelligence research
+  </p>
+</div>
+""",
     unsafe_allow_html=True,
 )
 
@@ -1074,9 +1393,8 @@ col7, col8 = st.columns(2, gap="large")
 
 with col7:
     st.markdown("#### Ransomware Involvement Rate by Industry Sector")
-    st.caption("Percentage of breaches in each sector that involved ransomware · Green = below average · Orange = elevated · Red = high")
-    bar_colors = [C_GREEN if v < 40 else (C_AMBER if v < 60 else C_RED)
-                  for v in df_ransom_sector["Ransomware (%)"]]
+    st.caption("Percentage of breaches in each sector that involved ransomware — each sector shown in its own distinct colour")
+    bar_colors = ["#3b82f6","#10b981","#f59e0b","#8b5cf6","#ef4444","#06b6d4","#f97316"]
     fig_rs = go.Figure(go.Bar(
         y=df_ransom_sector["Sector"], x=df_ransom_sector["Ransomware (%)"],
         orientation="h",
@@ -1176,9 +1494,8 @@ col9, col10 = st.columns(2, gap="large")
 
 with col9:
     st.markdown("#### Most Commonly Stolen Data")
-    st.caption("Ranked by how often each data type appears in confirmed breach incidents")
-    data_colors = [C_BLUE if v >= 7 else (C_PURP if v >= 5 else "#94a3b8")
-                   for v in df_data["Relative Prevalence"]]
+    st.caption("Ranked by how often each data type appears in confirmed breach incidents — each data type shown in its own distinct colour")
+    data_colors = ["#6366f1","#ec4899","#14b8a6","#f43f5e","#84cc16","#a78bfa","#fb923c","#0ea5e9"]
     fig_dt = go.Figure(go.Bar(
         y=df_data["Data Type"], x=df_data["Relative Prevalence"],
         orientation="h",
@@ -1347,6 +1664,258 @@ st.markdown(insight_box(_hl_tr, _bd_tr), unsafe_allow_html=True)
 open_analysis_btn("trends", fig_trends, "How Exploitation Trends Have Shifted Over 12 Weeks",
                   _src_tr, _hl_tr, _bd_tr, _ext_tr)
 # ─────────────────────────────────────────
+# SECTION — INDUSTRIAL CONTROL SYSTEMS (ICS)
+# ─────────────────────────────────────────
+_ICS_DIR = os.path.join(os.path.dirname(__file__), "ics_data")
+_ICS_SRC = ("Kaspersky ICS-CERT — Threat Landscape for Industrial Automation Systems, Q2 2025 · "
+            "ics-cert.kaspersky.com")
+
+df_ics_region   = pd.read_csv(os.path.join(_ICS_DIR, "02_regional_overall.csv"))
+df_ics_industry = pd.read_csv(os.path.join(_ICS_DIR, "03_industry_breakdown.csv"))
+df_ics_hist     = pd.read_csv(os.path.join(_ICS_DIR, "06_historical_quarterly_trends.csv"))
+df_ics_src_h    = pd.read_csv(os.path.join(_ICS_DIR, "07_threat_sources_historical.csv"))
+
+st.markdown("---")
+st.markdown("## Industrial Control System Cyber Threats")
+st.caption(
+    "Data from Kaspersky ICS-CERT covering Q2 2025 (April – June 2025). "
+    "Percentages show the share of ICS computers on which malicious objects were blocked during the quarter."
+)
+
+ics_col1, ics_col2 = st.columns(2, gap="large")
+
+# ── Chart 1 : ICS Attack Rate by Region ────────────────────────────────────
+with ics_col1:
+    st.markdown("### ICS Attack Rate by Region (Q2 2025)")
+    st.caption("Percentage of ICS computers on which threats were blocked, by region — each region shown in its own distinct colour")
+
+    _df_r    = df_ics_region[df_ics_region["Region"] != "World"].sort_values("Q2_2025_Pct")
+    _world_r = float(df_ics_region.loc[df_ics_region["Region"] == "World", "Q2_2025_Pct"].iloc[0])
+    _palette_r = ["#0ea5e9","#10b981","#f59e0b","#ef4444","#8b5cf6",
+                  "#ec4899","#14b8a6","#f97316","#6366f1","#84cc16",
+                  "#a78bfa","#06b6d4","#f43f5e"]
+    _colors_r = _palette_r[:len(_df_r)]
+
+    fig_ics_region = go.Figure(go.Bar(
+        x=_df_r["Q2_2025_Pct"], y=_df_r["Region"], orientation="h",
+        marker_color=_colors_r,
+        text=[f"{v:.1f}%" for v in _df_r["Q2_2025_Pct"]],
+        textposition="outside",
+        hovertemplate="<b>%{y}</b><br>ICS Computers Attacked: %{x:.1f}%<extra></extra>",
+    ))
+    fig_ics_region.add_vline(
+        x=_world_r, line_dash="dash", line_color=ORANGE, line_width=2,
+        annotation_text=f"Global avg: {_world_r}%",
+        annotation_position="bottom right",
+        annotation_font=dict(color=ORANGE, size=11),
+    )
+    _lay_r = chart_layout(height=440)
+    _lay_r.update({
+        "xaxis": dict(title="% of ICS Computers Attacked", ticksuffix="%",
+                      range=[0, _df_r["Q2_2025_Pct"].max() * 1.22]),
+        "yaxis": dict(title=""),
+        "showlegend": False,
+        "margin": dict(l=155, r=64, t=36, b=48),
+    })
+    fig_ics_region.update_layout(**_lay_r)
+    st.plotly_chart(fig_ics_region, use_container_width=True,
+                    config={"displayModeBar": True, "displaylogo": False,
+                            "modeBarButtonsToAdd": ["toggleFullscreen"]})
+
+    _hl_icsr = "Africa and South-East Asia face the highest industrial cyber risk"
+    _bd_icsr = ("In Q2 2025, 27.8% of ICS computers in Africa and 26.8% in South-East Asia were targeted — "
+                "nearly 2.5 times the rate seen in Northern Europe (11.2%). High attack rates in these regions "
+                "often reflect older, unpatched equipment and limited dedicated industrial cybersecurity staff.")
+    _ext_icsr = ("The disparity between regions reflects differences in industrial modernisation and patching cycles. "
+                 "Western and Northern Europe benefit from stricter regulatory environments (such as the European Union "
+                 "Network and Information Security Directive) and higher investment in operational technology security. "
+                 "Africa and South-East Asia often operate legacy programmable logic controllers and supervisory "
+                 "control and data acquisition systems that cannot be updated without production downtime. "
+                 "Central Asia recorded the largest single-quarter improvement (−3.6 percentage points), suggesting "
+                 "targeted remediation efforts. Australia and New Zealand and Northern Europe both saw small increases, "
+                 "which may reflect broader detection capability expansion rather than a true rise in attacks.")
+    st.markdown(source_badge(url="https://ics-cert.kaspersky.com/publications/reports/2025/09/11/threat-landscape-for-industrial-automation-systems-q2-2025/", label="Kaspersky ICS-CERT — Threat Landscape for Industrial Automation Systems, Q2 2025"), unsafe_allow_html=True)
+    st.markdown(insight_box(_hl_icsr, _bd_icsr), unsafe_allow_html=True)
+    open_analysis_btn("ics_region", fig_ics_region,
+                      "ICS Attack Rate by Region (Q2 2025)",
+                      _ICS_SRC, _hl_icsr, _bd_icsr, _ext_icsr)
+
+# ── Chart 2 : ICS Attack Rate by Industry ──────────────────────────────────
+with ics_col2:
+    st.markdown("### ICS Attack Rate by Industry Sector (Q2 2025)")
+    st.caption("Percentage of ICS computers on which threats were blocked, by industry — each sector shown in its own distinct colour")
+
+    _df_i    = df_ics_industry[df_ics_industry["Industry"] != "World"].sort_values("Q2_2025_Pct")
+    _world_i = float(df_ics_industry.loc[df_ics_industry["Industry"] == "World", "Q2_2025_Pct"].iloc[0])
+    _palette_i = ["#f43f5e","#3b82f6","#f59e0b","#a78bfa","#06b6d4","#84cc16","#fb923c"]
+    _colors_i = _palette_i[:len(_df_i)]
+
+    fig_ics_industry = go.Figure(go.Bar(
+        x=_df_i["Q2_2025_Pct"], y=_df_i["Industry"], orientation="h",
+        marker_color=_colors_i,
+        text=[f"{v:.1f}%" for v in _df_i["Q2_2025_Pct"]],
+        textposition="outside",
+        hovertemplate="<b>%{y}</b><br>ICS Computers Attacked: %{x:.1f}%<extra></extra>",
+    ))
+    fig_ics_industry.add_vline(
+        x=_world_i, line_dash="dash", line_color=ORANGE, line_width=2,
+        annotation_text=f"Global avg: {_world_i}%",
+        annotation_position="bottom right",
+        annotation_font=dict(color=ORANGE, size=11),
+    )
+    _lay_i = chart_layout(height=440)
+    _lay_i.update({
+        "xaxis": dict(title="% of ICS Computers Attacked", ticksuffix="%",
+                      range=[0, _df_i["Q2_2025_Pct"].max() * 1.22]),
+        "yaxis": dict(title=""),
+        "showlegend": False,
+        "margin": dict(l=175, r=64, t=36, b=48),
+    })
+    fig_ics_industry.update_layout(**_lay_i)
+    st.plotly_chart(fig_ics_industry, use_container_width=True,
+                    config={"displayModeBar": True, "displaylogo": False,
+                            "modeBarButtonsToAdd": ["toggleFullscreen"]})
+
+    _hl_icsi = "Biometrics and Building Automation top the ICS attack chart"
+    _bd_icsi = ("Biometrics (27.2%) and Building Automation (23.4%) recorded the highest share of attacked ICS "
+                "computers in Q2 2025. Oil and Gas (16.1%) and Manufacturing (16.7%) sit below the global average, "
+                "possibly reflecting stronger perimeter controls following high-profile pipeline incidents.")
+    _ext_icsi = ("Biometrics systems are often network-connected for centralised identity management, making them "
+                 "an overlooked entry point into physical security infrastructure. Building Automation systems "
+                 "(heating, ventilation, air conditioning, access control) are increasingly Internet-connected but "
+                 "frequently managed by facilities teams rather than cybersecurity professionals, creating gaps. "
+                 "The relatively lower rates for Oil and Gas and Manufacturing may reflect increased investment "
+                 "following the 2021 Colonial Pipeline incident, which drove sector-wide adoption of air-gapping, "
+                 "network segmentation, and Purdue Model enforcement. Electric Power sits close to the global "
+                 "average, consistent with ongoing nation-state interest in energy infrastructure.")
+    st.markdown(source_badge(url="https://ics-cert.kaspersky.com/publications/reports/2025/09/11/threat-landscape-for-industrial-automation-systems-q2-2025/", label="Kaspersky ICS-CERT — Threat Landscape for Industrial Automation Systems, Q2 2025"), unsafe_allow_html=True)
+    st.markdown(insight_box(_hl_icsi, _bd_icsi), unsafe_allow_html=True)
+    open_analysis_btn("ics_industry", fig_ics_industry,
+                      "ICS Attack Rate by Industry Sector (Q2 2025)",
+                      _ICS_SRC, _hl_icsi, _bd_icsi, _ext_icsi)
+
+ics_col3, ics_col4 = st.columns(2, gap="large")
+
+# ── Chart 3 : Historical ICS Attack Trend ──────────────────────────────────
+with ics_col3:
+    st.markdown("### Global ICS Attack Rate Trend (2022 – 2025)")
+    st.caption("Share of ICS computers attacked worldwide per quarter, with key threat category overlays")
+
+    fig_ics_hist = go.Figure()
+    fig_ics_hist.add_trace(go.Scatter(
+        x=df_ics_hist["Quarter_Label"], y=df_ics_hist["Overall_ICS_Attacked_Pct"],
+        name="Overall ICS Attack Rate", mode="lines+markers",
+        line=dict(color=RED, width=3), marker=dict(size=6),
+        hovertemplate="<b>%{x}</b><br>Overall Attacked: %{y:.1f}%<extra></extra>",
+    ))
+    fig_ics_hist.add_trace(go.Scatter(
+        x=df_ics_hist["Quarter_Label"], y=df_ics_hist["Malicious_Scripts_Pct"],
+        name="Malicious Scripts and Phishing Pages", mode="lines+markers",
+        line=dict(color=C_BLUE, width=2, dash="dot"), marker=dict(size=5),
+        hovertemplate="<b>%{x}</b><br>Malicious Scripts: %{y:.2f}%<extra></extra>",
+    ))
+    fig_ics_hist.add_trace(go.Scatter(
+        x=df_ics_hist["Quarter_Label"], y=df_ics_hist["Spyware_Pct"],
+        name="Spyware, Backdoors, and Keyloggers", mode="lines+markers",
+        line=dict(color=ORANGE, width=2, dash="dash"), marker=dict(size=5),
+        hovertemplate="<b>%{x}</b><br>Spyware: %{y:.2f}%<extra></extra>",
+    ))
+    fig_ics_hist.add_trace(go.Scatter(
+        x=df_ics_hist["Quarter_Label"], y=df_ics_hist["Denylisted_Resources_Pct"],
+        name="Denylisted Internet Resources", mode="lines+markers",
+        line=dict(color=C_GREEN, width=2, dash="dashdot"), marker=dict(size=5),
+        hovertemplate="<b>%{x}</b><br>Denylisted Resources: %{y:.2f}%<extra></extra>",
+    ))
+    _lay_h = chart_layout(height=440, show_legend=True)
+    _lay_h.update({
+        "xaxis": dict(title="Quarter", tickangle=-45, type="category"),
+        "yaxis": dict(title="% of ICS Computers Affected", ticksuffix="%"),
+        "legend": dict(orientation="h", y=-0.38, x=0, font=dict(size=10,
+                       color=MUTED, family="Inter, sans-serif")),
+        "margin": dict(l=56, r=24, t=36, b=110),
+    })
+    fig_ics_hist.update_layout(**_lay_h)
+    st.plotly_chart(fig_ics_hist, use_container_width=True,
+                    config={"displayModeBar": True, "displaylogo": False,
+                            "modeBarButtonsToAdd": ["toggleFullscreen"]})
+
+    _hl_icsh = "Global ICS attack rates have fallen 22% since their 2022 – 2023 peak"
+    _bd_icsh = ("The share of ICS computers attacked worldwide dropped from 26.8% in Q2 2023 to 20.5% in "
+                "Q2 2025 — a 6.3 percentage point reduction. Malicious scripts and phishing pages remain "
+                "the leading threat category but have also declined steadily from 9.96% (Q1 2023) to 6.49%.")
+    _ext_icsh = ("The downward trend reflects increased investment in operational technology security following "
+                 "a wave of high-profile industrial incidents in 2021 – 2022. Endpoint protection improvements, "
+                 "stronger network segmentation between IT and operational technology networks, and greater "
+                 "awareness of industrial security frameworks have all contributed. However, while the volume of "
+                 "attacked computers is declining, malware sophistication is increasing — spyware and backdoors "
+                 "enable persistent, long-term access. Denylisted Internet Resources spiked in Q1 2023 (8.89%) "
+                 "likely driven by increased scanning activity after major vulnerability disclosures, before "
+                 "normalising. Ransomware in ICS environments remains low in percentage terms (0.14%), but targets "
+                 "operational technology directly — with the potential for physical disruption to critical "
+                 "infrastructure, unlike traditional IT ransomware.")
+    st.markdown(source_badge(url="https://ics-cert.kaspersky.com/publications/reports/2025/09/11/threat-landscape-for-industrial-automation-systems-q2-2025/", label="Kaspersky ICS-CERT — Threat Landscape for Industrial Automation Systems, Q2 2025"), unsafe_allow_html=True)
+    st.markdown(insight_box(_hl_icsh, _bd_icsh), unsafe_allow_html=True)
+    open_analysis_btn("ics_hist", fig_ics_hist,
+                      "Global ICS Attack Rate Trend (2022 – 2025)",
+                      _ICS_SRC, _hl_icsh, _bd_icsh, _ext_icsh)
+
+# ── Chart 4 : Threat Delivery Pathways ─────────────────────────────────────
+with ics_col4:
+    st.markdown("### How Threats Reach Industrial Systems (2024 – 2025)")
+    st.caption("Percentage of ICS computers attacked via each delivery pathway over the last three quarters")
+
+    _df_s = df_ics_src_h[df_ics_src_h["Quarter_Label"].isin(["Q2 2024", "Q1 2025", "Q2 2025"])]
+    _qtrs = _df_s["Quarter_Label"].tolist()
+
+    fig_ics_src = go.Figure()
+    for _col, _label, _color in [
+        ("Internet_Pct",       "Internet",                    C_BLUE),
+        ("Email_Clients_Pct",  "Email Clients",               RED),
+        ("Removable_Media_Pct","Removable Media",             ORANGE),
+        ("Network_Folders_Pct","Shared Network Folders",      C_GREEN),
+    ]:
+        fig_ics_src.add_trace(go.Bar(
+            name=_label, x=_qtrs, y=_df_s[_col],
+            marker_color=_color,
+            text=[f"{v:.2f}%" for v in _df_s[_col]],
+            textposition="auto",
+            hovertemplate=f"<b>{_label}</b><br>%{{x}}: %{{y:.2f}}%<extra></extra>",
+        ))
+    _lay_s = chart_layout(height=440, show_legend=True)
+    _lay_s.update({
+        "barmode": "group",
+        "xaxis": dict(title="Quarter", type="category"),
+        "yaxis": dict(title="% of ICS Computers Reached", ticksuffix="%"),
+        "legend": dict(orientation="h", y=-0.28, x=0, font=dict(size=10,
+                       color=MUTED, family="Inter, sans-serif")),
+        "margin": dict(l=56, r=24, t=36, b=90),
+    })
+    fig_ics_src.update_layout(**_lay_s)
+    st.plotly_chart(fig_ics_src, use_container_width=True,
+                    config={"displayModeBar": True, "displaylogo": False,
+                            "modeBarButtonsToAdd": ["toggleFullscreen"]})
+
+    _hl_icss = "The internet is the primary gateway into industrial systems — and email threats are rising"
+    _bd_icss = ("In Q2 2025, 9.76% of ICS computers were attacked via internet connections — nearly three "
+                "times the email rate (3.06%). However, email-borne threats are the only pathway showing "
+                "consistent growth: up from 2.72% in Q4 2024 to 3.06% in Q2 2025. Removable media and "
+                "shared network folders continue their multi-year decline.")
+    _ext_icss = ("The decline of removable media (from 2.66% in Q2 2022 to 0.37% in Q2 2025) reflects "
+                 "widespread enforcement of device-control policies following the Stuxnet era, where removable "
+                 "media was the primary mechanism for bridging air gaps into isolated industrial networks. "
+                 "Shared Network Folders are now a negligible pathway at 0.05%, reflecting improved "
+                 "lateral-movement controls. The consistent rise in email-delivered threats is significant: "
+                 "it indicates that ICS workstations are increasingly connected to corporate IT networks and "
+                 "that engineering staff are using email on machines that also run industrial software — a "
+                 "dangerous convergence of IT and operational technology environments. Dedicated operational "
+                 "technology workstations with no email client access are a recommended mitigation.")
+    st.markdown(source_badge(url="https://ics-cert.kaspersky.com/publications/reports/2025/09/11/threat-landscape-for-industrial-automation-systems-q2-2025/", label="Kaspersky ICS-CERT — Threat Landscape for Industrial Automation Systems, Q2 2025"), unsafe_allow_html=True)
+    st.markdown(insight_box(_hl_icss, _bd_icss), unsafe_allow_html=True)
+    open_analysis_btn("ics_sources", fig_ics_src,
+                      "How Threats Reach Industrial Systems (2024 – 2025)",
+                      _ICS_SRC, _hl_icss, _bd_icss, _ext_icss)
+
+# ─────────────────────────────────────────
 # CONTRIBUTORS
 # ─────────────────────────────────────────
 
@@ -1368,13 +1937,16 @@ st.markdown(f"""
 <div style="text-align:center;padding:1.6rem;background:{SURFACE};
             border:1px solid {BORDER};border-radius:12px;margin-top:1rem;">
   <p style="color:{MUTED};font-size:0.82rem;line-height:2;margin:0;font-family:'Inter',sans-serif;">
-    <strong style="color:{TEXT};">Data Source:</strong>
+    <strong style="color:{TEXT};">Data Sources:</strong>
     Verizon 2025 Data Breach Investigations Report (DBIR) ·
     22,052 incidents · 12,195 confirmed breaches · Nov 2023 – Oct 2024
+    &nbsp;·&nbsp;
+    Kaspersky ICS-CERT — Threat Landscape for Industrial Automation Systems, Q2 2025 ·
+    ics-cert.kaspersky.com
     <br/>
     <strong style="color:{TEXT};">CyberSignals</strong> ·
     Industrial Cyber Risk Radar · Team N5 · USI4280 ·
-    All charts rendered from DBIR CSV data · No placeholder images
+    All charts rendered from DBIR and Kaspersky ICS-CERT data · No placeholder images
   </p>
 </div>
 """, unsafe_allow_html=True)
