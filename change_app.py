@@ -771,7 +771,7 @@ _TIPS = {
         "prevention": [
             "Verify any payroll or direct deposit change requests by calling the requester directly using a known number.",
             "Never open unexpected tax document attachments — download statements only from official portals.",
-            "Train staff to recognise Business Email Compromise — urgent wire transfer requests are a red flag.",
+            "Train staff to recognize Business Email Compromise — urgent wire transfer requests are a red flag.",
             "Check your credit report for unexpected accounts opened in your name.",
         ],
     },
@@ -1379,7 +1379,7 @@ with col6:
     _bd_pie  = ("Credential theft has led initial access for years, but Edge Device and Virtual Private Network "
                 "exploitation jumped 34% year over year to draw level. Attackers now scan for unpatched firewalls "
                 "and Virtual Private Network appliances — no phishing email needed, just a known vulnerability and "
-                "an exposed IP address. Organisations with long patch cycles are particularly exposed, especially "
+                "an exposed IP address. Organizations with long patch cycles are particularly exposed, especially "
                 "if they use End-of-Life network appliances.")
     _ext_pie = ("Each slice represents a different attack philosophy. Stolen credentials require the least technical "
                 "skill — credentials are bought cheaply on criminal marketplaces and tried at scale (credential "
@@ -1436,10 +1436,10 @@ with col7:
                "— making ransomware far less effective even when attackers gain initial access. Public "
                "Administration's lower rate partly reflects government policies that restrict ransom payments.")
     _ext_rs = ("The global average of 44% means nearly one in two breaches now involves ransomware. Sectors above "
-               "this line face elevated risk and should prioritise offline backup testing, network segmentation, "
+               "this line face elevated risk and should prioritize offline backup testing, network segmentation, "
                "and incident response planning. Sectors below the line are not immune — Finance's 18% still "
                "represents hundreds of incidents globally. The colour coding (green/orange/red) reflects deviation "
-               "from that 44% average. The most actionable insight: if your organisation is in Education or "
+               "from that 44% average. The most actionable insight: if your organization is in Education or "
                "Manufacturing, ransomware is statistically more likely than not to be involved in any breach you "
                "experience. Offline, tested backups and a rehearsed response plan are the two highest-return "
                "investments available.")
@@ -1478,18 +1478,18 @@ with col8:
     _hl_act  = "The 163% spike in espionage is the report's starkest shift"
     _bd_act  = ("Nation-state actors — primarily linked to Russia, China, Iran and North Korea — dramatically "
                 "increased targeting of intellectual property and critical infrastructure in 2024. The boundary "
-                "between organised crime and state-sponsored hacking is blurring: some groups operate freely in "
+                "between organized crime and state-sponsored hacking is blurring: some groups operate freely in "
                 "exchange for intelligence-sharing with their governments. For organizations, this means attacks "
                 "are better-resourced, more patient, and harder to detect than purely financial attacks.")
     _ext_act = ("External actors dominate breaches because they have the greatest motivation, resources, and "
                 "scale. However, the 20% internal figure is deceptively significant — insider threats cause "
-                "disproportionate damage because insiders already have authorised access and can bypass perimeter "
+                "disproportionate damage because insiders already have authorized access and can bypass perimeter "
                 "controls entirely. Malicious insiders are often motivated by financial gain (selling data to "
                 "competitors or criminal groups) or grievance. Partner and third-party breaches are the fastest-"
                 "growing category: supply chain compromises give attackers access to dozens of organizations "
                 "through a single point of entry — one compromised vendor credential can open doors across an "
                 "entire partner ecosystem. State-sponsored actors at 15% are often the hardest to detect and "
-                "remove — they operate with long time horizons, prioritise stealth over speed, and are backed "
+                "remove — they operate with long time horizons, prioritize stealth over speed, and are backed "
                 "by substantial intelligence resources.")
     st.markdown(source_badge(_src_act), unsafe_allow_html=True)
     st.markdown(insight_box(_hl_act, _bd_act), unsafe_allow_html=True)
@@ -1534,8 +1534,8 @@ with col9:
                "creation, and targeted phishing. Medical records command the highest individual price — up to $1,000 "
                "per record — because they contain immutable identifiers (date of birth, health history) that cannot "
                "be changed like a credit card number. Credentials are the 'key' category: stolen credentials feed "
-               "directly into future attacks, creating a compounding risk cycle. An organisation that loses "
-               "credentials in one breach may find them used to breach a partner organisation months later. "
+               "directly into future attacks, creating a compounding risk cycle. An organization that loses "
+               "credentials in one breach may find them used to breach a partner organization months later. "
                "Payment card data, while historically the top target, has declined in relative value as card "
                "networks improve real-time fraud detection.")
     st.markdown(source_badge(_src_dt), unsafe_allow_html=True)
@@ -1976,10 +1976,10 @@ author_cards = "".join([f"""
   <div style="
     display:flex;align-items:center;gap:6px;
     background:{SURFACE};border:1px solid {BORDER};border-radius:6px;
-    padding:6px 10px;flex:1;min-width:130px;
+    padding:6px 10px;flex:1;min-width:190px;
   ">
     <p style="margin:0;font-size:0.75rem;font-weight:500;color:{TEXT};
-              font-family:'Inter',sans-serif;white-space:nowrap;">{name}</p>
+              font-family:'Inter',sans-serif;word-break:break-word;">{name}</p>
     <a href="{url}" target="_blank" style="margin-left:auto;flex-shrink:0;
        display:flex;align-items:center;justify-content:center;
        width:22px;height:22px;border-radius:5px;
