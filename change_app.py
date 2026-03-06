@@ -209,12 +209,20 @@ p, .stMarkdown p {{
     padding: 1rem 1.2rem !important;
     box-shadow: 0 1px 3px rgba(0,0,0,0.05) !important;
 }}
-[data-testid="metric-container"] label {{
+[data-testid="metric-container"] label,
+[data-testid="stMetricLabel"],
+[data-testid="stMetricLabel"] > div,
+[data-testid="stMetricLabel"] p {{
     color: {MUTED} !important;
     font-size: 0.72rem !important;
     text-transform: uppercase !important;
     letter-spacing: 0.1em !important;
     font-family: 'Inter', sans-serif !important;
+    white-space: normal !important;
+    overflow: visible !important;
+    text-overflow: unset !important;
+    word-break: break-word !important;
+    line-height: 1.3 !important;
 }}
 [data-testid="metric-container"] [data-testid="stMetricValue"] {{
     font-family: 'Syne', sans-serif !important;
