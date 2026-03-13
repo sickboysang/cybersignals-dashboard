@@ -63,6 +63,7 @@ html, body, [class*="css"] {{
 /* Hide the raw "keyboard_double_arrow_*" text inside sidebar collapse spans */
 [data-testid="stSidebarCollapseButton"] button span,
 [data-testid="collapsedControl"] button span,
+[data-testid="stSidebarCollapsedControl"] button span,
 section[data-testid="stSidebar"] header button span {{
     font-size: 0 !important;
     width: 0 !important;
@@ -70,26 +71,27 @@ section[data-testid="stSidebar"] header button span {{
     overflow: hidden !important;
     display: inline-block !important;
     visibility: hidden !important;
+    pointer-events: none !important;
 }}
-/* Inject a clean arrow in place of the hidden text */
+/* Inject a clean arrow — collapse button (sidebar open) */
 [data-testid="stSidebarCollapseButton"] button::before,
 section[data-testid="stSidebar"] header button::before {{
     content: "‹" !important;
-    font-size: 22px !important;
+    font-size: 20px !important;
     font-family: sans-serif !important;
     color: #ffffff !important;
     line-height: 1 !important;
-    display: inline-block !important;
-    visibility: visible !important;
+    pointer-events: none !important;
 }}
-[data-testid="collapsedControl"] button::before {{
+/* Inject a clean arrow — expand button (sidebar collapsed) */
+[data-testid="collapsedControl"] button::before,
+[data-testid="stSidebarCollapsedControl"] button::before {{
     content: "›" !important;
-    font-size: 22px !important;
+    font-size: 20px !important;
     font-family: sans-serif !important;
-    color: #334155 !important;
+    color: #cbd5e1 !important;
     line-height: 1 !important;
-    display: inline-block !important;
-    visibility: visible !important;
+    pointer-events: none !important;
 }}
 .stApp {{
     background-color: {BG} !important;
@@ -157,87 +159,53 @@ p, .stMarkdown p {{
     overflow: hidden !important;
 }}
 
-/* ── SIDEBAR BACKGROUND ── */
-section[data-testid="stSidebar"],
-section[data-testid="stSidebar"] > div,
+/* ── SIDEBAR BACKGROUND — full height, no white gaps ── */
+section[data-testid="stSidebar"] {{
+    background-color: #1e293b !important;
+    background: #1e293b !important;
+    border-right: 1px solid #334155 !important;
+    min-height: 100vh !important;
+}}
+section[data-testid="stSidebar"] > div {{
+    background-color: #1e293b !important;
+    background: #1e293b !important;
+    min-height: 100vh !important;
+    /* Keep content anchored to the top, not pushed to the bottom */
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: flex-start !important;
+    align-items: stretch !important;
+}}
 section[data-testid="stSidebar"] > div > div,
 section[data-testid="stSidebar"] > div > div > div,
 [data-testid="stSidebar"],
 [data-testid="stSidebar"] > div {{
     background-color: #1e293b !important;
     background: #1e293b !important;
-    border-right: 1px solid #334155 !important;
 }}
 [data-testid="stSidebar"] .block-container {{
     background: #1e293b !important;
     padding: 1rem 0.75rem !important;
 }}
 
-/* ── SIDEBAR COLLAPSE ARROW — always visible, no disappearing ── */
-section[data-testid="stSidebar"] header {{
-    background: transparent !important;
-}}
-/* The close button inside the open sidebar */
-[data-testid="stSidebarCollapseButton"],
+/* ── SIDEBAR COLLAPSE BUTTON — style only, let Streamlit control show/hide ── */
+/* DO NOT set display/visibility here — Streamlit JS manages that and fights us */
 [data-testid="stSidebarCollapseButton"] button {{
     opacity: 1 !important;
-    visibility: visible !important;
-    display: flex !important;
-}}
-[data-testid="stSidebarCollapseButton"] button {{
     background: rgba(255,255,255,0.12) !important;
     border-radius: 6px !important;
     border: 1px solid rgba(255,255,255,0.2) !important;
-    color: #ffffff !important;
-}}
-[data-testid="stSidebarCollapseButton"] button span,
-[data-testid="stSidebarCollapseButton"] button svg {{
-    color: #ffffff !important;
-    fill: #ffffff !important;
-    stroke: #ffffff !important;
-    opacity: 1 !important;
 }}
 [data-testid="stSidebarCollapseButton"] button:hover {{
     background: rgba(255,255,255,0.22) !important;
 }}
-/* Also target via old header selector for compatibility */
-section[data-testid="stSidebar"] header button,
-section[data-testid="stSidebar"] header button span,
-section[data-testid="stSidebar"] header button svg {{
-    color: #ffffff !important;
-    fill: #ffffff !important;
-    stroke: #ffffff !important;
-    opacity: 1 !important;
-    visibility: visible !important;
-}}
-section[data-testid="stSidebar"] header button {{
-    background: rgba(255,255,255,0.12) !important;
-    border-radius: 6px !important;
-    border: 1px solid rgba(255,255,255,0.2) !important;
-}}
-section[data-testid="stSidebar"] header button:hover {{
-    background: rgba(255,255,255,0.22) !important;
-}}
-/* The re-open button shown when sidebar is collapsed */
+/* Collapsed-state re-open button (two possible testids across Streamlit versions) */
 [data-testid="collapsedControl"] button,
-[data-testid="collapsedControl"] button span,
-[data-testid="collapsedControl"] button svg {{
+[data-testid="stSidebarCollapsedControl"] button {{
     opacity: 1 !important;
-    visibility: visible !important;
-    color: #ffffff !important;
-    fill: #ffffff !important;
-    stroke: #ffffff !important;
-}}
-[data-testid="collapsedControl"] button {{
     background: #1e293b !important;
     border: 1px solid #334155 !important;
     border-radius: 6px !important;
-}}
-/* Hide native browser tooltip text on collapse button */
-[data-testid="stSidebarCollapseButton"] button::after,
-[data-testid="collapsedControl"] button::after {{
-    display: none !important;
-    content: none !important;
 }}
 
 /* ── ALL TEXT IN SIDEBAR WHITE ── */
@@ -527,26 +495,29 @@ components.html("""
 (function() {
     function clean() {
         var parentDoc = window.parent.document;
-        // Hide raw "keyboard_double_arrow_*" text that shows when Material Symbols font is absent
-        parentDoc.querySelectorAll(
-            '[data-testid="stSidebarCollapseButton"] button span, ' +
-            '[data-testid="collapsedControl"] button span, ' +
+        // Hide raw "keyboard_double_arrow_*" text (shows when Material Symbols font missing)
+        var collapseSpanSel = [
+            '[data-testid="stSidebarCollapseButton"] button span',
+            '[data-testid="collapsedControl"] button span',
+            '[data-testid="stSidebarCollapsedControl"] button span',
             'section[data-testid="stSidebar"] header button span'
-        ).forEach(function(span) {
-            if (span.textContent && span.textContent.toLowerCase().includes('keyboard')) {
-                span.style.fontSize   = '0';
-                span.style.width      = '0';
-                span.style.height     = '0';
-                span.style.overflow   = 'hidden';
-                span.style.visibility = 'hidden';
-                span.style.display    = 'inline-block';
-            }
+        ].join(', ');
+        parentDoc.querySelectorAll(collapseSpanSel).forEach(function(span) {
+            span.style.fontSize      = '0';
+            span.style.width         = '0';
+            span.style.height        = '0';
+            span.style.overflow      = 'hidden';
+            span.style.visibility    = 'hidden';
+            span.style.display       = 'inline-block';
+            span.style.pointerEvents = 'none';
         });
-        // Remove tooltip title attributes from collapse buttons
-        parentDoc.querySelectorAll(
-            '[data-testid="stSidebarCollapseButton"] button, ' +
-            '[data-testid="collapsedControl"] button'
-        ).forEach(function(btn) {
+        // Remove tooltip title attributes from collapse/expand buttons
+        var collapseBtnSel = [
+            '[data-testid="stSidebarCollapseButton"] button',
+            '[data-testid="collapsedControl"] button',
+            '[data-testid="stSidebarCollapsedControl"] button'
+        ].join(', ');
+        parentDoc.querySelectorAll(collapseBtnSel).forEach(function(btn) {
             btn.removeAttribute('title');
             btn.setAttribute('aria-label', '');
         });
@@ -827,6 +798,11 @@ st.markdown(f"""
   <div style="display:inline-flex;align-items:center;
               font-size:13px;font-weight:500;letter-spacing:0;
               color:{MUTED};border:1px solid {BORDER2};padding:7px 16px;border-radius:8px;background:{SURFACE};">
+    Kaspersky ICS-CERT Q2 2025
+  </div>
+  <div style="display:inline-flex;align-items:center;
+              font-size:13px;font-weight:500;letter-spacing:0;
+              color:{MUTED};border:1px solid {BORDER2};padding:7px 16px;border-radius:8px;background:{SURFACE};">
     Team N5 · USI4280
   </div>
 </div>
@@ -876,12 +852,15 @@ components.html(f"""<script>
 (function() {{
     var TARGET = {_nav_tab_idx};
 
-    // Switch to the correct tab
+    // Scroll to top then switch tab
+    window.parent.scrollTo({{top: 0, behavior: 'instant'}});
+
     function clickTab() {{
         var tabs = window.parent.document.querySelectorAll(
             '[data-testid="stTabs"] [data-baseweb="tab-list"] button[role="tab"]'
         );
         if (tabs.length > TARGET) {{ tabs[TARGET].click(); }}
+        window.parent.scrollTo({{top: 0, behavior: 'instant'}});
     }}
     setTimeout(clickTab, 150);
 
@@ -2401,6 +2380,7 @@ if _chosen_key == "simple":
             "that are harder to update and protect."
         )
         st.plotly_chart(fig_rs, use_container_width=True, config={"displayModeBar": False})
+        st.markdown('<p style="font-size:0.72rem;color:#94a3b8;font-family:\'Inter\',sans-serif;margin-top:-10px;">Source: Verizon 2025 Data Breach Investigations Report (DBIR)</p>', unsafe_allow_html=True)
     with _ps_c2:
         st.markdown("#### Is ransomware getting worse — or are people fighting back?")
         st.caption(
@@ -2410,6 +2390,7 @@ if _chosen_key == "simple":
             "for attackers to keep doing it."
         )
         st.plotly_chart(fig_fore, use_container_width=True, config={"displayModeBar": False})
+        st.markdown('<p style="font-size:0.72rem;color:#94a3b8;font-family:\'Inter\',sans-serif;margin-top:-10px;">Source: Verizon 2025 Data Breach Investigations Report (DBIR)</p>', unsafe_allow_html=True)
 
     st.markdown("#### What do hackers actually steal?")
     st.caption(
@@ -2419,6 +2400,7 @@ if _chosen_key == "simple":
         "If you've ever had an account breached, the information in this chart is probably what was stolen."
     )
     st.plotly_chart(fig_dt, use_container_width=True, config={"displayModeBar": False})
+    st.markdown('<p style="font-size:0.72rem;color:#94a3b8;font-family:\'Inter\',sans-serif;margin-top:-10px;">Source: Verizon 2025 Data Breach Investigations Report (DBIR)</p>', unsafe_allow_html=True)
 
 # ─────────────────────────────────────────
 # EXPERT CONSOLE — For IT & Security Professionals
@@ -2596,6 +2578,7 @@ elif _chosen_key == "expert":
             "T1078, T1190, and T1566."
         )
         st.plotly_chart(fig_pie, use_container_width=True, config={"displayModeBar": False})
+        st.markdown('<p style="font-size:0.72rem;color:#94a3b8;font-family:\'Inter\',sans-serif;margin-top:-10px;">Source: Verizon 2025 Data Breach Investigations Report (DBIR)</p>', unsafe_allow_html=True)
     with _ex_c2:
         st.markdown("#### MFA Bypass Technique Split")
         st.caption(
@@ -2605,6 +2588,7 @@ elif _chosen_key == "expert":
             "grants, and high-volume push notification bursts per-user within short windows."
         )
         st.plotly_chart(fig_mfa, use_container_width=True, config={"displayModeBar": False})
+        st.markdown('<p style="font-size:0.72rem;color:#94a3b8;font-family:\'Inter\',sans-serif;margin-top:-10px;">Source: Verizon 2025 Data Breach Investigations Report (DBIR)</p>', unsafe_allow_html=True)
 
     st.markdown("#### Weekly Exploitation Trend by Attack Category (12-Week Window)")
     st.caption(
@@ -2615,6 +2599,7 @@ elif _chosen_key == "expert":
         "policies restricting legacy authentication protocols."
     )
     st.plotly_chart(fig_trends, use_container_width=True, config={"displayModeBar": False})
+    st.markdown('<p style="font-size:0.72rem;color:#94a3b8;font-family:\'Inter\',sans-serif;margin-top:-10px;">Source: Verizon 2025 Data Breach Investigations Report (DBIR)</p>', unsafe_allow_html=True)
 
     _ex_c3, _ex_c4 = st.columns(2, gap="large")
     with _ex_c3:
@@ -2627,6 +2612,7 @@ elif _chosen_key == "expert":
             "controls (network segmentation, application whitelisting on HMIs)."
         )
         st.plotly_chart(fig_ics_region, use_container_width=True, config={"displayModeBar": False})
+        st.markdown('<p style="font-size:0.72rem;color:#94a3b8;font-family:\'Inter\',sans-serif;margin-top:-10px;">Source: Kaspersky ICS-CERT — Threat Landscape for Industrial Automation Systems, Q2 2025</p>', unsafe_allow_html=True)
     with _ex_c4:
         st.markdown("#### ICS Historical Quarterly Trend")
         st.caption(
@@ -2636,6 +2622,7 @@ elif _chosen_key == "expert":
             "scheduling OT vulnerability assessments and threat-hunting exercises."
         )
         st.plotly_chart(fig_ics_hist, use_container_width=True, config={"displayModeBar": False})
+        st.markdown('<p style="font-size:0.72rem;color:#94a3b8;font-family:\'Inter\',sans-serif;margin-top:-10px;">Source: Kaspersky ICS-CERT — Threat Landscape for Industrial Automation Systems, Q2 2025</p>', unsafe_allow_html=True)
 
 # ─────────────────────────────────────────
 # EXECUTIVE BRIEF — For Business Leaders
@@ -2804,6 +2791,7 @@ elif _chosen_key == "exec":
             "prioritise investment in the control areas where your industry scores highest."
         )
         st.plotly_chart(fig_radar, use_container_width=True, config={"displayModeBar": False})
+        st.markdown('<p style="font-size:0.72rem;color:#94a3b8;font-family:\'Inter\',sans-serif;margin-top:-10px;">Source: Verizon 2025 Data Breach Investigations Report (DBIR)</p>', unsafe_allow_html=True)
     with _eb_c2:
         st.markdown("#### Ransomware Trend: Rising Threat, Rising Refusal")
         st.caption(
@@ -2813,6 +2801,7 @@ elif _chosen_key == "exec":
             "this shift. The business case for investing in resilience — not just prevention — is clear."
         )
         st.plotly_chart(fig_fore, use_container_width=True, config={"displayModeBar": False})
+        st.markdown('<p style="font-size:0.72rem;color:#94a3b8;font-family:\'Inter\',sans-serif;margin-top:-10px;">Source: Verizon 2025 Data Breach Investigations Report (DBIR)</p>', unsafe_allow_html=True)
 
     _eb_c3, _eb_c4 = st.columns(2, gap="large")
     with _eb_c3:
@@ -2825,6 +2814,7 @@ elif _chosen_key == "exec":
             "highlighting the importance of access governance and vendor risk management."
         )
         st.plotly_chart(fig_act, use_container_width=True, config={"displayModeBar": False})
+        st.markdown('<p style="font-size:0.72rem;color:#94a3b8;font-family:\'Inter\',sans-serif;margin-top:-10px;">Source: Verizon 2025 Data Breach Investigations Report (DBIR)</p>', unsafe_allow_html=True)
     with _eb_c4:
         st.markdown("#### ICS Attack Rate by Region")
         st.caption(
@@ -2835,6 +2825,7 @@ elif _chosen_key == "exec":
             "systems on a separate, monitored network?"
         )
         st.plotly_chart(fig_ics_region, use_container_width=True, config={"displayModeBar": False})
+        st.markdown('<p style="font-size:0.72rem;color:#94a3b8;font-family:\'Inter\',sans-serif;margin-top:-10px;">Source: Kaspersky ICS-CERT — Threat Landscape for Industrial Automation Systems, Q2 2025</p>', unsafe_allow_html=True)
 
 # ─────────────────────────────────────────
 # FOOTER
