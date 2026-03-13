@@ -15,6 +15,14 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
+# ── Session state defaults ──────────────────────────────────────────────────
+if "_audience" not in st.session_state:
+    st.session_state["_audience"] = "simple"
+if "_scroll_guides" not in st.session_state:
+    st.session_state["_scroll_guides"] = False
+if "_nav_tab" not in st.session_state:
+    st.session_state["_nav_tab"] = 0
+
 # ─────────────────────────────────────────
 # DESIGN TOKENS — light mode
 # ─────────────────────────────────────────
@@ -45,11 +53,43 @@ C_PURP  = "#8b5cf6"
 st.markdown(f"""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=block');
 
 html, body, [class*="css"] {{
     font-family: 'Inter', sans-serif !important;
     background-color: {BG} !important;
     color: {TEXT} !important;
+}}
+/* Hide the raw "keyboard_double_arrow_*" text inside sidebar collapse spans */
+[data-testid="stSidebarCollapseButton"] button span,
+[data-testid="collapsedControl"] button span,
+section[data-testid="stSidebar"] header button span {{
+    font-size: 0 !important;
+    width: 0 !important;
+    height: 0 !important;
+    overflow: hidden !important;
+    display: inline-block !important;
+    visibility: hidden !important;
+}}
+/* Inject a clean arrow in place of the hidden text */
+[data-testid="stSidebarCollapseButton"] button::before,
+section[data-testid="stSidebar"] header button::before {{
+    content: "‹" !important;
+    font-size: 22px !important;
+    font-family: sans-serif !important;
+    color: #ffffff !important;
+    line-height: 1 !important;
+    display: inline-block !important;
+    visibility: visible !important;
+}}
+[data-testid="collapsedControl"] button::before {{
+    content: "›" !important;
+    font-size: 22px !important;
+    font-family: sans-serif !important;
+    color: #334155 !important;
+    line-height: 1 !important;
+    display: inline-block !important;
+    visibility: visible !important;
 }}
 .stApp {{
     background-color: {BG} !important;
@@ -117,86 +157,155 @@ p, .stMarkdown p {{
     overflow: hidden !important;
 }}
 
-/* ── SIDEBAR ── */
-[data-testid="stSidebar"] {{
-    background-color: {SURFACE} !important;
-    border-right: 1px solid {BORDER2} !important;
+/* ── SIDEBAR BACKGROUND ── */
+section[data-testid="stSidebar"],
+section[data-testid="stSidebar"] > div,
+section[data-testid="stSidebar"] > div > div,
+section[data-testid="stSidebar"] > div > div > div,
+[data-testid="stSidebar"],
+[data-testid="stSidebar"] > div {{
+    background-color: #1e293b !important;
+    background: #1e293b !important;
+    border-right: 1px solid #334155 !important;
 }}
 [data-testid="stSidebar"] .block-container {{
+    background: #1e293b !important;
+    padding: 1rem 0.75rem !important;
+}}
+
+/* ── SIDEBAR COLLAPSE ARROW — always visible, no disappearing ── */
+section[data-testid="stSidebar"] header {{
     background: transparent !important;
-    padding: 1.5rem 1.2rem !important;
 }}
-[data-testid="stSidebar"] h2 {{
-    font-family: 'Inter', sans-serif !important;
-    font-size: 0.95rem !important;
-    font-weight: 600 !important;
-    color: {ACCENT} !important;
-    border-bottom: 1px solid {BORDER2} !important;
-    padding-bottom: 0.5rem !important;
-    margin-bottom: 1.2rem !important;
+/* The close button inside the open sidebar */
+[data-testid="stSidebarCollapseButton"],
+[data-testid="stSidebarCollapseButton"] button {{
+    opacity: 1 !important;
+    visibility: visible !important;
+    display: flex !important;
 }}
-[data-testid="stSidebar"] label,
-[data-testid="stSidebar"] p,
-[data-testid="stSidebar"] span {{
-    color: {TEXT} !important;
-    font-family: 'Inter', sans-serif !important;
-    font-size: 0.82rem !important;
-}}
-[data-testid="stSidebar"] .stMarkdown h5 {{
-    color: {MUTED} !important;
-    font-size: 0.7rem !important;
-    text-transform: uppercase !important;
-    letter-spacing: 0.12em !important;
-    margin: 1.2rem 0 0.4rem 0 !important;
-}}
-[data-testid="stSidebar"] .stMultiSelect > div > div,
-[data-testid="stSidebar"] .stSelectbox > div > div {{
-    background-color: {BG} !important;
-    border: 1px solid {BORDER2} !important;
+[data-testid="stSidebarCollapseButton"] button {{
+    background: rgba(255,255,255,0.12) !important;
     border-radius: 6px !important;
-    color: {TEXT} !important;
+    border: 1px solid rgba(255,255,255,0.2) !important;
+    color: #ffffff !important;
 }}
-/* multiselect selected tags (chips) */
-[data-testid="stSidebar"] [data-baseweb="tag"] {{
-    background-color: rgba(37,99,235,0.1) !important;
-    border: 1px solid rgba(37,99,235,0.3) !important;
-    border-radius: 4px !important;
-    color: {ACCENT} !important;
+[data-testid="stSidebarCollapseButton"] button span,
+[data-testid="stSidebarCollapseButton"] button svg {{
+    color: #ffffff !important;
+    fill: #ffffff !important;
+    stroke: #ffffff !important;
+    opacity: 1 !important;
 }}
-[data-testid="stSidebar"] [data-baseweb="tag"] span {{
-    color: {ACCENT} !important;
-    font-size: 0.78rem !important;
+[data-testid="stSidebarCollapseButton"] button:hover {{
+    background: rgba(255,255,255,0.22) !important;
 }}
-[data-testid="stSidebar"] [data-baseweb="tag"] svg {{
-    fill: {ACCENT} !important;
+/* Also target via old header selector for compatibility */
+section[data-testid="stSidebar"] header button,
+section[data-testid="stSidebar"] header button span,
+section[data-testid="stSidebar"] header button svg {{
+    color: #ffffff !important;
+    fill: #ffffff !important;
+    stroke: #ffffff !important;
+    opacity: 1 !important;
+    visibility: visible !important;
 }}
-/* dropdown popup list */
-[data-baseweb="popover"] ul {{
-    background-color: {BG} !important;
-    border: 1px solid {BORDER2} !important;
+section[data-testid="stSidebar"] header button {{
+    background: rgba(255,255,255,0.12) !important;
+    border-radius: 6px !important;
+    border: 1px solid rgba(255,255,255,0.2) !important;
 }}
-[data-baseweb="popover"] li {{
-    background-color: {BG} !important;
-    color: {TEXT} !important;
+section[data-testid="stSidebar"] header button:hover {{
+    background: rgba(255,255,255,0.22) !important;
+}}
+/* The re-open button shown when sidebar is collapsed */
+[data-testid="collapsedControl"] button,
+[data-testid="collapsedControl"] button span,
+[data-testid="collapsedControl"] button svg {{
+    opacity: 1 !important;
+    visibility: visible !important;
+    color: #ffffff !important;
+    fill: #ffffff !important;
+    stroke: #ffffff !important;
+}}
+[data-testid="collapsedControl"] button {{
+    background: #1e293b !important;
+    border: 1px solid #334155 !important;
+    border-radius: 6px !important;
+}}
+/* Hide native browser tooltip text on collapse button */
+[data-testid="stSidebarCollapseButton"] button::after,
+[data-testid="collapsedControl"] button::after {{
+    display: none !important;
+    content: none !important;
+}}
+
+/* ── ALL TEXT IN SIDEBAR WHITE ── */
+[data-testid="stSidebar"] p,
+[data-testid="stSidebar"] span,
+[data-testid="stSidebar"] label,
+[data-testid="stSidebar"] div,
+section[data-testid="stSidebar"] p,
+section[data-testid="stSidebar"] span,
+section[data-testid="stSidebar"] div {{
+    color: #e2e8f0 !important;
     font-family: 'Inter', sans-serif !important;
-    font-size: 0.85rem !important;
 }}
-[data-baseweb="popover"] li:hover {{
-    background-color: {SURFACE} !important;
-}}
-/* multiselect input text */
-[data-testid="stSidebar"] [data-baseweb="input"] input {{
-    color: {TEXT} !important;
-    font-family: 'Inter', sans-serif !important;
+/* Override any white/light background on sidebar children */
+section[data-testid="stSidebar"] [data-testid="stVerticalBlock"],
+section[data-testid="stSidebar"] [data-testid="stVerticalBlockBorderWrapper"],
+section[data-testid="stSidebar"] [data-testid="stSidebarUserContent"],
+section[data-testid="stSidebar"] [data-testid="stSidebarContent"],
+section[data-testid="stSidebar"] .css-1d391kg,
+section[data-testid="stSidebar"] .stElementContainer,
+section[data-testid="stSidebar"] .element-container,
+section[data-testid="stSidebar"] .stMarkdown {{
+    background: transparent !important;
     background-color: transparent !important;
 }}
-[data-testid="stSidebar"] [data-testid="stNotificationContentInfo"] {{
-    background-color: rgba(37,99,235,0.06) !important;
-    border: 1px solid rgba(37,99,235,0.2) !important;
-    border-left: 3px solid {ACCENT} !important;
-    color: {TEXT} !important;
-    border-radius: 6px !important;
-    font-size: 0.8rem !important;
+/* Kill the white bottom spacer Streamlit injects */
+section[data-testid="stSidebar"] > div > div:last-child,
+section[data-testid="stSidebar"] > div:last-child {{
+    background: #1e293b !important;
+    background-color: #1e293b !important;
+}}
+
+/* ── NAV BUTTONS ── */
+[data-testid="stSidebar"] .stButton > button,
+[data-testid="stSidebar"] .stButton > button p,
+[data-testid="stSidebar"] .stButton > button span {{
+    background: transparent !important;
+    border: none !important;
+    border-left: 3px solid transparent !important;
+    border-radius: 0 6px 6px 0 !important;
+    color: #cbd5e1 !important;
+    font-family: 'Inter', sans-serif !important;
+    font-size: 0.875rem !important;
+    font-weight: 400 !important;
+    text-align: left !important;
+    width: 100% !important;
+    padding: 0.5rem 0.75rem !important;
+    margin-bottom: 2px !important;
+    justify-content: flex-start !important;
+    transition: background 0.15s, color 0.15s !important;
+    box-shadow: none !important;
+}}
+[data-testid="stSidebar"] .stButton > button:hover,
+[data-testid="stSidebar"] .stButton > button:hover p,
+[data-testid="stSidebar"] .stButton > button:hover span {{
+    background: rgba(255,255,255,0.08) !important;
+    color: #ffffff !important;
+    border-left: 3px solid #3b82f6 !important;
+}}
+[data-testid="stSidebar"] .stButton > button:focus,
+[data-testid="stSidebar"] .stButton > button:active,
+[data-testid="stSidebar"] .stButton > button:focus p,
+[data-testid="stSidebar"] .stButton > button:focus span {{
+    background: rgba(59,130,246,0.18) !important;
+    color: #ffffff !important;
+    border-left: 3px solid #3b82f6 !important;
+    box-shadow: none !important;
+    outline: none !important;
 }}
 
 /* ── METRICS ── */
@@ -287,14 +396,13 @@ hr {{
     background: rgba(255,255,255,0.12) !important;
     border-radius: 6px;
 }}
-/* ── SIDEBAR COLLAPSE / EXPAND TOGGLE BUTTON ── */
-/* ── SIDEBAR COLLAPSE CONTROL (floats on white bg when sidebar is closed) ── */
+/* ── SIDEBAR EXPAND TAB (visible on main bg when sidebar is closed) ── */
 [data-testid="stSidebarCollapsedControl"] {{
-    background-color: #0f172a !important;
-    border-radius: 0 10px 10px 0 !important;
-    border-right: 3px solid #2563eb !important;
-    border-top: 1px solid #2563eb !important;
-    border-bottom: 1px solid #2563eb !important;
+    background-color: #1e293b !important;
+    border-radius: 0 8px 8px 0 !important;
+    border-right: 2px solid #3b82f6 !important;
+    border-top: 1px solid #334155 !important;
+    border-bottom: 1px solid #334155 !important;
     padding: 6px 4px !important;
     min-width: 36px !important;
 }}
@@ -302,24 +410,18 @@ hr {{
     color: #ffffff !important;
     background: transparent !important;
     border: none !important;
-    border-radius: 6px !important;
-    min-width: 32px !important;
-    min-height: 32px !important;
+    border-radius: 4px !important;
+    min-width: 30px !important;
+    min-height: 30px !important;
 }}
 [data-testid="stSidebarCollapsedControl"] button:hover {{
-    background: rgba(37,99,235,0.40) !important;
+    background: rgba(59,130,246,0.3) !important;
 }}
-[data-testid="stSidebarCollapsedControl"] button span {{
-    font-family: 'Material Icons', 'Material Symbols Outlined' !important;
-    font-size: 22px !important;
-    color: #ffffff !important;
-    display: inline-block !important;
-    -webkit-font-feature-settings: 'liga' !important;
-    font-feature-settings: 'liga' !important;
-}}
+[data-testid="stSidebarCollapsedControl"] button span,
 [data-testid="stSidebarCollapsedControl"] button svg {{
-    fill: #ffffff !important;
     color: #ffffff !important;
+    fill: #ffffff !important;
+    opacity: 1 !important;
 }}
 
 /* ── FORCE LIGHT MODE ON ALL REMAINING DARK ELEMENTS ── */
@@ -425,22 +527,28 @@ components.html("""
 (function() {
     function clean() {
         var parentDoc = window.parent.document;
-        // Remove ugly "keyboard_double_arrow_*" title tooltips
-        parentDoc.querySelectorAll('button[title]').forEach(function(btn) {
-            if (btn.getAttribute('title') && btn.getAttribute('title').toLowerCase().includes('keyboard')) {
-                btn.removeAttribute('title');
-                btn.setAttribute('aria-label', 'Toggle sidebar');
-            }
-        });
-        // Force Material Icons font on sidebar span icons so they render as icons not text
+        // Hide raw "keyboard_double_arrow_*" text that shows when Material Symbols font is absent
         parentDoc.querySelectorAll(
-            '[data-testid="stSidebarCollapsedControl"] button span, ' +
+            '[data-testid="stSidebarCollapseButton"] button span, ' +
+            '[data-testid="collapsedControl"] button span, ' +
             'section[data-testid="stSidebar"] header button span'
         ).forEach(function(span) {
-            span.style.fontFamily = "'Material Icons', 'Material Symbols Outlined'";
-            span.style.fontSize   = '22px';
-            span.style.color      = '#ffffff';
-            span.style.display    = 'inline-block';
+            if (span.textContent && span.textContent.toLowerCase().includes('keyboard')) {
+                span.style.fontSize   = '0';
+                span.style.width      = '0';
+                span.style.height     = '0';
+                span.style.overflow   = 'hidden';
+                span.style.visibility = 'hidden';
+                span.style.display    = 'inline-block';
+            }
+        });
+        // Remove tooltip title attributes from collapse buttons
+        parentDoc.querySelectorAll(
+            '[data-testid="stSidebarCollapseButton"] button, ' +
+            '[data-testid="collapsedControl"] button'
+        ).forEach(function(btn) {
+            btn.removeAttribute('title');
+            btn.setAttribute('aria-label', '');
         });
     }
     clean();
@@ -662,33 +770,42 @@ vuln_colors = [C_BLUE, C_PURP, PINK, C_AMBER, C_GREEN]
 # ─────────────────────────────────────────
 # SIDEBAR
 # ─────────────────────────────────────────
-st.sidebar.header("Filters & Controls")
-st.sidebar.markdown("##### Sector Selection")
-selected_sectors = st.sidebar.multiselect(
-    "Sector",
-    ["Finance","Manufacturing","Healthcare","Professional Services","Public Administration",
-     "Information","Education","Retail","Wholesale","Transportation",
-     "Utilities","Construction","Real Estate","Entertainment","Other Services"],
-    default=["Finance","Manufacturing","Healthcare","Professional Services","Public Administration"],
-)
-st.sidebar.markdown("##### Time Period")
-st.sidebar.selectbox("Time Range",
-    ["Nov 2023 – Oct 2024 (DBIR 2025)","Last 12 months","Last Quarter"])
-st.sidebar.markdown("##### Threat Category")
-st.sidebar.selectbox("Threat Type",
-    ["All","Ransomware","Social Engineering","Vulnerability Exploitation",
-     "Data Theft","Supply Chain Attack","Denial of Service"])
-st.sidebar.markdown("<em>Other filters are decorative — only sector selection is wired up.</em>", unsafe_allow_html=True)
-st.sidebar.info(
-    "**Source 1:** Verizon 2025 DBIR\n\n"
-    "22,052 incidents · 12,195 confirmed breaches\n\n"
-    "Nov 2023 – Oct 2024"
-)
-st.sidebar.info(
-    "**Source 2:** Kaspersky ICS-CERT\n\n"
-    "Threat Landscape for Industrial Automation Systems\n\n"
-    "Q2 2025 (April – June 2025)"
-)
+# selected_sectors consumed by sector chart — include all so chart shows full data
+selected_sectors = [
+    "Finance","Manufacturing","Healthcare","Professional Services","Public Administration",
+    "Information","Education","Retail","Wholesale","Transportation",
+    "Utilities","Construction","Real Estate","Entertainment","Other Services",
+]
+
+with st.sidebar:
+    st.markdown(f"""
+<div style="padding:0.5rem 0.25rem 1rem 0.25rem;border-bottom:1px solid rgba(255,255,255,0.1);margin-bottom:0.6rem;">
+  <p style="margin:0;font-size:1rem;font-weight:600;color:#ffffff;font-family:'Inter',sans-serif;letter-spacing:-0.01em;">🛡️ CyberSignals</p>
+  <p style="margin:2px 0 0 0;font-size:0.68rem;color:rgba(255,255,255,0.4);font-family:'Inter',sans-serif;">Cyber Risk Intelligence</p>
+</div>
+""", unsafe_allow_html=True)
+
+    _NAV = [
+        ("🏠", "Home",           0),
+        ("📡", "Sector Risk",    1),
+        ("⚔️", "Attack Methods", 2),
+        ("🔓", "Ransomware",     3),
+        ("🗂️", "Stolen Data",    4),
+        ("📈", "Trends",         5),
+        ("🏭", "ICS Threats",    6),
+    ]
+    for _ni, _nl, _nidx in _NAV:
+        if st.button(f"{_ni}  {_nl}", key=f"_nav_{_nidx}", use_container_width=True):
+            st.session_state["_nav_tab"] = _nidx
+            st.rerun()
+
+    st.markdown(f"""
+<div style="margin-top:1.2rem;padding-top:0.8rem;border-top:1px solid rgba(255,255,255,0.1);">
+  <p style="margin:0 0 3px 0;font-size:0.67rem;color:rgba(255,255,255,0.35);font-family:'Inter',sans-serif;">Verizon DBIR 2025 · 22,052 incidents</p>
+  <p style="margin:0 0 3px 0;font-size:0.67rem;color:rgba(255,255,255,0.35);font-family:'Inter',sans-serif;">Kaspersky ICS-CERT Q2 2025</p>
+  <p style="margin:0;font-size:0.67rem;color:rgba(255,255,255,0.25);font-family:'Inter',sans-serif;">Team N5 · USI4280</p>
+</div>
+""", unsafe_allow_html=True)
 
 # ─────────────────────────────────────────
 # HEADER
@@ -716,22 +833,30 @@ st.markdown(f"""
 """, unsafe_allow_html=True)
 
 st.title("🛡️ CyberSignals")
-st.caption(
-    "Sector-level cyber risk radar · 22,052 incidents · "
-    "12,195 confirmed breaches · Nov 2023 – Oct 2024"
-)
-st.markdown(
-    "Tracks **which sectors are under pressure**, **what is driving risk**, "
-    "and **what actions to take next** — powered by DBIR 2025 CSV data."
-)
-st.markdown(
-    f'<p style="font-size:0.8rem;color:{MUTED};font-family:\'Inter\',sans-serif;margin-top:-8px;">'
-    "💡 <strong>Tip:</strong> Hover over any chart and click the <strong>⤢ expand icon</strong> "
-    "in the top-right corner to view it full screen.</p>",
-    unsafe_allow_html=True,
-)
+st.caption("Cyber risk intelligence · DBIR 2025 · 22,052 incidents · 12,195 breaches")
 
 # ─────────────────────────────────────────
+# AUDIENCE GUIDE QUICK ACCESS — above tab bar
+# ─────────────────────────────────────────
+st.markdown(
+    f'<p style="font-size:0.78rem;color:{MUTED};font-family:\'Inter\',sans-serif;margin:0.4rem 0 0.5rem 0;">'
+    '📚 Jump straight to an audience guide:</p>',
+    unsafe_allow_html=True,
+)
+_aq1, _aq2, _aq3 = st.columns(3, gap="small")
+if _aq1.button("💡 Plain & Simple", use_container_width=True, key="_go_simple"):
+    st.session_state["_audience"] = "simple"
+    st.session_state["_scroll_guides"] = True
+    st.rerun()
+if _aq2.button("⚙️ Expert Console", use_container_width=True, key="_go_expert"):
+    st.session_state["_audience"] = "expert"
+    st.session_state["_scroll_guides"] = True
+    st.rerun()
+if _aq3.button("💼 Executive Brief", use_container_width=True, key="_go_exec"):
+    st.session_state["_audience"] = "exec"
+    st.session_state["_scroll_guides"] = True
+    st.rerun()
+
 # ─────────────────────────────────────────
 # TABS — top-level navigation
 # ─────────────────────────────────────────
@@ -744,6 +869,36 @@ _tab_home, _tab_sector, _tab_attacks, _tab_ransom, _tab_data, _tab_trends, _tab_
     "📈  Trends",
     "🏭  ICS Threats",
 ])
+
+# ── Sidebar nav → tab switcher + tooltip remover ─────────────────────────────
+_nav_tab_idx = int(st.session_state.get("_nav_tab", 0))
+components.html(f"""<script>
+(function() {{
+    var TARGET = {_nav_tab_idx};
+
+    // Switch to the correct tab
+    function clickTab() {{
+        var tabs = window.parent.document.querySelectorAll(
+            '[data-testid="stTabs"] [data-baseweb="tab-list"] button[role="tab"]'
+        );
+        if (tabs.length > TARGET) {{ tabs[TARGET].click(); }}
+    }}
+    setTimeout(clickTab, 150);
+
+    // Remove native browser tooltip from sidebar collapse/expand buttons
+    function removeTooltips() {{
+        var btns = window.parent.document.querySelectorAll(
+            '[data-testid="stSidebarCollapseButton"] button, [data-testid="collapsedControl"] button'
+        );
+        btns.forEach(function(b) {{
+            b.removeAttribute('title');
+            b.setAttribute('aria-label', '');
+        }});
+    }}
+    setTimeout(removeTooltips, 300);
+    setTimeout(removeTooltips, 800);
+}})();
+</script>""", height=0)
 
 # HOME TAB — hero + welcome
 # ─────────────────────────────────────────
@@ -762,9 +917,7 @@ with _tab_home:
     Understanding Today's Cyber Threat Landscape
   </h1>
   <p style="margin:0 0 1.4rem 0;font-size:0.93rem;color:#475569;font-family:'Inter',sans-serif;line-height:1.65;max-width:780px;">
-    This dashboard translates two authoritative 2025 threat intelligence reports into clear,
-    actionable visuals — covering which sectors are most at risk, how attackers operate,
-    what data they steal, and what organisations can do about it.
+    Two 2025 threat intelligence reports — DBIR and Kaspersky ICS-CERT — translated into clear visuals covering sector risk, attack methods, stolen data, and what to do about it.
   </p>
   <div style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:1.4rem;">
     <div style="background:#ffffff;border:1px solid #e2e8f0;border-radius:10px;padding:0.75rem 1.1rem;flex:1;min-width:140px;text-align:center;">
@@ -2066,18 +2219,39 @@ LI_LOGO = """<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" view
 # AUDIENCE GUIDES — Separate section below main dashboard
 # ─────────────────────────────────────────
 st.divider()
+# Scroll anchor — JS targets this element when a top button is clicked
+st.markdown('<div id="audience-anchor" style="scroll-margin-top:72px;"></div>', unsafe_allow_html=True)
+
+# Trigger scroll if the user came from a top button
+if st.session_state.get("_scroll_guides"):
+    st.session_state["_scroll_guides"] = False
+    components.html("""<script>
+setTimeout(function() {
+    var el = window.parent.document.getElementById('audience-anchor');
+    if (el) { el.scrollIntoView({behavior: 'smooth', block: 'start'}); }
+}, 250);
+</script>""", height=0)
+
 st.markdown("## 📚 Audience Guides")
 st.caption("The same data — explained three different ways. Pick the view that suits you.")
-_tab_simple, _tab_expert, _tab_exec = st.tabs([
-    "💡  Plain & Simple",
-    "⚙️  Expert Console",
-    "💼  Executive Brief",
-])
+
+_AUDIENCE_KEYS   = ["simple", "expert", "exec"]
+_AUDIENCE_LABELS = ["💡  Plain & Simple", "⚙️  Expert Console", "💼  Executive Brief"]
+_current_idx = _AUDIENCE_KEYS.index(st.session_state.get("_audience", "simple"))
+_chosen_label = st.radio(
+    "Select audience guide:",
+    _AUDIENCE_LABELS,
+    index=_current_idx,
+    horizontal=True,
+    label_visibility="collapsed",
+)
+_chosen_key = _AUDIENCE_KEYS[_AUDIENCE_LABELS.index(_chosen_label)]
+st.session_state["_audience"] = _chosen_key
 
 # ─────────────────────────────────────────
-# PLAIN & SIMPLE TAB — For Everyone
+# PLAIN & SIMPLE — For Everyone
 # ─────────────────────────────────────────
-with _tab_simple:
+if _chosen_key == "simple":
     st.markdown(f"""
 <div style="background:linear-gradient(135deg,#fffbeb 0%,#fefce8 100%);
             border:1px solid #fde68a;border-radius:16px;
@@ -2212,10 +2386,44 @@ with _tab_simple:
 </div>
 """, unsafe_allow_html=True)
 
+    # ── Charts for Plain & Simple ──────────────────────────────────────────
+    st.markdown("---")
+    st.markdown("### 📊 The Charts — In Plain Terms")
+    st.caption("These are the actual data visualisations from the dashboard. They look complex but the numbers tell a simple story.")
+
+    _ps_c1, _ps_c2 = st.columns(2, gap="large")
+    with _ps_c1:
+        st.markdown("#### Which sectors get hit hardest by ransomware?")
+        st.caption(
+            "Each bar shows what share of hacks in that industry involved ransomware — criminals who lock your "
+            "files and demand money to unlock them. A longer bar means that industry gets hit more often. "
+            "Manufacturing and Education show up near the top because they often rely on older computers "
+            "that are harder to update and protect."
+        )
+        st.plotly_chart(fig_rs, use_container_width=True, config={"displayModeBar": False})
+    with _ps_c2:
+        st.markdown("#### Is ransomware getting worse — or are people fighting back?")
+        st.caption(
+            "The rising bars show that ransomware attacks have been increasing over the past few years. "
+            "But there's good news too — more and more victims are choosing NOT to pay the ransom. "
+            "Paying doesn't guarantee you get your files back, and refusing to pay makes it less profitable "
+            "for attackers to keep doing it."
+        )
+        st.plotly_chart(fig_fore, use_container_width=True, config={"displayModeBar": False})
+
+    st.markdown("#### What do hackers actually steal?")
+    st.caption(
+        "When a hack is successful, this chart shows what kind of information gets taken most often. "
+        "Passwords and login details are the most common target because they unlock everything else. "
+        "Personal details like your name, address, or ID numbers come next. "
+        "If you've ever had an account breached, the information in this chart is probably what was stolen."
+    )
+    st.plotly_chart(fig_dt, use_container_width=True, config={"displayModeBar": False})
+
 # ─────────────────────────────────────────
-# EXPERT CONSOLE TAB — For IT & Security Professionals
+# EXPERT CONSOLE — For IT & Security Professionals
 # ─────────────────────────────────────────
-with _tab_expert:
+elif _chosen_key == "expert":
     st.markdown(f"""
 <div style="background:linear-gradient(135deg,#eff6ff 0%,#f8fafc 100%);
             border:1px solid #93c5fd;border-left:6px solid #1d4ed8;border-radius:16px;
@@ -2372,10 +2580,67 @@ with _tab_expert:
 </div>
 """, unsafe_allow_html=True)
 
+    # ── Charts for Expert Console ──────────────────────────────────────────
+    st.markdown("---")
+    st.markdown("### 📊 Supporting Telemetry")
+    st.caption("Key charts mapped to TTPs and defensive controls — use alongside the technical notes above.")
+
+    _ex_c1, _ex_c2 = st.columns(2, gap="large")
+    with _ex_c1:
+        st.markdown("#### Initial Access Vector Distribution")
+        st.caption(
+            "DBIR 2025 initial access breakdown across 12,195 confirmed breaches. Credential compromise "
+            "(phishing, credential stuffing, brute-force) and exploitation of public-facing applications "
+            "account for ~42% of initial access entries combined — reinforcing the case for phishing-resistant "
+            "MFA and aggressive external attack surface management. Map to MITRE ATT&CK TA0001 sub-techniques "
+            "T1078, T1190, and T1566."
+        )
+        st.plotly_chart(fig_pie, use_container_width=True, config={"displayModeBar": False})
+    with _ex_c2:
+        st.markdown("#### MFA Bypass Technique Split")
+        st.caption(
+            "Adversary-in-the-Middle (AiTM) proxy toolkits (Evilginx2, Modlishka), MFA fatigue / push-bombing, "
+            "and post-authentication session token theft each represent roughly equal thirds of MFA bypass "
+            "incidents. Detection priority: monitor for impossible-travel sign-in events, anomalous OAuth token "
+            "grants, and high-volume push notification bursts per-user within short windows."
+        )
+        st.plotly_chart(fig_mfa, use_container_width=True, config={"displayModeBar": False})
+
+    st.markdown("#### Weekly Exploitation Trend by Attack Category (12-Week Window)")
+    st.caption(
+        "12-week rolling telemetry across attack categories. Remote-access exploitation (VPN appliances, "
+        "RDP, SSH brute-force) is the only vector on a statistically significant upward trajectory — "
+        "correlates with mass-exploitation of CVEs in edge devices (Ivanti, Palo Alto, Cisco ASA). "
+        "Prioritise patching internet-facing remote-access infrastructure and review conditional-access "
+        "policies restricting legacy authentication protocols."
+    )
+    st.plotly_chart(fig_trends, use_container_width=True, config={"displayModeBar": False})
+
+    _ex_c3, _ex_c4 = st.columns(2, gap="large")
+    with _ex_c3:
+        st.markdown("#### ICS Threat Rate by Region — Q2 2025")
+        st.caption(
+            "Kaspersky ICS-CERT telemetry: percentage of ICS/SCADA endpoints where at least one malicious "
+            "object was blocked during Q2 2025. Africa and Southeast Asia show the highest rates (>40%), "
+            "likely reflecting lower EDR/OT-security maturity and delayed patch cycles on engineering "
+            "workstations. Cross-reference against your OT network segments and evaluate compensating "
+            "controls (network segmentation, application whitelisting on HMIs)."
+        )
+        st.plotly_chart(fig_ics_region, use_container_width=True, config={"displayModeBar": False})
+    with _ex_c4:
+        st.markdown("#### ICS Historical Quarterly Trend")
+        st.caption(
+            "Quarterly ICS threat volume from Kaspersky ICS-CERT. The Q2 2025 uptick follows a trough in "
+            "Q4 2024, consistent with seasonal threat actor activity patterns and increased targeting of "
+            "energy and manufacturing sectors post-winter. Use this trend as a leading indicator when "
+            "scheduling OT vulnerability assessments and threat-hunting exercises."
+        )
+        st.plotly_chart(fig_ics_hist, use_container_width=True, config={"displayModeBar": False})
+
 # ─────────────────────────────────────────
-# EXECUTIVE BRIEF TAB — For Business Leaders
+# EXECUTIVE BRIEF — For Business Leaders
 # ─────────────────────────────────────────
-with _tab_exec:
+elif _chosen_key == "exec":
     st.markdown(f"""
 <div style="background:linear-gradient(135deg,#f0fdf4 0%,#f8fafc 100%);
             border:1px solid #bbf7d0;border-radius:16px;
@@ -2523,6 +2788,53 @@ with _tab_exec:
   </div>
 </div>
 """, unsafe_allow_html=True)
+
+    # ── Charts for Executive Brief ─────────────────────────────────────────
+    st.markdown("---")
+    st.markdown("### 📊 Key Charts for Leadership")
+    st.caption("Strategic-level visualisations to support board reporting and risk committee briefings.")
+
+    _eb_c1, _eb_c2 = st.columns(2, gap="large")
+    with _eb_c1:
+        st.markdown("#### Sector Breach Exposure Radar")
+        st.caption(
+            "This radar chart maps relative cyber risk across major industries. A larger shape means "
+            "higher exposure. Finance and Healthcare show consistently elevated risk due to the high "
+            "value of the data they hold. Use this to benchmark your sector's risk profile and "
+            "prioritise investment in the control areas where your industry scores highest."
+        )
+        st.plotly_chart(fig_radar, use_container_width=True, config={"displayModeBar": False})
+    with _eb_c2:
+        st.markdown("#### Ransomware Trend: Rising Threat, Rising Refusal")
+        st.caption(
+            "Ransomware involvement in breaches has nearly doubled over three years — now affecting 44% "
+            "of all incidents. The positive signal is that 64% of victims chose not to pay the ransom in "
+            "2024, up from 50% in 2022. Organisations with tested backup and recovery plans are driving "
+            "this shift. The business case for investing in resilience — not just prevention — is clear."
+        )
+        st.plotly_chart(fig_fore, use_container_width=True, config={"displayModeBar": False})
+
+    _eb_c3, _eb_c4 = st.columns(2, gap="large")
+    with _eb_c3:
+        st.markdown("#### Who Is Behind the Attacks?")
+        st.caption(
+            "Roughly 80% of breaches are carried out by external criminal organisations motivated by "
+            "financial gain — not nation-states. This is relevant for risk quantification: these actors "
+            "follow the money, targeting organisations with weak controls or valuable data. "
+            "A smaller but growing share involves insiders or business partners with legitimate access, "
+            "highlighting the importance of access governance and vendor risk management."
+        )
+        st.plotly_chart(fig_act, use_container_width=True, config={"displayModeBar": False})
+    with _eb_c4:
+        st.markdown("#### ICS Attack Rate by Region")
+        st.caption(
+            "1 in 5 industrial computers globally had a threat blocked in Q2 2025. For organisations "
+            "with manufacturing, logistics, or utilities operations, this represents direct operational "
+            "and safety risk — not just data loss. Regions with the highest rates often correspond to "
+            "facilities with older operational technology. Boards should ask: are our industrial "
+            "systems on a separate, monitored network?"
+        )
+        st.plotly_chart(fig_ics_region, use_container_width=True, config={"displayModeBar": False})
 
 # ─────────────────────────────────────────
 # FOOTER
