@@ -44,7 +44,7 @@ C_PURP  = "#8b5cf6"
 # ─────────────────────────────────────────
 st.markdown(f"""
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Syne:wght@400;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
 
 html, body, [class*="css"] {{
     font-family: 'Inter', sans-serif !important;
@@ -62,53 +62,51 @@ html, body, [class*="css"] {{
 
 h1 {{
     font-family: 'Inter', sans-serif !important;
-    font-weight: 700 !important;
-    font-size: 2.4rem !important;
+    font-weight: 600 !important;
+    font-size: 2rem !important;
     color: {TEXT} !important;
-    letter-spacing: 0 !important;
+    letter-spacing: -0.01em !important;
     line-height: 1.25 !important;
     margin-bottom: 0.5rem !important;
 }}
 h2 {{
     font-family: 'Inter', sans-serif !important;
-    font-weight: 600 !important;
-    font-size: 1.35rem !important;
+    font-weight: 500 !important;
+    font-size: 1.2rem !important;
     color: {TEXT} !important;
-    margin-top: 3rem !important;
-    margin-bottom: 1.2rem !important;
-    padding-bottom: 0.7rem !important;
-    border-bottom: 1px solid {BORDER2} !important;
+    margin-top: 2rem !important;
+    margin-bottom: 1rem !important;
+    padding-bottom: 0.6rem !important;
+    border-bottom: 1px solid {BORDER} !important;
     letter-spacing: 0 !important;
 }}
 h3 {{
     font-family: 'Inter', sans-serif !important;
-    font-weight: 600 !important;
-    font-size: 1.05rem !important;
+    font-weight: 500 !important;
+    font-size: 1rem !important;
     color: {TEXT} !important;
     margin-top: 0 !important;
-    margin-bottom: 0.5rem !important;
+    margin-bottom: 0.4rem !important;
     letter-spacing: 0 !important;
 }}
 h4 {{
     font-family: 'Inter', sans-serif !important;
-    font-weight: 600 !important;
-    font-size: 0.95rem !important;
-    color: {MUTED} !important;
+    font-weight: 500 !important;
+    font-size: 0.88rem !important;
+    color: {TEXT} !important;
     margin-top: 0 !important;
-    margin-bottom: 0.4rem !important;
+    margin-bottom: 0.35rem !important;
     letter-spacing: 0 !important;
-    text-transform: uppercase !important;
-    font-size: 0.72rem !important;
 }}
 p, .stMarkdown p {{
     font-family: 'Inter', sans-serif !important;
     color: {TEXT} !important;
-    font-size: 0.95rem !important;
-    line-height: 1.75 !important;
+    font-size: 0.93rem !important;
+    line-height: 1.7 !important;
 }}
 [data-testid="stCaptionContainer"] p {{
     color: {MUTED} !important;
-    font-size: 0.86rem !important;
+    font-size: 0.83rem !important;
     line-height: 1.6 !important;
 }}
 
@@ -129,9 +127,9 @@ p, .stMarkdown p {{
     padding: 1.5rem 1.2rem !important;
 }}
 [data-testid="stSidebar"] h2 {{
-    font-family: 'Syne', sans-serif !important;
-    font-size: 1.1rem !important;
-    font-weight: 700 !important;
+    font-family: 'Inter', sans-serif !important;
+    font-size: 0.95rem !important;
+    font-weight: 600 !important;
     color: {ACCENT} !important;
     border-bottom: 1px solid {BORDER2} !important;
     padding-bottom: 0.5rem !important;
@@ -225,9 +223,9 @@ p, .stMarkdown p {{
     line-height: 1.3 !important;
 }}
 [data-testid="metric-container"] [data-testid="stMetricValue"] {{
-    font-family: 'Syne', sans-serif !important;
-    font-size: 1.7rem !important;
-    font-weight: 800 !important;
+    font-family: 'Inter', sans-serif !important;
+    font-size: 1.45rem !important;
+    font-weight: 600 !important;
     color: {ACCENT} !important;
 }}
 [data-testid="metric-container"] [data-testid="stMetricDelta"] {{
@@ -260,8 +258,8 @@ hr {{
     transform: translate(-50%, -50%);
     color: #ffffff;
     font-family: 'Inter', sans-serif;
-    font-weight: 700;
-    font-size: 1rem;
+    font-weight: 500;
+    font-size: 0.9rem;
     letter-spacing: 0.01em;
     white-space: nowrap;
     pointer-events: none;
@@ -529,9 +527,9 @@ def source_badge(extra="", url=None, label=None):
     border-radius:0 8px 8px 0;
 ">
   <span style="font-size:16px;">📊</span>
-  <span style="font-family:'Inter',sans-serif;font-size:0.88rem;font-weight:600;color:{TEXT};">
+  <span style="font-family:'Inter',sans-serif;font-size:0.83rem;font-weight:400;color:{MUTED};">
     Source: {source_link}
-    <span style="color:{MUTED};font-weight:400;">{date_str}{detail}</span>
+    <span style="font-weight:400;">{date_str}{detail}</span>
   </span>
 </div>"""
 
@@ -547,8 +545,8 @@ def insight_box(headline, body):
     border-radius:0 8px 8px 0;
     font-family:'Inter',sans-serif;
 ">
-  <p style="margin:0 0 5px 0;font-size:0.9rem;font-weight:600;color:{TEXT};">💡 {headline}</p>
-  <p style="margin:0;font-size:0.86rem;color:{MUTED};line-height:1.75;">{body}</p>
+  <p style="margin:0 0 5px 0;font-size:0.88rem;font-weight:500;color:{TEXT};">💡 {headline}</p>
+  <p style="margin:0;font-size:0.84rem;color:{MUTED};line-height:1.7;">{body}</p>
 </div>"""
 
 # ─────────────────────────────────────────
@@ -581,16 +579,16 @@ def show_full_analysis():
 <div style="padding:14px 18px;background:#f8fafc;border:1px solid {BORDER};
             border-left:4px solid {ACCENT2};border-radius:0 8px 8px 0;
             font-family:'Inter',sans-serif;margin-bottom:14px;">
-  <p style="margin:0 0 6px 0;font-size:0.88rem;font-weight:600;color:{TEXT};">💡 {headline}</p>
-  <p style="margin:0;font-size:0.82rem;color:{MUTED};line-height:1.75;">{body}</p>
+  <p style="margin:0 0 6px 0;font-size:0.86rem;font-weight:500;color:{TEXT};">💡 {headline}</p>
+  <p style="margin:0;font-size:0.83rem;color:{MUTED};line-height:1.7;">{body}</p>
 </div>""", unsafe_allow_html=True)
         if extended:
             st.markdown(f"""
 <div style="padding:14px 18px;background:#eff6ff;border:1px solid #bfdbfe;
             border-left:4px solid {ACCENT};border-radius:0 8px 8px 0;
             font-family:'Inter',sans-serif;">
-  <p style="margin:0 0 6px 0;font-size:0.88rem;font-weight:600;color:{ACCENT};">🔍 Deeper Dive</p>
-  <p style="margin:0;font-size:0.82rem;color:{TEXT};line-height:1.75;">{extended}</p>
+  <p style="margin:0 0 6px 0;font-size:0.86rem;font-weight:500;color:{ACCENT};">🔍 Deeper Dive</p>
+  <p style="margin:0;font-size:0.83rem;color:{TEXT};line-height:1.7;">{extended}</p>
 </div>""", unsafe_allow_html=True)
 
 def open_analysis_btn(key, fig, title, source, headline, body, extended=""):
@@ -755,48 +753,48 @@ with _tab_home:
             border:1px solid #e2e8f0;border-radius:16px;
             padding:2rem 2.4rem 1.6rem 2.4rem;margin-bottom:1.4rem;
             box-shadow:0 2px 12px rgba(37,99,235,0.07);">
-  <p style="margin:0 0 0.3rem 0;font-size:0.75rem;font-weight:700;letter-spacing:0.1em;
-            color:#2563eb;font-family:'Inter',sans-serif;text-transform:uppercase;">
+  <p style="margin:0 0 0.3rem 0;font-size:0.75rem;font-weight:500;letter-spacing:0.04em;
+            color:#2563eb;font-family:'Inter',sans-serif;">
     CyberSignals · Cyber Risk Intelligence Dashboard
   </p>
-  <h1 style="margin:0 0 0.6rem 0;font-size:2rem;font-weight:800;color:#0f172a;
-             font-family:'Inter',sans-serif;line-height:1.2;">
+  <h1 style="margin:0 0 0.6rem 0;font-size:1.75rem;font-weight:600;color:#0f172a;
+             font-family:'Inter',sans-serif;line-height:1.2;letter-spacing:-0.01em;">
     Understanding Today's Cyber Threat Landscape
   </h1>
-  <p style="margin:0 0 1.4rem 0;font-size:1rem;color:#475569;font-family:'Inter',sans-serif;line-height:1.65;max-width:780px;">
+  <p style="margin:0 0 1.4rem 0;font-size:0.93rem;color:#475569;font-family:'Inter',sans-serif;line-height:1.65;max-width:780px;">
     This dashboard translates two authoritative 2025 threat intelligence reports into clear,
     actionable visuals — covering which sectors are most at risk, how attackers operate,
     what data they steal, and what organisations can do about it.
   </p>
   <div style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:1.4rem;">
     <div style="background:#ffffff;border:1px solid #e2e8f0;border-radius:10px;padding:0.75rem 1.1rem;flex:1;min-width:140px;text-align:center;">
-      <p style="margin:0;font-size:1.5rem;font-weight:800;color:#dc2626;font-family:'Inter',sans-serif;">22,052</p>
+      <p style="margin:0;font-size:1.35rem;font-weight:600;color:#dc2626;font-family:'Inter',sans-serif;">22,052</p>
       <p style="margin:0;font-size:0.75rem;color:#64748b;font-family:'Inter',sans-serif;">Total incidents (DBIR)</p>
     </div>
     <div style="background:#ffffff;border:1px solid #e2e8f0;border-radius:10px;padding:0.75rem 1.1rem;flex:1;min-width:140px;text-align:center;">
-      <p style="margin:0;font-size:1.5rem;font-weight:800;color:#2563eb;font-family:'Inter',sans-serif;">12,195</p>
+      <p style="margin:0;font-size:1.35rem;font-weight:600;color:#2563eb;font-family:'Inter',sans-serif;">12,195</p>
       <p style="margin:0;font-size:0.75rem;color:#64748b;font-family:'Inter',sans-serif;">Confirmed breaches</p>
     </div>
     <div style="background:#ffffff;border:1px solid #e2e8f0;border-radius:10px;padding:0.75rem 1.1rem;flex:1;min-width:140px;text-align:center;">
-      <p style="margin:0;font-size:1.5rem;font-weight:800;color:#d97706;font-family:'Inter',sans-serif;">44%</p>
+      <p style="margin:0;font-size:1.35rem;font-weight:600;color:#d97706;font-family:'Inter',sans-serif;">44%</p>
       <p style="margin:0;font-size:0.75rem;color:#64748b;font-family:'Inter',sans-serif;">Breaches with ransomware</p>
     </div>
     <div style="background:#ffffff;border:1px solid #e2e8f0;border-radius:10px;padding:0.75rem 1.1rem;flex:1;min-width:140px;text-align:center;">
-      <p style="margin:0;font-size:1.5rem;font-weight:800;color:#7c3aed;font-family:'Inter',sans-serif;">20.5%</p>
+      <p style="margin:0;font-size:1.35rem;font-weight:600;color:#7c3aed;font-family:'Inter',sans-serif;">20.5%</p>
       <p style="margin:0;font-size:0.75rem;color:#64748b;font-family:'Inter',sans-serif;">ICS computers attacked (Q2 2025)</p>
     </div>
     <div style="background:#ffffff;border:1px solid #e2e8f0;border-radius:10px;padding:0.75rem 1.1rem;flex:1;min-width:140px;text-align:center;">
-      <p style="margin:0;font-size:1.5rem;font-weight:800;color:#059669;font-family:'Inter',sans-serif;">64%</p>
+      <p style="margin:0;font-size:1.35rem;font-weight:600;color:#059669;font-family:'Inter',sans-serif;">64%</p>
       <p style="margin:0;font-size:0.75rem;color:#64748b;font-family:'Inter',sans-serif;">Victims refusing to pay ransom</p>
     </div>
   </div>
   <div style="display:flex;flex-wrap:wrap;gap:8px;">
-    <span style="background:#eff6ff;border:1px solid #bfdbfe;color:#1d4ed8;padding:4px 12px;border-radius:20px;font-size:0.78rem;font-family:'Inter',sans-serif;font-weight:600;">📡 Sector Risk</span>
-    <span style="background:#fef2f2;border:1px solid #fecaca;color:#b91c1c;padding:4px 12px;border-radius:20px;font-size:0.78rem;font-family:'Inter',sans-serif;font-weight:600;">⚔️ Attack Methods</span>
-    <span style="background:#fff7ed;border:1px solid #fed7aa;color:#c2410c;padding:4px 12px;border-radius:20px;font-size:0.78rem;font-family:'Inter',sans-serif;font-weight:600;">🔓 Ransomware</span>
-    <span style="background:#faf5ff;border:1px solid #e9d5ff;color:#7c3aed;padding:4px 12px;border-radius:20px;font-size:0.78rem;font-family:'Inter',sans-serif;font-weight:600;">🗂️ Stolen Data</span>
-    <span style="background:#f0fdf4;border:1px solid #bbf7d0;color:#15803d;padding:4px 12px;border-radius:20px;font-size:0.78rem;font-family:'Inter',sans-serif;font-weight:600;">📈 Trends</span>
-    <span style="background:#f5f3ff;border:1px solid #ddd6fe;color:#6d28d9;padding:4px 12px;border-radius:20px;font-size:0.78rem;font-family:'Inter',sans-serif;font-weight:600;">🏭 ICS Threats</span>
+    <span style="background:#eff6ff;border:1px solid #bfdbfe;color:#1d4ed8;padding:4px 12px;border-radius:20px;font-size:0.78rem;font-family:'Inter',sans-serif;font-weight:500;">📡 Sector Risk</span>
+    <span style="background:#fef2f2;border:1px solid #fecaca;color:#b91c1c;padding:4px 12px;border-radius:20px;font-size:0.78rem;font-family:'Inter',sans-serif;font-weight:500;">⚔️ Attack Methods</span>
+    <span style="background:#fff7ed;border:1px solid #fed7aa;color:#c2410c;padding:4px 12px;border-radius:20px;font-size:0.78rem;font-family:'Inter',sans-serif;font-weight:500;">🔓 Ransomware</span>
+    <span style="background:#faf5ff;border:1px solid #e9d5ff;color:#7c3aed;padding:4px 12px;border-radius:20px;font-size:0.78rem;font-family:'Inter',sans-serif;font-weight:500;">🗂️ Stolen Data</span>
+    <span style="background:#f0fdf4;border:1px solid #bbf7d0;color:#15803d;padding:4px 12px;border-radius:20px;font-size:0.78rem;font-family:'Inter',sans-serif;font-weight:500;">📈 Trends</span>
+    <span style="background:#f5f3ff;border:1px solid #ddd6fe;color:#6d28d9;padding:4px 12px;border-radius:20px;font-size:0.78rem;font-family:'Inter',sans-serif;font-weight:500;">🏭 ICS Threats</span>
   </div>
   <p style="margin:1rem 0 0 0;font-size:0.75rem;color:#94a3b8;font-family:'Inter',sans-serif;">
     Sources: Verizon DBIR 2025 (Nov 2023 – Oct 2024) &nbsp;·&nbsp; Kaspersky ICS-CERT Q2 2025 &nbsp;·&nbsp; Team N5 · USI4280
@@ -1064,18 +1062,18 @@ with _tab_home:
     <div style="display:flex;align-items:center;gap:10px;">
       <span style="font-size:2rem;line-height:1;">{_tip['icon']}</span>
       <div>
-        <p style="margin:0;font-size:0.72rem;font-weight:600;letter-spacing:0.08em;
-                  color:#64748b;font-family:'Inter',sans-serif;text-transform:uppercase;">
+        <p style="margin:0;font-size:0.72rem;font-weight:400;letter-spacing:0.04em;
+                  color:#64748b;font-family:'Inter',sans-serif;">
           Threat Focus · {_tip['month']} {_now.year}
         </p>
-        <p style="margin:0;font-size:1.15rem;font-weight:700;color:#0f172a;font-family:'Inter',sans-serif;line-height:1.25;">
+        <p style="margin:0;font-size:1rem;font-weight:600;color:#0f172a;font-family:'Inter',sans-serif;line-height:1.25;">
           {_tip['threat']}
         </p>
       </div>
     </div>
     <span style="
-        padding:4px 14px;border-radius:20px;font-size:0.72rem;font-weight:700;
-        letter-spacing:0.06em;font-family:'Inter',sans-serif;
+        padding:4px 14px;border-radius:20px;font-size:0.72rem;font-weight:500;
+        letter-spacing:0.03em;font-family:'Inter',sans-serif;
         background:{_tip['risk_color']};color:#ffffff;">
       {_tip['risk']} RISK
     </span>
@@ -1089,8 +1087,8 @@ with _tab_home:
 
   <!-- prevention list -->
   <div style="background:#f1f5f9;border-radius:8px;padding:0.9rem 1.1rem;border:1px solid #e2e8f0;">
-    <p style="margin:0 0 0.5rem 0;font-size:0.75rem;font-weight:700;letter-spacing:0.06em;
-              color:#2563eb;font-family:'Inter',sans-serif;text-transform:uppercase;">
+    <p style="margin:0 0 0.5rem 0;font-size:0.78rem;font-weight:500;letter-spacing:0;
+              color:#2563eb;font-family:'Inter',sans-serif;">
       🛡️ How to Protect Yourself
     </p>
     {_tip_prevention_html}
