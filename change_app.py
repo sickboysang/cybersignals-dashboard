@@ -50,11 +50,25 @@ C_PURP  = "#8b5cf6"
 # ─────────────────────────────────────────
 st.markdown(f"""
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=block');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap');
 
-html, body, [class*="css"] {{
-    font-family: 'Inter', sans-serif !important;
+html, body {{
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+    -webkit-font-smoothing: antialiased !important;
+    -moz-osx-font-smoothing: grayscale !important;
+    background-color: {BG} !important;
+    color: {TEXT} !important;
+}}
+/* Apply Inter only to text-bearing elements, not icon/widget wrappers */
+body *, .stApp, .main, .stMarkdown, .stText, .element-container p,
+.element-container h1, .element-container h2, .element-container h3,
+.element-container h4, .element-container li, .element-container span:not([class*="material"]) {{
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+    -webkit-font-smoothing: antialiased !important;
+    background-color: transparent;
+    color: inherit;
+}}
+body, .stApp {{
     background-color: {BG} !important;
     color: {TEXT} !important;
 }}
