@@ -109,7 +109,7 @@ section[data-testid="stSidebar"] header button::before {{
     background-color: {BG} !important;
 }}
 .main .block-container {{
-    padding: 2.5rem 3rem 4rem 3rem !important;
+    padding: 72px 3rem 4rem 3rem !important;
     max-width: 1400px !important;
     background: transparent !important;
 }}
@@ -171,121 +171,84 @@ p, .stMarkdown p {{
     overflow: hidden !important;
 }}
 
-/* ── SIDEBAR BACKGROUND — full height, no white gaps ── */
-section[data-testid="stSidebar"] {{
-    background-color: #1e293b !important;
-    background: #1e293b !important;
-    border-right: 1px solid #334155 !important;
-    min-height: 100vh !important;
+/* ── HIDE SIDEBAR + COLLAPSE BUTTONS COMPLETELY ── */
+section[data-testid="stSidebar"],
+[data-testid="stSidebarCollapseButton"],
+[data-testid="collapsedControl"],
+[data-testid="stSidebarCollapsedControl"] {{
+    display: none !important;
 }}
-section[data-testid="stSidebar"] > div {{
-    background-color: #1e293b !important;
+/* Full-width main area when sidebar is gone */
+[data-testid="stAppViewContainer"] {{
+    margin-left: 0 !important;
+}}
+
+/* ── FIXED TOP NAV BAR — the st.tabs tab-list ── */
+[data-testid="stTabs"] [data-baseweb="tab-list"] {{
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    z-index: 9999 !important;
     background: #1e293b !important;
-    min-height: 100vh !important;
-    /* Keep content anchored to the top, not pushed to the bottom */
+    border-bottom: 1px solid #334155 !important;
+    padding: 0 1.5rem !important;
+    height: 54px !important;
     display: flex !important;
-    flex-direction: column !important;
-    justify-content: flex-start !important;
-    align-items: stretch !important;
+    align-items: center !important;
+    gap: 2px !important;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.25) !important;
+    margin: 0 !important;
+    overflow: visible !important;
 }}
-section[data-testid="stSidebar"] > div > div,
-section[data-testid="stSidebar"] > div > div > div,
-[data-testid="stSidebar"],
-[data-testid="stSidebar"] > div {{
-    background-color: #1e293b !important;
-    background: #1e293b !important;
-}}
-[data-testid="stSidebar"] .block-container {{
-    background: #1e293b !important;
-    padding: 1rem 0.75rem !important;
-}}
-
-/* ── SIDEBAR COLLAPSE BUTTON — style only, let Streamlit control show/hide ── */
-/* DO NOT set display/visibility here — Streamlit JS manages that and fights us */
-[data-testid="stSidebarCollapseButton"] button {{
-    opacity: 1 !important;
-    background: rgba(255,255,255,0.12) !important;
-    border-radius: 6px !important;
-    border: 1px solid rgba(255,255,255,0.2) !important;
-}}
-[data-testid="stSidebarCollapseButton"] button:hover {{
-    background: rgba(255,255,255,0.22) !important;
-}}
-/* Collapsed-state re-open button (two possible testids across Streamlit versions) */
-[data-testid="collapsedControl"] button,
-[data-testid="stSidebarCollapsedControl"] button {{
-    opacity: 1 !important;
-    background: #1e293b !important;
-    border: 1px solid #334155 !important;
-    border-radius: 6px !important;
-}}
-
-/* ── ALL TEXT IN SIDEBAR WHITE ── */
-[data-testid="stSidebar"] p,
-[data-testid="stSidebar"] span,
-[data-testid="stSidebar"] label,
-[data-testid="stSidebar"] div,
-section[data-testid="stSidebar"] p,
-section[data-testid="stSidebar"] span,
-section[data-testid="stSidebar"] div {{
-    color: #e2e8f0 !important;
-    font-family: 'Inter', sans-serif !important;
-}}
-/* Override any white/light background on sidebar children */
-section[data-testid="stSidebar"] [data-testid="stVerticalBlock"],
-section[data-testid="stSidebar"] [data-testid="stVerticalBlockBorderWrapper"],
-section[data-testid="stSidebar"] [data-testid="stSidebarUserContent"],
-section[data-testid="stSidebar"] [data-testid="stSidebarContent"],
-section[data-testid="stSidebar"] .css-1d391kg,
-section[data-testid="stSidebar"] .stElementContainer,
-section[data-testid="stSidebar"] .element-container,
-section[data-testid="stSidebar"] .stMarkdown {{
+/* Tab buttons as nav items */
+[data-testid="stTabs"] [data-baseweb="tab"] {{
     background: transparent !important;
-    background-color: transparent !important;
-}}
-/* Kill the white bottom spacer Streamlit injects */
-section[data-testid="stSidebar"] > div > div:last-child,
-section[data-testid="stSidebar"] > div:last-child {{
-    background: #1e293b !important;
-    background-color: #1e293b !important;
-}}
-
-/* ── NAV BUTTONS ── */
-[data-testid="stSidebar"] .stButton > button,
-[data-testid="stSidebar"] .stButton > button p,
-[data-testid="stSidebar"] .stButton > button span {{
-    background: transparent !important;
+    color: #94a3b8 !important;
     border: none !important;
-    border-left: 3px solid transparent !important;
-    border-radius: 0 6px 6px 0 !important;
-    color: #cbd5e1 !important;
-    font-family: 'Inter', sans-serif !important;
-    font-size: 0.875rem !important;
-    font-weight: 400 !important;
-    text-align: left !important;
-    width: 100% !important;
-    padding: 0.5rem 0.75rem !important;
-    margin-bottom: 2px !important;
-    justify-content: flex-start !important;
-    transition: background 0.15s, color 0.15s !important;
-    box-shadow: none !important;
+    border-bottom: 2px solid transparent !important;
+    border-radius: 0 !important;
+    padding: 0 11px !important;
+    height: 54px !important;
+    font-size: 0.81rem !important;
+    font-weight: 500 !important;
+    white-space: nowrap !important;
+    cursor: pointer !important;
+    transition: color 0.15s !important;
+    display: flex !important;
+    align-items: center !important;
+    margin: 0 !important;
+    line-height: 1 !important;
 }}
-[data-testid="stSidebar"] .stButton > button:hover,
-[data-testid="stSidebar"] .stButton > button:hover p,
-[data-testid="stSidebar"] .stButton > button:hover span {{
-    background: rgba(255,255,255,0.08) !important;
-    color: #ffffff !important;
-    border-left: 3px solid #3b82f6 !important;
+[data-testid="stTabs"] [data-baseweb="tab"] p,
+[data-testid="stTabs"] [data-baseweb="tab"] span {{
+    color: #94a3b8 !important;
+    font-size: 0.81rem !important;
+    font-weight: 500 !important;
+    margin: 0 !important;
+    line-height: 1 !important;
 }}
-[data-testid="stSidebar"] .stButton > button:focus,
-[data-testid="stSidebar"] .stButton > button:active,
-[data-testid="stSidebar"] .stButton > button:focus p,
-[data-testid="stSidebar"] .stButton > button:focus span {{
-    background: rgba(59,130,246,0.18) !important;
-    color: #ffffff !important;
-    border-left: 3px solid #3b82f6 !important;
-    box-shadow: none !important;
-    outline: none !important;
+[data-testid="stTabs"] [data-baseweb="tab"]:hover,
+[data-testid="stTabs"] [data-baseweb="tab"]:hover p,
+[data-testid="stTabs"] [data-baseweb="tab"]:hover span {{
+    color: #f1f5f9 !important;
+    background: rgba(255,255,255,0.07) !important;
+}}
+[data-testid="stTabs"] [data-baseweb="tab"][aria-selected="true"],
+[data-testid="stTabs"] [data-baseweb="tab"][aria-selected="true"] p,
+[data-testid="stTabs"] [data-baseweb="tab"][aria-selected="true"] span {{
+    color: #60a5fa !important;
+    border-bottom: 2px solid #3b82f6 !important;
+    background: transparent !important;
+}}
+/* Hide the animated underline indicator */
+[data-testid="stTabs"] [data-baseweb="tab-highlight"],
+[data-testid="stTabs"] [data-baseweb="tab-border"] {{
+    display: none !important;
+}}
+/* Push tab panel content below the fixed nav */
+[data-testid="stTabs"] [data-baseweb="tab-panel"] {{
+    padding-top: 12px !important;
 }}
 
 /* ── METRICS ── */
@@ -331,77 +294,57 @@ hr {{
 ::-webkit-scrollbar-track {{ background: {SURFACE}; }}
 ::-webkit-scrollbar-thumb {{ background: {BORDER2}; border-radius: 3px; }}
 
-/* ── STICKY BRANDED TOOLBAR ── */
-[data-testid="stHeader"] {{
-    background-color: #0f172a !important;
-    border-bottom: 2px solid rgba(37,99,235,0.5) !important;
-    position: sticky !important;
-    top: 0 !important;
-    z-index: 999999 !important;
+/* ── SPEECH BUBBLE TOOLTIPS ── */
+.cs-stat {{
+    position: relative !important;
+    cursor: default !important;
 }}
-[data-testid="stHeader"]::before {{
-    content: "🛡️  CyberSignals";
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
-    color: #ffffff;
-    font-family: 'Inter', sans-serif;
-    font-weight: 500;
-    font-size: 0.9rem;
-    letter-spacing: 0.01em;
-    white-space: nowrap;
-    pointer-events: none;
+.cs-stat::after {{
+    content: attr(data-tip) !important;
+    position: absolute !important;
+    bottom: calc(100% + 12px) !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    background: #1e293b !important;
+    color: #e2e8f0 !important;
+    font-size: 0.72rem !important;
+    font-family: 'Inter', sans-serif !important;
+    padding: 9px 13px !important;
+    border-radius: 8px !important;
+    width: 210px !important;
+    text-align: center !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+    transition: opacity 0.18s ease !important;
+    z-index: 10000 !important;
+    box-shadow: 0 4px 18px rgba(0,0,0,0.28) !important;
+    line-height: 1.6 !important;
+    white-space: normal !important;
 }}
-/* keep Streamlit's own toolbar buttons visible and white against dark bar */
-[data-testid="stHeader"] button,
-[data-testid="stHeader"] a,
-[data-testid="stHeader"] [data-testid="stDecoration"] {{
-    position: relative;
-    z-index: 1;
-    color: #ffffff !important;
+.cs-stat::before {{
+    content: '' !important;
+    position: absolute !important;
+    bottom: calc(100% + 6px) !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    border: 6px solid transparent !important;
+    border-top-color: #1e293b !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+    transition: opacity 0.18s ease !important;
+    z-index: 10000 !important;
 }}
-[data-testid="stHeader"] button svg,
-[data-testid="stHeader"] a svg,
-[data-testid="stHeader"] [data-testid="stToolbar"] svg,
-[data-testid="stHeader"] [data-testid="stToolbar"] button,
-[data-testid="stHeader"] [data-testid="stStatusWidget"] svg,
-[data-testid="stHeader"] [data-testid="stStatusWidget"] span,
-[data-testid="stHeader"] [data-testid="stStatusWidget"] p {{
-    color: #ffffff !important;
-    fill: #ffffff !important;
-    stroke: #ffffff !important;
-}}
-[data-testid="stHeader"] button:hover {{
-    background: rgba(255,255,255,0.12) !important;
-    border-radius: 6px;
-}}
-/* ── SIDEBAR EXPAND TAB (visible on main bg when sidebar is closed) ── */
-[data-testid="stSidebarCollapsedControl"] {{
-    background-color: #1e293b !important;
-    border-radius: 0 8px 8px 0 !important;
-    border-right: 2px solid #3b82f6 !important;
-    border-top: 1px solid #334155 !important;
-    border-bottom: 1px solid #334155 !important;
-    padding: 6px 4px !important;
-    min-width: 36px !important;
-}}
-[data-testid="stSidebarCollapsedControl"] button {{
-    color: #ffffff !important;
-    background: transparent !important;
-    border: none !important;
-    border-radius: 4px !important;
-    min-width: 30px !important;
-    min-height: 30px !important;
-}}
-[data-testid="stSidebarCollapsedControl"] button:hover {{
-    background: rgba(59,130,246,0.3) !important;
-}}
-[data-testid="stSidebarCollapsedControl"] button span,
-[data-testid="stSidebarCollapsedControl"] button svg {{
-    color: #ffffff !important;
-    fill: #ffffff !important;
+.cs-stat:hover::after,
+.cs-stat:hover::before {{
     opacity: 1 !important;
+}}
+
+/* ── HIDE STREAMLIT'S OWN HEADER TOOLBAR ── */
+[data-testid="stHeader"],
+[data-testid="stDecoration"],
+[data-testid="stStatusWidget"],
+[data-testid="stToolbar"] {{
+    display: none !important;
 }}
 
 /* ── FORCE LIGHT MODE ON ALL REMAINING DARK ELEMENTS ── */
@@ -436,19 +379,6 @@ section[data-testid="stMain"] > div {{
 /* Slider */
 [data-testid="stSlider"] [data-baseweb="slider"] {{
     background-color: transparent !important;
-}}
-/* Tab bar */
-[data-testid="stTabs"] [data-baseweb="tab-list"] {{
-    background-color: {SURFACE} !important;
-    border-bottom: 1px solid {BORDER2} !important;
-}}
-[data-testid="stTabs"] [data-baseweb="tab"] {{
-    background-color: transparent !important;
-    color: {MUTED} !important;
-}}
-[data-testid="stTabs"] [aria-selected="true"] {{
-    color: {ACCENT} !important;
-    border-bottom: 2px solid {ACCENT} !important;
 }}
 /* Warning / info / error banners */
 [data-testid="stAlert"] {{
@@ -794,35 +724,8 @@ with st.sidebar:
 # ─────────────────────────────────────────
 # HEADER
 # ─────────────────────────────────────────
-st.markdown(f"""
-<div style="display:flex;align-items:center;gap:10px;margin-bottom:20px;flex-wrap:wrap;">
-  <div style="display:inline-flex;align-items:center;gap:8px;
-              font-size:13px;font-weight:600;letter-spacing:0;
-              color:{ACCENT};border:1.5px solid rgba(37,99,235,0.25);
-              padding:7px 16px;border-radius:8px;background:rgba(37,99,235,0.05);">
-    <span style="width:8px;height:8px;border-radius:50%;background:{ACCENT};display:inline-block;flex-shrink:0;"></span>
-    Live Threat Intelligence
-  </div>
-  <div style="display:inline-flex;align-items:center;
-              font-size:13px;font-weight:500;letter-spacing:0;
-              color:{MUTED};border:1px solid {BORDER2};padding:7px 16px;border-radius:8px;background:{SURFACE};">
-    Verizon DBIR 2025
-  </div>
-  <div style="display:inline-flex;align-items:center;
-              font-size:13px;font-weight:500;letter-spacing:0;
-              color:{MUTED};border:1px solid {BORDER2};padding:7px 16px;border-radius:8px;background:{SURFACE};">
-    Kaspersky ICS-CERT Q2 2025
-  </div>
-  <div style="display:inline-flex;align-items:center;
-              font-size:13px;font-weight:500;letter-spacing:0;
-              color:{MUTED};border:1px solid {BORDER2};padding:7px 16px;border-radius:8px;background:{SURFACE};">
-    Team N5 · USI4280
-  </div>
-</div>
-""", unsafe_allow_html=True)
 
 st.title("🛡️ CyberSignals")
-st.caption("Cyber risk intelligence · DBIR 2025 · 22,052 incidents · 12,195 breaches")
 
 # ─────────────────────────────────────────
 # AUDIENCE GUIDE QUICK ACCESS — above tab bar
@@ -860,36 +763,56 @@ _tab_home, _tab_sector, _tab_attacks, _tab_ransom, _tab_data, _tab_trends, _tab_
     "📚  Guides",
 ])
 
-# ── Sidebar nav → tab switcher + tooltip remover ─────────────────────────────
-_nav_tab_idx = int(st.session_state.get("_nav_tab", 0))
+# ── Tab switcher (fires only when explicitly requested) + brand injector ──────
+_nav_tab_idx = int(st.session_state.get("_nav_tab", -1))
+if _nav_tab_idx >= 0:
+    st.session_state["_nav_tab"] = -1  # reset so next rerun doesn't re-fire
 components.html(f"""<script>
 (function() {{
     var TARGET = {_nav_tab_idx};
+    var p = window.parent.document;
 
-    // Scroll to top then switch tab
-    window.parent.scrollTo({{top: 0, behavior: 'instant'}});
-
-    function clickTab() {{
-        var tabs = window.parent.document.querySelectorAll(
-            '[data-testid="stTabs"] [data-baseweb="tab-list"] button[role="tab"]'
-        );
-        if (tabs.length > TARGET) {{ tabs[TARGET].click(); }}
+    // Only programmatically switch + scroll when explicitly requested
+    if (TARGET >= 0) {{
         window.parent.scrollTo({{top: 0, behavior: 'instant'}});
+        function clickTab() {{
+            var tabs = p.querySelectorAll(
+                '[data-testid="stTabs"] [data-baseweb="tab-list"] button[role="tab"]'
+            );
+            if (tabs.length > TARGET) {{ tabs[TARGET].click(); }}
+        }}
+        setTimeout(clickTab, 150);
     }}
-    setTimeout(clickTab, 150);
 
-    // Remove native browser tooltip from sidebar collapse/expand buttons
-    function removeTooltips() {{
-        var btns = window.parent.document.querySelectorAll(
-            '[data-testid="stSidebarCollapseButton"] button, [data-testid="collapsedControl"] button'
-        );
-        btns.forEach(function(b) {{
-            b.removeAttribute('title');
-            b.setAttribute('aria-label', '');
-        }});
+    // Inject CyberSignals brand as first item in the fixed nav bar
+    function injectBrand() {{
+        var tabList = p.querySelector('[data-testid="stTabs"] [data-baseweb="tab-list"]');
+        if (!tabList) {{ setTimeout(injectBrand, 250); return; }}
+        if (tabList.querySelector('#cs-nav-brand')) return;
+        var brand = p.createElement('div');
+        brand.id = 'cs-nav-brand';
+        brand.innerHTML = '&#x1F6E1;&#xFE0F; <span>CyberSignals</span>';
+        brand.style.cssText = [
+            'color:#ffffff',
+            'font-weight:700',
+            'font-size:0.92rem',
+            'white-space:nowrap',
+            'font-family:Inter,-apple-system,sans-serif',
+            'display:flex',
+            'align-items:center',
+            'gap:6px',
+            'flex-shrink:0',
+            'margin-right:18px',
+            'padding-right:18px',
+            'border-right:1px solid rgba(255,255,255,0.15)',
+            'pointer-events:none'
+        ].join(';');
+        tabList.insertBefore(brand, tabList.firstChild);
     }}
-    setTimeout(removeTooltips, 300);
-    setTimeout(removeTooltips, 800);
+    injectBrand();
+    // Re-check after Streamlit may recreate the DOM
+    setTimeout(injectBrand, 600);
+    setTimeout(injectBrand, 1800);
 }})();
 </script>""", height=0)
 
@@ -913,23 +836,23 @@ with _tab_home:
     Two 2025 threat intelligence reports — DBIR and Kaspersky ICS-CERT — translated into clear visuals covering sector risk, attack methods, stolen data, and what to do about it.
   </p>
   <div style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:1.4rem;">
-    <div style="background:#ffffff;border:1px solid #e2e8f0;border-radius:10px;padding:0.75rem 1.1rem;flex:1;min-width:140px;text-align:center;">
+    <div class="cs-stat" data-tip="All security events reported to Verizon between Nov 2023 – Oct 2024, including near-misses and unconfirmed incidents alongside confirmed breaches." style="background:#ffffff;border:1px solid #e2e8f0;border-radius:10px;padding:0.75rem 1.1rem;flex:1;min-width:140px;text-align:center;">
       <p style="margin:0;font-size:1.35rem;font-weight:600;color:#dc2626;font-family:'Inter',sans-serif;">22,052</p>
       <p style="margin:0;font-size:0.75rem;color:#64748b;font-family:'Inter',sans-serif;">Total incidents (DBIR)</p>
     </div>
-    <div style="background:#ffffff;border:1px solid #e2e8f0;border-radius:10px;padding:0.75rem 1.1rem;flex:1;min-width:140px;text-align:center;">
+    <div class="cs-stat" data-tip="55% of all incidents ended in confirmed data exposure. Attackers successfully accessed, stole, or destroyed sensitive information in these cases." style="background:#ffffff;border:1px solid #e2e8f0;border-radius:10px;padding:0.75rem 1.1rem;flex:1;min-width:140px;text-align:center;">
       <p style="margin:0;font-size:1.35rem;font-weight:600;color:#2563eb;font-family:'Inter',sans-serif;">12,195</p>
       <p style="margin:0;font-size:0.75rem;color:#64748b;font-family:'Inter',sans-serif;">Confirmed breaches</p>
     </div>
-    <div style="background:#ffffff;border:1px solid #e2e8f0;border-radius:10px;padding:0.75rem 1.1rem;flex:1;min-width:140px;text-align:center;">
+    <div class="cs-stat" data-tip="Up from 32% in 2023 — a 37% year-over-year jump. Ransomware groups lock systems and demand payment. Manufacturing and Education are the hardest-hit sectors." style="background:#ffffff;border:1px solid #e2e8f0;border-radius:10px;padding:0.75rem 1.1rem;flex:1;min-width:140px;text-align:center;">
       <p style="margin:0;font-size:1.35rem;font-weight:600;color:#d97706;font-family:'Inter',sans-serif;">44%</p>
       <p style="margin:0;font-size:0.75rem;color:#64748b;font-family:'Inter',sans-serif;">Breaches with ransomware</p>
     </div>
-    <div style="background:#ffffff;border:1px solid #e2e8f0;border-radius:10px;padding:0.75rem 1.1rem;flex:1;min-width:140px;text-align:center;">
+    <div class="cs-stat" data-tip="1 in 5 industrial control system computers globally was attacked in Q2 2025. Malicious scripts and phishing pages are the top delivery methods. Source: Kaspersky ICS-CERT." style="background:#ffffff;border:1px solid #e2e8f0;border-radius:10px;padding:0.75rem 1.1rem;flex:1;min-width:140px;text-align:center;">
       <p style="margin:0;font-size:1.35rem;font-weight:600;color:#7c3aed;font-family:'Inter',sans-serif;">20.5%</p>
       <p style="margin:0;font-size:0.75rem;color:#64748b;font-family:'Inter',sans-serif;">ICS computers attacked (Q2 2025)</p>
     </div>
-    <div style="background:#ffffff;border:1px solid #e2e8f0;border-radius:10px;padding:0.75rem 1.1rem;flex:1;min-width:140px;text-align:center;">
+    <div class="cs-stat" data-tip="Ransom refusal rose from 50% in 2019 to 64% in 2024 — driven by better backups and incident response. Paying does not guarantee data recovery." style="background:#ffffff;border:1px solid #e2e8f0;border-radius:10px;padding:0.75rem 1.1rem;flex:1;min-width:140px;text-align:center;">
       <p style="margin:0;font-size:1.35rem;font-weight:600;color:#059669;font-family:'Inter',sans-serif;">64%</p>
       <p style="margin:0;font-size:0.75rem;color:#64748b;font-family:'Inter',sans-serif;">Victims refusing to pay ransom</p>
     </div>
@@ -1258,12 +1181,35 @@ with _tab_home:
 
         st.markdown("## Key Risk Metrics")
         st.caption("Each percentage is an independent risk factor — a single breach can involve ransomware, a vulnerability, and a third party at the same time, which is why the figures do not total 100%.")
-        m1,m2,m3,m4,m5 = st.columns(5)
-        m1.metric("Total Incidents Reported",  "22,052",  "Nov 2023 – Oct 2024")
-        m2.metric("Confirmed Data Breaches",   "12,195",  "55% of all incidents")
-        m3.metric("Breaches Involved Ransomware", "44%",  "↑37% Year-over-Year",  delta_color="inverse")
-        m4.metric("Breaches via Vulnerability",   "20%",  "↑34% Year-over-Year",  delta_color="inverse")
-        m5.metric("Breaches via Third Party",     "30%",  "↑100% Year-over-Year", delta_color="inverse")
+        st.markdown(f"""
+<div style="display:flex;flex-wrap:wrap;gap:12px;margin-top:0.5rem;">
+  <div class="cs-stat" data-tip="All security events reported to Verizon from Nov 2023 – Oct 2024, including near-misses alongside confirmed breaches." style="flex:1;min-width:150px;background:{BG};border:1px solid {BORDER};border-radius:10px;padding:1rem 1.2rem;">
+    <p style="margin:0 0 2px 0;font-size:0.7rem;color:{MUTED};font-family:'Inter',sans-serif;text-transform:uppercase;letter-spacing:0.08em;">Total Incidents Reported</p>
+    <p style="margin:0 0 4px 0;font-size:1.45rem;font-weight:600;color:{ACCENT};font-family:'Inter',sans-serif;">22,052</p>
+    <p style="margin:0;font-size:0.72rem;color:{MUTED};font-family:'Inter',sans-serif;">Nov 2023 – Oct 2024</p>
+  </div>
+  <div class="cs-stat" data-tip="55% of all incidents ended in confirmed data exposure — attackers successfully accessed or stole sensitive information in these cases." style="flex:1;min-width:150px;background:{BG};border:1px solid {BORDER};border-radius:10px;padding:1rem 1.2rem;">
+    <p style="margin:0 0 2px 0;font-size:0.7rem;color:{MUTED};font-family:'Inter',sans-serif;text-transform:uppercase;letter-spacing:0.08em;">Confirmed Data Breaches</p>
+    <p style="margin:0 0 4px 0;font-size:1.45rem;font-weight:600;color:{ACCENT};font-family:'Inter',sans-serif;">12,195</p>
+    <p style="margin:0;font-size:0.72rem;color:{MUTED};font-family:'Inter',sans-serif;">55% of all incidents</p>
+  </div>
+  <div class="cs-stat" data-tip="Up from 32% in 2023 — a 37% year-over-year rise. Ransomware locks systems and demands payment. Attackers now double-extort by also threatening to leak stolen data." style="flex:1;min-width:150px;background:{BG};border:1px solid {BORDER};border-radius:10px;padding:1rem 1.2rem;">
+    <p style="margin:0 0 2px 0;font-size:0.7rem;color:{MUTED};font-family:'Inter',sans-serif;text-transform:uppercase;letter-spacing:0.08em;">Breaches Involved Ransomware</p>
+    <p style="margin:0 0 4px 0;font-size:1.45rem;font-weight:600;color:#ef4444;font-family:'Inter',sans-serif;">44%</p>
+    <p style="margin:0;font-size:0.72rem;color:#ef4444;font-family:'Inter',sans-serif;">↑37% Year-over-Year</p>
+  </div>
+  <div class="cs-stat" data-tip="Unpatched software flaws are exploited in 1 in 5 breaches — up 34% year-over-year. MOVEit and other file-transfer vulnerabilities drove much of this surge." style="flex:1;min-width:150px;background:{BG};border:1px solid {BORDER};border-radius:10px;padding:1rem 1.2rem;">
+    <p style="margin:0 0 2px 0;font-size:0.7rem;color:{MUTED};font-family:'Inter',sans-serif;text-transform:uppercase;letter-spacing:0.08em;">Breaches via Vulnerability</p>
+    <p style="margin:0 0 4px 0;font-size:1.45rem;font-weight:600;color:#ef4444;font-family:'Inter',sans-serif;">20%</p>
+    <p style="margin:0;font-size:0.72rem;color:#ef4444;font-family:'Inter',sans-serif;">↑34% Year-over-Year</p>
+  </div>
+  <div class="cs-stat" data-tip="Third-party breaches doubled year-over-year — supply chain and partner access is now a primary attack vector. One vendor compromise can expose hundreds of organisations." style="flex:1;min-width:150px;background:{BG};border:1px solid {BORDER};border-radius:10px;padding:1rem 1.2rem;">
+    <p style="margin:0 0 2px 0;font-size:0.7rem;color:{MUTED};font-family:'Inter',sans-serif;text-transform:uppercase;letter-spacing:0.08em;">Breaches via Third Party</p>
+    <p style="margin:0 0 4px 0;font-size:1.45rem;font-weight:600;color:#ef4444;font-family:'Inter',sans-serif;">30%</p>
+    <p style="margin:0;font-size:0.72rem;color:#ef4444;font-family:'Inter',sans-serif;">↑100% Year-over-Year</p>
+  </div>
+</div>
+""", unsafe_allow_html=True)
 
         # ─────────────────────────────────────────
 # SECTION 1 — RADAR + INCIDENT PRESSURE
