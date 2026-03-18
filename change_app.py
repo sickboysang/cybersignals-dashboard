@@ -224,7 +224,15 @@ section[data-testid="stSidebar"],
     gap: 2px !important;
     box-shadow: 0 2px 8px rgba(0,0,0,0.25) !important;
     margin: 0 !important;
-    overflow: visible !important;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    flex-wrap: nowrap !important;
+    -webkit-overflow-scrolling: touch !important;
+    scrollbar-width: none !important;
+}}
+/* Hide scrollbar track on webkit browsers (Chrome, Safari, mobile) */
+[data-testid="stTabs"] [data-baseweb="tab-list"]::-webkit-scrollbar {{
+    display: none !important;
 }}
 /* Tab buttons as nav items */
 [data-testid="stTabs"] [data-baseweb="tab"] {{
