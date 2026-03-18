@@ -746,7 +746,7 @@ with st.sidebar:
         ("Stolen Data",    4),
         ("Trends",         5),
         ("ICS Threats",    6),
-        ("Guides",         7),
+        ("Accessibility Levels", 7),
     ]
     for _nl, _nidx in _NAV:
         if st.button(_nl, key=f"_nav_{_nidx}", use_container_width=True):
@@ -779,7 +779,7 @@ _tab_home, _tab_sector, _tab_attacks, _tab_ransom, _tab_data, _tab_trends, _tab_
     "Stolen Data",
     "Trends",
     "ICS Threats",
-    "Guides",
+    "Accessibility Levels",
 ])
 
 # ── Tab switcher (fires only when explicitly requested) + brand injector ──────
