@@ -52,23 +52,38 @@ st.markdown(f"""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap');
 
-html, body {{
+/* ── UNIVERSAL FONT — Inter on every element ── */
+*, *::before, *::after {{
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
     -webkit-font-smoothing: antialiased !important;
     -moz-osx-font-smoothing: grayscale !important;
-    background-color: {BG} !important;
-    color: {TEXT} !important;
 }}
-/* Apply Inter only to text-bearing elements, not icon/widget wrappers */
-body *, .stApp, .main, .stMarkdown, .stText, .element-container p,
-.element-container h1, .element-container h2, .element-container h3,
-.element-container h4, .element-container li, .element-container span:not([class*="material"]) {{
+/* Preserve icon font for Material Symbols only */
+.material-symbols-rounded,
+[class*="material-symbols"],
+[class*="material-icons"] {{
+    font-family: 'Material Symbols Rounded' !important;
+}}
+/* ── EXPANDER — hide icon ligature text (direct span children of summary only) ── */
+[data-testid="stExpander"] summary > span,
+[data-testid="stExpander"] details > summary > span {{
+    font-size: 0 !important;
+    overflow: hidden !important;
+    width: 0 !important;
+    display: inline-block !important;
+    visibility: hidden !important;
+}}
+/* Keep title paragraph text clean */
+[data-testid="stExpander"] summary p {{
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
-    -webkit-font-smoothing: antialiased !important;
-    background-color: transparent;
-    color: inherit;
+    font-size: 0.95rem !important;
+    font-weight: 500 !important;
+    color: {TEXT} !important;
+    visibility: visible !important;
+    width: auto !important;
+    overflow: visible !important;
 }}
-body, .stApp {{
+html, body, .stApp {{
     background-color: {BG} !important;
     color: {TEXT} !important;
 }}
@@ -162,6 +177,15 @@ p, .stMarkdown p {{
     color: {MUTED} !important;
     font-size: 0.83rem !important;
     line-height: 1.6 !important;
+}}
+
+/* ── HIDE HEADING ANCHOR LINK ICONS ── */
+h1 a, h2 a, h3 a, h4 a, h5 a, h6 a,
+[data-testid="stMarkdownContainer"] h1 a,
+[data-testid="stMarkdownContainer"] h2 a,
+[data-testid="stMarkdownContainer"] h3 a,
+[data-testid="stMarkdownContainer"] h4 a {{
+    display: none !important;
 }}
 
 /* ── CHART CARD SHADOW ── */
@@ -413,19 +437,35 @@ div[role="dialog"] .stMarkdown p {{
     color: {TEXT} !important;
 }}
 
-/* ── FULL ANALYSIS BUTTON ── */
-button[kind="primary"] {{
-    background-color: {ACCENT} !important;
+/* ── FULL CHART ANALYSIS BUTTON ── */
+button[kind="primary"],
+[data-testid="stButton"] button[kind="primary"],
+.stButton > button[kind="primary"],
+[data-baseweb="button"][kind="primary"] {{
+    background-color: #2563eb !important;
     color: #ffffff !important;
     border: none !important;
     font-family: 'Inter', sans-serif !important;
     font-size: 0.85rem !important;
-    font-weight: 500 !important;
+    font-weight: 600 !important;
     border-radius: 8px !important;
-    padding: 6px 16px !important;
+    padding: 6px 18px !important;
+    box-shadow: 0 1px 4px rgba(37,99,235,0.3) !important;
 }}
-button[kind="primary"]:hover {{
+button[kind="primary"] p,
+button[kind="primary"] span,
+.stButton > button[kind="primary"] p,
+.stButton > button[kind="primary"] span {{
+    color: #ffffff !important;
+}}
+button[kind="primary"]:hover,
+.stButton > button[kind="primary"]:hover {{
     background-color: #1d4ed8 !important;
+    color: #ffffff !important;
+    box-shadow: 0 2px 8px rgba(37,99,235,0.45) !important;
+}}
+button[kind="primary"]:hover p,
+button[kind="primary"]:hover span {{
     color: #ffffff !important;
 }}
 </style>
@@ -475,9 +515,8 @@ components.html("""
 # AUDIENCE BADGE HELPER
 # ─────────────────────────────────────────
 _AUDIENCE_STYLES = {
-    "simple":  {"icon": "💡", "label": "Plain & Simple",  "bg": "#fffbeb", "border": "#fde68a", "color": "#92400e"},
-    "expert":  {"icon": "⚙️", "label": "Expert Console",  "bg": "#eff6ff", "border": "#bfdbfe", "color": "#1d4ed8"},
-    "exec":    {"icon": "💼", "label": "Executive Brief",  "bg": "#f0fdf4", "border": "#bbf7d0", "color": "#15803d"},
+    "simple":   {"label": "Plain & Simple", "bg": "#fffbeb", "border": "#fde68a", "color": "#92400e"},
+    "advanced": {"label": "Advanced",       "bg": "#eff6ff", "border": "#bfdbfe", "color": "#1d4ed8"},
 }
 def audience_badge(key):
     s = _AUDIENCE_STYLES[key]
@@ -486,7 +525,7 @@ def audience_badge(key):
         f'font-size:0.72rem;font-weight:600;color:{s["color"]};'
         f'background:{s["bg"]};border:1px solid {s["border"]};'
         f'border-radius:20px;padding:3px 10px;font-family:\'Inter\',sans-serif;">'
-        f'{s["icon"]} {s["label"]}</span>'
+        f'{s["label"]}</span>'
     )
 
 # CHART BASE LAYOUT
@@ -518,6 +557,7 @@ def chart_layout(height=420, show_legend=True, legend_y=-0.2):
             linecolor=BORDER2,
             title_font=dict(size=12, color=MUTED),
         ),
+        dragmode=False,
     )
 
 # ─────────────────────────────────────────
@@ -547,7 +587,7 @@ def source_badge(extra="", url=None, label=None):
     border-left:4px solid {ACCENT};
     border-radius:0 8px 8px 0;
 ">
-  <span style="font-size:16px;">📊</span>
+  <span style="font-size:16px;"></span>
   <span style="font-family:'Inter',sans-serif;font-size:0.83rem;font-weight:400;color:{MUTED};">
     Source: {source_link}
     <span style="font-weight:400;">{date_str}{detail}</span>
@@ -566,14 +606,14 @@ def insight_box(headline, body):
     border-radius:0 8px 8px 0;
     font-family:'Inter',sans-serif;
 ">
-  <p style="margin:0 0 5px 0;font-size:0.88rem;font-weight:500;color:{TEXT};">💡 {headline}</p>
+  <p style="margin:0 0 5px 0;font-size:0.88rem;font-weight:500;color:{TEXT};">{headline}</p>
   <p style="margin:0;font-size:0.84rem;color:{MUTED};line-height:1.7;">{body}</p>
 </div>"""
 
 # ─────────────────────────────────────────
 # FULL ANALYSIS DIALOG
 # ─────────────────────────────────────────
-@st.dialog("📊 Full Chart Analysis", width="large")
+@st.dialog("Full Chart Analysis", width="large")
 def show_full_analysis():
     title    = st.session_state.get("_dlg_title",   "Chart Analysis")
     fig_json = st.session_state.get("_dlg_fig",     None)
@@ -590,9 +630,9 @@ def show_full_analysis():
         if fig_json:
             import plotly.io as pio
             fig_big = pio.from_json(fig_json)
-            fig_big.update_layout(height=480, margin=dict(l=40, r=20, t=30, b=40))
-            st.plotly_chart(fig_big, use_container_width=True,
-                            config={"displayModeBar": False})
+            fig_big.update_layout(height=480, margin=dict(l=40, r=20, t=30, b=40), dragmode=False)
+            st.plotly_chart(fig_big, use_container_width=True, key="chart_big",
+                            config={"displayModeBar": False, "scrollZoom": False})
         st.markdown(source_badge(source), unsafe_allow_html=True)
 
     with col_text:
@@ -600,7 +640,7 @@ def show_full_analysis():
 <div style="padding:14px 18px;background:#f8fafc;border:1px solid {BORDER};
             border-left:4px solid {ACCENT2};border-radius:0 8px 8px 0;
             font-family:'Inter',sans-serif;margin-bottom:14px;">
-  <p style="margin:0 0 6px 0;font-size:0.86rem;font-weight:500;color:{TEXT};">💡 {headline}</p>
+  <p style="margin:0 0 6px 0;font-size:0.86rem;font-weight:500;color:{TEXT};">{headline}</p>
   <p style="margin:0;font-size:0.83rem;color:{MUTED};line-height:1.7;">{body}</p>
 </div>""", unsafe_allow_html=True)
         if extended:
@@ -608,13 +648,13 @@ def show_full_analysis():
 <div style="padding:14px 18px;background:#eff6ff;border:1px solid #bfdbfe;
             border-left:4px solid {ACCENT};border-radius:0 8px 8px 0;
             font-family:'Inter',sans-serif;">
-  <p style="margin:0 0 6px 0;font-size:0.86rem;font-weight:500;color:{ACCENT};">🔍 Deeper Dive</p>
+  <p style="margin:0 0 6px 0;font-size:0.86rem;font-weight:500;color:{ACCENT};">Deeper Dive</p>
   <p style="margin:0;font-size:0.83rem;color:{TEXT};line-height:1.7;">{extended}</p>
 </div>""", unsafe_allow_html=True)
 
 def open_analysis_btn(key, fig, title, source, headline, body, extended=""):
     """Renders a small button that opens the full analysis dialog."""
-    if st.button("📖 Full Analysis", key=f"dlg_{key}", type="primary",
+    if st.button("Full Chart Analysis", key=f"dlg_{key}", type="primary",
                  help="Open enlarged chart with extended analysis"):
         st.session_state["_dlg_title"]    = title
         st.session_state["_dlg_fig"]      = fig.to_json()
@@ -699,17 +739,17 @@ with st.sidebar:
 """, unsafe_allow_html=True)
 
     _NAV = [
-        ("🏠", "Home",           0),
-        ("📡", "Sector Risk",    1),
-        ("⚔️", "Attack Methods", 2),
-        ("🔓", "Ransomware",     3),
-        ("🗂️", "Stolen Data",    4),
-        ("📈", "Trends",         5),
-        ("🏭", "ICS Threats",    6),
-        ("📚", "Guides",          7),
+        ("Home",           0),
+        ("Sector Risk",    1),
+        ("Attack Methods", 2),
+        ("Ransomware",     3),
+        ("Stolen Data",    4),
+        ("Trends",         5),
+        ("ICS Threats",    6),
+        ("Guides",         7),
     ]
-    for _ni, _nl, _nidx in _NAV:
-        if st.button(f"{_ni}  {_nl}", key=f"_nav_{_nidx}", use_container_width=True):
+    for _nl, _nidx in _NAV:
+        if st.button(_nl, key=f"_nav_{_nidx}", use_container_width=True):
             st.session_state["_nav_tab"] = _nidx
             st.rerun()
 
@@ -727,40 +767,19 @@ with st.sidebar:
 
 st.title("🛡️ CyberSignals")
 
-# ─────────────────────────────────────────
-# AUDIENCE GUIDE QUICK ACCESS — above tab bar
-# ─────────────────────────────────────────
-st.markdown(
-    f'<p style="font-size:0.78rem;color:{MUTED};font-family:\'Inter\',sans-serif;margin:0.4rem 0 0.5rem 0;">'
-    '📚 Jump straight to an audience guide:</p>',
-    unsafe_allow_html=True,
-)
-_aq1, _aq2, _aq3 = st.columns(3, gap="small")
-if _aq1.button("💡 Plain & Simple", use_container_width=True, key="_go_simple"):
-    st.session_state["_audience"] = "simple"
-    st.session_state["_nav_tab"] = 7
-    st.rerun()
-if _aq2.button("⚙️ Expert Console", use_container_width=True, key="_go_expert"):
-    st.session_state["_audience"] = "expert"
-    st.session_state["_nav_tab"] = 7
-    st.rerun()
-if _aq3.button("💼 Executive Brief", use_container_width=True, key="_go_exec"):
-    st.session_state["_audience"] = "exec"
-    st.session_state["_nav_tab"] = 7
-    st.rerun()
 
 # ─────────────────────────────────────────
 # TABS — top-level navigation
 # ─────────────────────────────────────────
 _tab_home, _tab_sector, _tab_attacks, _tab_ransom, _tab_data, _tab_trends, _tab_ics, _tab_guides = st.tabs([
-    "🏠  Home",
-    "📡  Sector Risk",
-    "⚔️  Attack Methods",
-    "🔓  Ransomware",
-    "🗂️  Stolen Data",
-    "📈  Trends",
-    "🏭  ICS Threats",
-    "📚  Guides",
+    "Home",
+    "Sector Risk",
+    "Attack Methods",
+    "Ransomware",
+    "Stolen Data",
+    "Trends",
+    "ICS Threats",
+    "Guides",
 ])
 
 # ── Tab switcher (fires only when explicitly requested) + brand injector ──────
@@ -779,9 +798,20 @@ components.html(f"""<script>
             var tabs = p.querySelectorAll(
                 '[data-testid="stTabs"] [data-baseweb="tab-list"] button[role="tab"]'
             );
-            if (tabs.length > TARGET) {{ tabs[TARGET].click(); }}
+            if (tabs.length > TARGET) {{
+                tabs[TARGET].click();
+                return true;
+            }}
+            return false;
         }}
-        setTimeout(clickTab, 150);
+        // Try at 200ms, retry at 500ms and 900ms in case React hasn't settled yet
+        setTimeout(function() {{
+            if (!clickTab()) {{
+                setTimeout(function() {{
+                    if (!clickTab()) {{ setTimeout(clickTab, 400); }}
+                }}, 300);
+            }}
+        }}, 200);
     }}
 
     // Inject CyberSignals brand as first item in the fixed nav bar
@@ -813,6 +843,39 @@ components.html(f"""<script>
     // Re-check after Streamlit may recreate the DOM
     setTimeout(injectBrand, 600);
     setTimeout(injectBrand, 1800);
+
+    // ── Hide raw icon text in expander toggles ─────────────────────────────
+    // Uses MutationObserver so the fix persists after every DOM re-render
+    // (e.g. when user clicks to expand/collapse).
+    var ICON_PAT = /^(expand_more|expand_less|keyboard_arrow_down|keyboard_arrow_up|arrow_drop_down|arrow_drop_up|arrow_downward|arrow_upward|chevron_right|chevron_left)$/i;
+    function fixExpanderIcons() {{
+        p.querySelectorAll('[data-testid="stExpander"] summary, details summary').forEach(function(summary) {{
+            summary.querySelectorAll('span, div').forEach(function(el) {{
+                if (el.querySelector('p')) return;
+                var txt = (el.textContent || '').trim();
+                if (ICON_PAT.test(txt) || (txt.length > 0 && txt.length < 30 && /^[a-z_]+$/.test(txt) && txt.indexOf(' ') === -1)) {{
+                    el.style.setProperty('font-size', '0', 'important');
+                    el.style.setProperty('width', '0', 'important');
+                    el.style.setProperty('height', '0', 'important');
+                    el.style.setProperty('overflow', 'hidden', 'important');
+                    el.style.setProperty('position', 'absolute', 'important');
+                    el.setAttribute('data-icon-hidden', '1');
+                }}
+            }});
+        }});
+    }}
+    fixExpanderIcons();
+    setTimeout(fixExpanderIcons, 400);
+    // MutationObserver with debounce — waits for Streamlit to finish re-rendering
+    // before re-applying the fix, preventing race conditions
+    if (!p.__csExpanderObserver) {{
+        var _csDebounce = null;
+        p.__csExpanderObserver = new MutationObserver(function() {{
+            clearTimeout(_csDebounce);
+            _csDebounce = setTimeout(fixExpanderIcons, 80);
+        }});
+        p.__csExpanderObserver.observe(p.body, {{ childList: true, subtree: true }});
+    }}
 }})();
 </script>""", height=0)
 
@@ -857,30 +920,78 @@ with _tab_home:
       <p style="margin:0;font-size:0.75rem;color:#64748b;font-family:'Inter',sans-serif;">Victims refusing to pay ransom</p>
     </div>
   </div>
-  <div style="display:flex;flex-wrap:wrap;gap:8px;">
-    <span style="background:#eff6ff;border:1px solid #bfdbfe;color:#1d4ed8;padding:4px 12px;border-radius:20px;font-size:0.78rem;font-family:'Inter',sans-serif;font-weight:500;">📡 Sector Risk</span>
-    <span style="background:#fef2f2;border:1px solid #fecaca;color:#b91c1c;padding:4px 12px;border-radius:20px;font-size:0.78rem;font-family:'Inter',sans-serif;font-weight:500;">⚔️ Attack Methods</span>
-    <span style="background:#fff7ed;border:1px solid #fed7aa;color:#c2410c;padding:4px 12px;border-radius:20px;font-size:0.78rem;font-family:'Inter',sans-serif;font-weight:500;">🔓 Ransomware</span>
-    <span style="background:#faf5ff;border:1px solid #e9d5ff;color:#7c3aed;padding:4px 12px;border-radius:20px;font-size:0.78rem;font-family:'Inter',sans-serif;font-weight:500;">🗂️ Stolen Data</span>
-    <span style="background:#f0fdf4;border:1px solid #bbf7d0;color:#15803d;padding:4px 12px;border-radius:20px;font-size:0.78rem;font-family:'Inter',sans-serif;font-weight:500;">📈 Trends</span>
-    <span style="background:#f5f3ff;border:1px solid #ddd6fe;color:#6d28d9;padding:4px 12px;border-radius:20px;font-size:0.78rem;font-family:'Inter',sans-serif;font-weight:500;">🏭 ICS Threats</span>
-  </div>
   <p style="margin:1rem 0 0 0;font-size:0.75rem;color:#94a3b8;font-family:'Inter',sans-serif;">
     Sources: Verizon DBIR 2025 (Nov 2023 – Oct 2024) &nbsp;·&nbsp; Kaspersky ICS-CERT Q2 2025 &nbsp;·&nbsp; Team N5 · USI4280
   </p>
 </div>
 """, unsafe_allow_html=True)
 
+# ACCESSIBILITY LEVEL QUICK SELECT — Home tab
+# ─────────────────────────────────────────
+with _tab_home:
+    st.markdown(
+        f'<p style="font-size:0.78rem;color:{MUTED};font-family:\'Inter\',sans-serif;margin:0.4rem 0 0.5rem 0;">'
+        'Select your accessibility level:</p>',
+        unsafe_allow_html=True,
+    )
+    _aq1, _aq2 = st.columns(2, gap="small")
+    if _aq1.button("Plain & Simple", use_container_width=True, key="_go_simple"):
+        st.session_state["_audience"] = "simple"
+        st.session_state["_nav_tab"] = 7
+        st.rerun()
+    if _aq2.button("Advanced", use_container_width=True, key="_go_advanced"):
+        st.session_state["_audience"] = "advanced"
+        st.session_state["_nav_tab"] = 7
+        st.rerun()
+
+    _aud_active = st.session_state.get("_audience", "simple")
+    components.html(f"""<script>
+(function() {{
+    var p = window.parent.document;
+    var ACTIVE = "{_aud_active}";
+    if (!p.getElementById('cs-aud-style')) {{
+        var s = p.createElement('style');
+        s.id = 'cs-aud-style';
+        s.textContent = `
+            button[data-aud="simple"] {{ color: #16a34a !important; border: 1.5px solid #16a34a !important; background: transparent !important; }}
+            button[data-aud="simple"] p, button[data-aud="simple"] span {{ color: #16a34a !important; }}
+            button[data-aud="simple"][data-aud-active="true"] {{ background: #16a34a !important; }}
+            button[data-aud="simple"][data-aud-active="true"] p, button[data-aud="simple"][data-aud-active="true"] span {{ color: #ffffff !important; }}
+            button[data-aud="simple"]:hover, button[data-aud="simple"]:hover p, button[data-aud="simple"]:hover span {{ background: #16a34a !important; color: #ffffff !important; }}
+            button[data-aud="advanced"] {{ color: #2563eb !important; border: 1.5px solid #2563eb !important; background: transparent !important; }}
+            button[data-aud="advanced"] p, button[data-aud="advanced"] span {{ color: #2563eb !important; }}
+            button[data-aud="advanced"][data-aud-active="true"] {{ background: #2563eb !important; }}
+            button[data-aud="advanced"][data-aud-active="true"] p, button[data-aud="advanced"][data-aud-active="true"] span {{ color: #ffffff !important; }}
+            button[data-aud="advanced"]:hover, button[data-aud="advanced"]:hover p, button[data-aud="advanced"]:hover span {{ background: #2563eb !important; color: #ffffff !important; }}
+        `;
+        p.head.appendChild(s);
+    }}
+    function tagBtns() {{
+        p.querySelectorAll('button').forEach(function(btn) {{
+            var txt = (btn.innerText || '').trim();
+            if (txt === 'Plain & Simple') {{
+                btn.setAttribute('data-aud', 'simple');
+                btn.setAttribute('data-aud-active', ACTIVE === 'simple' ? 'true' : 'false');
+            }} else if (txt === 'Advanced') {{
+                btn.setAttribute('data-aud', 'advanced');
+                btn.setAttribute('data-aud-active', ACTIVE === 'advanced' ? 'true' : 'false');
+            }}
+        }});
+    }}
+    tagBtns(); setTimeout(tagBtns, 300); setTimeout(tagBtns, 900);
+}})();
+</script>""", height=0)
+
 # TIP OF THE MONTH
 # ─────────────────────────────────────────
 with _tab_home:
-    with st.expander("💡  Tip of the Month", expanded=True):
+    with st.expander("Tip of the Month", expanded=True):
 
         _TIPS = {
             1: {
                 "month":   "January",
                 "threat":  "Tax Season Phishing",
-                "icon":    "🎯",
+                "icon":    "",
                 "risk":    "HIGH",
                 "risk_color": "#dc2626",
                 "summary": (
@@ -898,7 +1009,7 @@ with _tab_home:
             2: {
                 "month":   "February",
                 "threat":  "Romance Scams and Valentine's Day Phishing",
-                "icon":    "💌",
+                "icon":    "",
                 "risk":    "MEDIUM",
                 "risk_color": "#d97706",
                 "summary": (
@@ -916,7 +1027,7 @@ with _tab_home:
             3: {
                 "month":   "March",
                 "threat":  "Tax Deadline Phishing and Human Resources Scams",
-                "icon":    "📋",
+                "icon":    "",
                 "risk":    "HIGH",
                 "risk_color": "#dc2626",
                 "summary": (
@@ -953,7 +1064,7 @@ with _tab_home:
             5: {
                 "month":   "May",
                 "threat":  "Benefits Enrolment Phishing and Job Offer Scams",
-                "icon":    "📑",
+                "icon":    "",
                 "risk":    "MEDIUM",
                 "risk_color": "#d97706",
                 "summary": (
@@ -972,7 +1083,7 @@ with _tab_home:
             6: {
                 "month":   "June",
                 "threat":  "Credential Theft and Public Wi-Fi Attacks",
-                "icon":    "📶",
+                "icon":    "",
                 "risk":    "MEDIUM",
                 "risk_color": "#d97706",
                 "summary": (
@@ -990,7 +1101,7 @@ with _tab_home:
             7: {
                 "month":   "July",
                 "threat":  "Vacation-Themed Phishing and Out-of-Office Exploitation",
-                "icon":    "🏖️",
+                "icon":    "",
                 "risk":    "MEDIUM",
                 "risk_color": "#d97706",
                 "summary": (
@@ -1009,7 +1120,7 @@ with _tab_home:
             8: {
                 "month":   "August",
                 "threat":  "Back-to-School Scams and Educational Malware",
-                "icon":    "🎒",
+                "icon":    "",
                 "risk":    "MEDIUM",
                 "risk_color": "#d97706",
                 "summary": (
@@ -1028,7 +1139,7 @@ with _tab_home:
             9: {
                 "month":   "September",
                 "threat":  "Mobile Malware and One-Time Password Stealers",
-                "icon":    "📱",
+                "icon":    "",
                 "risk":    "HIGH",
                 "risk_color": "#dc2626",
                 "summary": (
@@ -1047,7 +1158,7 @@ with _tab_home:
             10: {
                 "month":   "October",
                 "threat":  "Ransomware Campaigns and Credential Stuffing",
-                "icon":    "🔐",
+                "icon":    "",
                 "risk":    "CRITICAL",
                 "risk_color": "#991b1b",
                 "summary": (
@@ -1066,7 +1177,7 @@ with _tab_home:
             11: {
                 "month":   "November",
                 "threat":  "Black Friday and Cyber Monday Shopping Fraud",
-                "icon":    "🛒",
+                "icon":    "",
                 "risk":    "CRITICAL",
                 "risk_color": "#991b1b",
                 "summary": (
@@ -1085,7 +1196,7 @@ with _tab_home:
             12: {
                 "month":   "December",
                 "threat":  "Holiday Ransomware, Charity Fraud and Phishing (Peak Month)",
-                "icon":    "🎄",
+                "icon":    "",
                 "risk":    "CRITICAL",
                 "risk_color": "#991b1b",
                 "summary": (
@@ -1114,7 +1225,7 @@ with _tab_home:
             for t in _tip["prevention"]
         )
 
-        st.markdown("## 💡 Tip of the Month")
+        st.markdown("## Tip of the Month")
         st.markdown(
     f"""
 <div style="
@@ -1177,34 +1288,34 @@ with _tab_home:
 # KPI ROW
 # ─────────────────────────────────────────
 with _tab_home:
-    with st.expander("📊  Key Risk Metrics", expanded=True):
+    with st.expander("Key Risk Metrics", expanded=True):
 
         st.markdown("## Key Risk Metrics")
         st.caption("Each percentage is an independent risk factor — a single breach can involve ransomware, a vulnerability, and a third party at the same time, which is why the figures do not total 100%.")
         st.markdown(f"""
 <div style="display:flex;flex-wrap:wrap;gap:12px;margin-top:0.5rem;">
   <div class="cs-stat" data-tip="All security events reported to Verizon from Nov 2023 – Oct 2024, including near-misses alongside confirmed breaches." style="flex:1;min-width:150px;background:{BG};border:1px solid {BORDER};border-radius:10px;padding:1rem 1.2rem;">
-    <p style="margin:0 0 2px 0;font-size:0.7rem;color:{MUTED};font-family:'Inter',sans-serif;text-transform:uppercase;letter-spacing:0.08em;">Total Incidents Reported</p>
+    <p style="margin:0 0 2px 0;font-size:0.75rem;color:{MUTED};font-family:'Inter',sans-serif;">Total Incidents Reported</p>
     <p style="margin:0 0 4px 0;font-size:1.45rem;font-weight:600;color:{ACCENT};font-family:'Inter',sans-serif;">22,052</p>
     <p style="margin:0;font-size:0.72rem;color:{MUTED};font-family:'Inter',sans-serif;">Nov 2023 – Oct 2024</p>
   </div>
   <div class="cs-stat" data-tip="55% of all incidents ended in confirmed data exposure — attackers successfully accessed or stole sensitive information in these cases." style="flex:1;min-width:150px;background:{BG};border:1px solid {BORDER};border-radius:10px;padding:1rem 1.2rem;">
-    <p style="margin:0 0 2px 0;font-size:0.7rem;color:{MUTED};font-family:'Inter',sans-serif;text-transform:uppercase;letter-spacing:0.08em;">Confirmed Data Breaches</p>
+    <p style="margin:0 0 2px 0;font-size:0.75rem;color:{MUTED};font-family:'Inter',sans-serif;">Confirmed Data Breaches</p>
     <p style="margin:0 0 4px 0;font-size:1.45rem;font-weight:600;color:{ACCENT};font-family:'Inter',sans-serif;">12,195</p>
     <p style="margin:0;font-size:0.72rem;color:{MUTED};font-family:'Inter',sans-serif;">55% of all incidents</p>
   </div>
   <div class="cs-stat" data-tip="Up from 32% in 2023 — a 37% year-over-year rise. Ransomware locks systems and demands payment. Attackers now double-extort by also threatening to leak stolen data." style="flex:1;min-width:150px;background:{BG};border:1px solid {BORDER};border-radius:10px;padding:1rem 1.2rem;">
-    <p style="margin:0 0 2px 0;font-size:0.7rem;color:{MUTED};font-family:'Inter',sans-serif;text-transform:uppercase;letter-spacing:0.08em;">Breaches Involved Ransomware</p>
+    <p style="margin:0 0 2px 0;font-size:0.75rem;color:{MUTED};font-family:'Inter',sans-serif;">Breaches Involved Ransomware</p>
     <p style="margin:0 0 4px 0;font-size:1.45rem;font-weight:600;color:#ef4444;font-family:'Inter',sans-serif;">44%</p>
     <p style="margin:0;font-size:0.72rem;color:#ef4444;font-family:'Inter',sans-serif;">↑37% Year-over-Year</p>
   </div>
   <div class="cs-stat" data-tip="Unpatched software flaws are exploited in 1 in 5 breaches — up 34% year-over-year. MOVEit and other file-transfer vulnerabilities drove much of this surge." style="flex:1;min-width:150px;background:{BG};border:1px solid {BORDER};border-radius:10px;padding:1rem 1.2rem;">
-    <p style="margin:0 0 2px 0;font-size:0.7rem;color:{MUTED};font-family:'Inter',sans-serif;text-transform:uppercase;letter-spacing:0.08em;">Breaches via Vulnerability</p>
+    <p style="margin:0 0 2px 0;font-size:0.75rem;color:{MUTED};font-family:'Inter',sans-serif;">Breaches via Vulnerability</p>
     <p style="margin:0 0 4px 0;font-size:1.45rem;font-weight:600;color:#ef4444;font-family:'Inter',sans-serif;">20%</p>
     <p style="margin:0;font-size:0.72rem;color:#ef4444;font-family:'Inter',sans-serif;">↑34% Year-over-Year</p>
   </div>
   <div class="cs-stat" data-tip="Third-party breaches doubled year-over-year — supply chain and partner access is now a primary attack vector. One vendor compromise can expose hundreds of organisations." style="flex:1;min-width:150px;background:{BG};border:1px solid {BORDER};border-radius:10px;padding:1rem 1.2rem;">
-    <p style="margin:0 0 2px 0;font-size:0.7rem;color:{MUTED};font-family:'Inter',sans-serif;text-transform:uppercase;letter-spacing:0.08em;">Breaches via Third Party</p>
+    <p style="margin:0 0 2px 0;font-size:0.75rem;color:{MUTED};font-family:'Inter',sans-serif;">Breaches via Third Party</p>
     <p style="margin:0 0 4px 0;font-size:1.45rem;font-weight:600;color:#ef4444;font-family:'Inter',sans-serif;">30%</p>
     <p style="margin:0;font-size:0.72rem;color:#ef4444;font-family:'Inter',sans-serif;">↑100% Year-over-Year</p>
   </div>
@@ -1215,7 +1326,7 @@ with _tab_home:
 # SECTION 1 — RADAR + INCIDENT PRESSURE
 # ─────────────────────────────────────────
 with _tab_sector:
-    with st.expander("📡  Sector Risk Analysis", expanded=True):
+    with st.expander("Sector Risk Analysis", expanded=True):
 
         st.markdown("## Which Sectors Are Most at Risk?")
         filtered = df_industry[df_industry["Industry"].isin(selected_sectors)]
@@ -1227,7 +1338,7 @@ with _tab_sector:
         with col1:
             st.markdown("### Breach Exposure by Sector")
             st.caption("Each spoke shows how hard a sector was hit — normalized across 12,195 confirmed breaches")
-            st.markdown(audience_badge("exec"), unsafe_allow_html=True)
+            st.markdown(audience_badge("advanced"), unsafe_allow_html=True)
             df_radar_plot = filtered if not filtered.empty else df_industry
             radar_sectors_plot  = df_radar_plot["Industry"].tolist()
             radar_breaches_plot = df_radar_plot["Breaches"].tolist()
@@ -1300,7 +1411,7 @@ with _tab_sector:
                 ),
             })
             fig_radar.update_layout(**layout_radar)
-            st.plotly_chart(fig_radar, use_container_width=True, config={"displayModeBar": True, "displaylogo": False, "modeBarButtonsToAdd": ["toggleFullscreen"]})
+            st.plotly_chart(fig_radar, use_container_width=True, key="chart_radar_sector", config={"displayModeBar": False, "scrollZoom": False})
             _src_radar = "22,052 incidents · 12,195 confirmed breaches"
             _hl_radar  = "Why does Manufacturing score so high?"
             _bd_radar  = ("Manufacturing topped confirmed breaches in 2025 for the first time. Ransomware groups deliberately "
@@ -1322,7 +1433,7 @@ with _tab_sector:
         with col2:
             st.markdown("### Incidents vs Confirmed Breaches")
             st.caption("Not every incident becomes a breach — this shows which sectors cross that line most often")
-            st.markdown(audience_badge("exec"), unsafe_allow_html=True)
+            st.markdown(audience_badge("advanced"), unsafe_allow_html=True)
             df_plot = filtered if not filtered.empty else df_industry
             fig_pressure = go.Figure()
             fig_pressure.add_trace(go.Bar(
@@ -1348,7 +1459,7 @@ with _tab_sector:
                 "legend": dict(orientation="h", y=-0.14, font=dict(size=11, color=TEXT)),
             })
             fig_pressure.update_layout(**layout)
-            st.plotly_chart(fig_pressure, use_container_width=True, config={"displayModeBar": True, "displaylogo": False, "modeBarButtonsToAdd": ["toggleFullscreen"]})
+            st.plotly_chart(fig_pressure, use_container_width=True, key="chart_pressure", config={"displayModeBar": False, "scrollZoom": False})
             _src_pres = "15 industries · Nov 2023 – Oct 2024"
             _hl_pres  = "Incident ≠ breach — the gap matters"
             _bd_pres  = ("A large gap between the blue and red bars means a sector detects and stops attacks before data is "
@@ -1376,7 +1487,7 @@ with _tab_sector:
         with col_fore:
             st.markdown("### Ransomware Is Rising — But More Victims Are Fighting Back")
             st.caption("Two stories in three years: ransomware doubled in breaches, yet refusal to pay jumped from 50% to 64%")
-            st.markdown(audience_badge("exec"), unsafe_allow_html=True)
+            st.markdown(audience_badge("advanced"), unsafe_allow_html=True)
 
             fig_fore = go.Figure()
 
@@ -1406,7 +1517,7 @@ with _tab_sector:
             fig_fore.add_annotation(
                 x=0, y=78,
                 xref="x", yref="y",
-                text="🔺 Ransomware nearly doubled<br>from 2022 to 2024",
+                text="Ransomware nearly doubled<br>from 2022 to 2024",
                 showarrow=False,
                 xanchor="center",
                 font=dict(size=11, color=RED, family="Inter, sans-serif"),
@@ -1431,7 +1542,7 @@ with _tab_sector:
                 "legend": dict(orientation="h", y=-0.22, font=dict(size=11, color=TEXT)),
             })
             fig_fore.update_layout(**layout)
-            st.plotly_chart(fig_fore, use_container_width=True, config={"displayModeBar": True, "displaylogo": False, "modeBarButtonsToAdd": ["toggleFullscreen"]})
+            st.plotly_chart(fig_fore, use_container_width=True, key="chart_fore_attacks", config={"displayModeBar": False, "scrollZoom": False})
             _src_fore = "Ransomware trajectory 2022–2024"
             _hl_fore  = "More ransomware, but victims are fighting back"
             _bd_fore  = ("Ransomware's share of breaches has nearly doubled in three years — from 1 in 4 breaches in 2022 "
@@ -1457,7 +1568,7 @@ with _tab_sector:
 # SECTION 3 — THREAT TYPE TRENDS
 # ─────────────────────────────────────────
 with _tab_attacks:
-    with st.expander("⚔️  How Attacks Happen", expanded=True):
+    with st.expander("How Attacks Happen", expanded=True):
 
         st.markdown("## How Attacks Happen")
         st.caption("The most common attack patterns — and how many of those incidents turn into real breaches")
@@ -1466,7 +1577,7 @@ with _tab_attacks:
 
         with col5:
             st.markdown("#### Most Common Attack Patterns")
-            st.markdown(audience_badge("expert"), unsafe_allow_html=True)
+            st.markdown(audience_badge("advanced"), unsafe_allow_html=True)
             fig_pat = go.Figure()
             fig_pat.add_trace(go.Bar(
                 y=df_patterns["Pattern"], x=df_patterns["Incidents"],
@@ -1492,13 +1603,14 @@ with _tab_attacks:
             ))
             # Callout annotation for the near-invisible "2 breaches" bar (Denial of Service)
             fig_pat.add_annotation(
-                y="Denial of Service", x=400,
+                x=400, y="Denial of Service",
                 text="★ Only 2 confirmed breaches",
-                showarrow=True, arrowhead=2, arrowcolor=C_RED, arrowwidth=1.5,
-                ax=160, ay=-40,
+                showarrow=False,
                 font=dict(size=10, color=RED, family="Inter, sans-serif"),
-                bgcolor="rgba(255,240,240,0.95)", bordercolor=C_RED, borderwidth=1, borderpad=5,
+                bgcolor="rgba(255,240,240,0.92)",
+                bordercolor=C_RED, borderwidth=1, borderpad=4,
                 xanchor="left",
+                yanchor="middle",
             )
             layout = chart_layout(height=420)
             layout.update({
@@ -1516,13 +1628,19 @@ with _tab_attacks:
                     automargin=True,
                     gridcolor="#f1f5f9",
                 ),
-                "legend": dict(orientation="h", y=-0.16, font=dict(size=11, color=TEXT)),
-                "margin": dict(l=56, r=140, t=36, b=56),
+                "legend": dict(
+                    orientation="h",
+                    x=0.5, y=1.12,
+                    xanchor="center", yanchor="bottom",
+                    font=dict(size=11, color=TEXT),
+                    bgcolor="rgba(255,255,255,0.0)",
+                    borderwidth=0,
+                ),
+                "margin": dict(l=56, r=160, t=64, b=40),
             })
             fig_pat.update_layout(**layout)
-            st.plotly_chart(fig_pat, use_container_width=True,
-                            config={"displayModeBar": True, "displaylogo": False,
-                                    "modeBarButtonsToAdd": ["toggleFullscreen"]})
+            st.plotly_chart(fig_pat, use_container_width=True, key="chart_pat",
+                            config={"displayModeBar": False, "scrollZoom": False})
             _src_pat = "7 VERIS (Vocabulary for Event Recording and Incident Sharing) incident classification patterns"
             _hl_pat  = "Why does Denial of Service have 6,520 incidents but only 2 breaches?"
             _bd_pat  = ("This is not a data error — it reflects how a breach is defined. The DBIR counts a breach only when "
@@ -1546,7 +1664,7 @@ with _tab_attacks:
 
         with col6:
             st.markdown("#### How Attackers Get In")
-            st.markdown(audience_badge("expert"), unsafe_allow_html=True)
+            st.markdown(audience_badge("advanced"), unsafe_allow_html=True)
             fig_pie = go.Figure(go.Pie(
                 labels=df_access["Vector"], values=df_access["Pct"], hole=0.50,
                 marker=dict(colors=[C_AMBER, C_RED, C_BLUE, C_PURP], line=dict(color="white", width=3)),
@@ -1567,7 +1685,7 @@ with _tab_attacks:
                 "margin": dict(l=24, r=24, t=36, b=80),
             })
             fig_pie.update_layout(**layout_pie)
-            st.plotly_chart(fig_pie, use_container_width=True, config={"displayModeBar": True, "displaylogo": False, "modeBarButtonsToAdd": ["toggleFullscreen"]})
+            st.plotly_chart(fig_pie, use_container_width=True, key="chart_pie", config={"displayModeBar": False, "scrollZoom": False})
             _src_pie = "Top initial access vectors in confirmed breaches"
             _hl_pie  = "Edge devices and Virtual Private Networks now tied with stolen credentials"
             _bd_pie  = ("Credential theft has led initial access for years, but Edge Device and Virtual Private Network "
@@ -1593,7 +1711,7 @@ with _tab_attacks:
 # SECTION 4 — RANSOMWARE + THREAT ACTORS
 # ─────────────────────────────────────────
 with _tab_ransom:
-    with st.expander("🔓  Ransomware and Threat Actors", expanded=True):
+    with st.expander("Ransomware and Threat Actors", expanded=True):
 
         st.markdown("## Ransomware & Who Is Behind Attacks")
         col7, col8 = st.columns(2, gap="large")
@@ -1601,7 +1719,7 @@ with _tab_ransom:
         with col7:
             st.markdown("#### Ransomware Involvement Rate by Industry Sector")
             st.caption("Percentage of breaches in each sector that involved ransomware — each sector shown in its own distinct colour")
-            st.markdown(audience_badge("exec"), unsafe_allow_html=True)
+            st.markdown(audience_badge("advanced"), unsafe_allow_html=True)
             bar_colors = ["#3b82f6","#10b981","#f59e0b","#8b5cf6","#ef4444","#06b6d4","#f97316"]
             fig_rs = go.Figure(go.Bar(
                 y=df_ransom_sector["Sector"], x=df_ransom_sector["Ransomware (%)"],
@@ -1624,7 +1742,7 @@ with _tab_ransom:
                 "yaxis": dict(tickfont=dict(color=TEXT, size=11), automargin=True, gridcolor="#f1f5f9"),
             })
             fig_rs.update_layout(**layout)
-            st.plotly_chart(fig_rs, use_container_width=True, config={"displayModeBar": True, "displaylogo": False, "modeBarButtonsToAdd": ["toggleFullscreen"]})
+            st.plotly_chart(fig_rs, use_container_width=True, key="chart_rs_ransom", config={"displayModeBar": False, "scrollZoom": False})
             _src_rs = "Ransomware involvement across sectors"
             _hl_rs  = "Why does Manufacturing rank so high — and Finance so low?"
             _bd_rs  = ("Manufacturing plants are difficult to patch because taking Operational Technology systems offline "
@@ -1649,7 +1767,7 @@ with _tab_ransom:
         with col8:
             st.markdown("#### Who Is Behind the Attacks?")
             st.caption("External actors rose 163% in espionage-driven breaches — the most significant shift reported in 2025")
-            st.markdown(audience_badge("expert"), unsafe_allow_html=True)
+            st.markdown(audience_badge("advanced"), unsafe_allow_html=True)
             actor_labels = ["External","Internal","Partner/3rd-party","State-sponsored"]
             actor_vals   = [80,20,30,15]
             actor_colors = [C_RED, C_AMBER, C_PURP, "#6b7280"]
@@ -1672,7 +1790,7 @@ with _tab_ransom:
                 "xaxis": dict(tickfont=dict(color=TEXT, size=12), gridcolor="#f1f5f9"),
             })
             fig_act.update_layout(**layout)
-            st.plotly_chart(fig_act, use_container_width=True, config={"displayModeBar": True, "displaylogo": False, "modeBarButtonsToAdd": ["toggleFullscreen"]})
+            st.plotly_chart(fig_act, use_container_width=True, key="chart_act", config={"displayModeBar": False, "scrollZoom": False})
             _src_act = "Threat actor categories across all breaches"
             _hl_act  = "The 163% spike in espionage is the report's starkest shift"
             _bd_act  = ("Nation-state actors — primarily linked to Russia, China, Iran and North Korea — dramatically "
@@ -1699,7 +1817,7 @@ with _tab_ransom:
 # SECTION 5 — DATA TYPES + MFA BYPASS
 # ─────────────────────────────────────────
 with _tab_data:
-    with st.expander("🗂️  Stolen Data and Security Controls", expanded=True):
+    with st.expander("Stolen Data and Security Controls", expanded=True):
 
         st.markdown("## What Gets Stolen and How Attackers Bypass Security Controls")
         col9, col10 = st.columns(2, gap="large")
@@ -1723,7 +1841,7 @@ with _tab_data:
                 "yaxis": dict(tickfont=dict(color=TEXT, size=11), gridcolor="#f1f5f9"),
             })
             fig_dt.update_layout(**layout)
-            st.plotly_chart(fig_dt, use_container_width=True, config={"displayModeBar": True, "displaylogo": False, "modeBarButtonsToAdd": ["toggleFullscreen"]})
+            st.plotly_chart(fig_dt, use_container_width=True, key="chart_dt_data", config={"displayModeBar": False, "scrollZoom": False})
             _src_dt = "Data categories stolen in confirmed breaches"
             _hl_dt  = "Internal documents overtook personal data — ransomware's 'double extortion' is why"
             _bd_dt  = ("Ransomware operators now exfiltrate files before encrypting them, threatening to publish sensitive "
@@ -1749,7 +1867,7 @@ with _tab_data:
         with col10:
             st.markdown("#### How Attackers Bypass Multi-Factor Authentication")
             st.caption("Three techniques, each accounting for roughly one-third of Multi-Factor Authentication bypass incidents")
-            st.markdown(audience_badge("expert"), unsafe_allow_html=True)
+            st.markdown(audience_badge("advanced"), unsafe_allow_html=True)
             fig_mfa = go.Figure(go.Pie(
                 labels=["Token Theft","Prompt Bombing","Adversary-in-the-Middle"],
                 values=[31,31,31], hole=0.52,
@@ -1771,7 +1889,7 @@ with _tab_data:
                 "margin": dict(l=24, r=24, t=36, b=80),
             })
             fig_mfa.update_layout(**layout_mfa)
-            st.plotly_chart(fig_mfa, use_container_width=True, config={"displayModeBar": True, "displaylogo": False, "modeBarButtonsToAdd": ["toggleFullscreen"]})
+            st.plotly_chart(fig_mfa, use_container_width=True, key="chart_mfa", config={"displayModeBar": False, "scrollZoom": False})
             _src_mfa = "Social engineering & Multi-Factor Authentication bypass tactics"
             _hl_mfa  = "Three equal bypass techniques mean no single fix is sufficient"
             _bd_mfa  = ("Token Theft steals the session cookie after a successful login — Multi-Factor Authentication was "
@@ -1798,18 +1916,15 @@ with _tab_data:
 
     st.markdown(f"""
 <div style="display:flex;flex-wrap:wrap;gap:12px;margin-top:8px;">
-  <div style="background:{SURFACE};border:1px solid {BORDER2};border-radius:10px;padding:14px 20px;
-              box-shadow:0 1px 3px rgba(0,0,0,0.06);flex:1;min-width:110px;">
+  <div class="cs-stat" data-tip="$6.3 billion in Business Email Compromise losses reported in 2024 — the single highest-value cybercrime category tracked by the FBI. Over 21,000 complaints were filed that year. Cumulative BEC losses from 2015 to 2024 total $17.1 billion, a 1,025% increase. By 2026, AI tools are enabling attackers to craft convincing impersonation emails at scale, accelerating the threat further." style="background:{SURFACE};border:1px solid {BORDER2};border-radius:10px;padding:14px 20px;box-shadow:0 1px 3px rgba(0,0,0,0.06);flex:1;min-width:110px;cursor:default;position:relative;">
     <span style="color:{MUTED};font-size:12px;display:block;font-weight:500;margin-bottom:4px;">Business Email Compromise Losses 2024</span>
     <span style="color:{RED};font-family:'Inter',sans-serif;font-size:24px;font-weight:700;">$6.3B</span>
   </div>
-  <div style="background:{SURFACE};border:1px solid {BORDER2};border-radius:10px;padding:14px 20px;
-              box-shadow:0 1px 3px rgba(0,0,0,0.06);flex:1;min-width:110px;">
+  <div class="cs-stat" data-tip="Roughly 1 in 10 phishing emails in 2024 were AI-generated. By late 2025 that figure surged to 40–56% during peak attack windows, then settled at around 40% into early 2026 (Hoxhunt, 2025–2026). AI removes the language barrier for attackers — previously a key way to spot fake emails — and allows highly personalised lures to be produced at scale." style="background:{SURFACE};border:1px solid {BORDER2};border-radius:10px;padding:14px 20px;box-shadow:0 1px 3px rgba(0,0,0,0.06);flex:1;min-width:110px;cursor:default;position:relative;">
     <span style="color:{MUTED};font-size:12px;display:block;font-weight:500;margin-bottom:4px;">AI-Written Lures</span>
     <span style="color:{ORANGE};font-family:'Inter',sans-serif;font-size:24px;font-weight:700;">~10%</span>
   </div>
-  <div style="background:{SURFACE};border:1px solid {BORDER2};border-radius:10px;padding:14px 20px;
-              box-shadow:0 1px 3px rgba(0,0,0,0.06);flex:1;min-width:110px;">
+  <div class="cs-stat" data-tip="52% of state-sponsored cyber incidents were driven by espionage — gathering intelligence on governments, defence contractors, and research institutions. The remaining 48% were financially motivated (ransomware, data theft for resale) or aimed at disruption and sabotage. State-sponsored espionage breaches rose 163% year-over-year in 2024, and the trend has continued into 2026 as geopolitical tensions increase." style="background:{SURFACE};border:1px solid {BORDER2};border-radius:10px;padding:14px 20px;box-shadow:0 1px 3px rgba(0,0,0,0.06);flex:1;min-width:110px;cursor:default;position:relative;">
     <span style="color:{MUTED};font-size:12px;display:block;font-weight:500;margin-bottom:4px;">Espionage Motive</span>
     <span style="color:{PINK};font-family:'Inter',sans-serif;font-size:24px;font-weight:700;">52%</span>
   </div>
@@ -1820,11 +1935,11 @@ with _tab_data:
 # SECTION 6 — VULNERABILITY EXPLOITATION THEMES
 # ─────────────────────────────────────────
 with _tab_trends:
-    with st.expander("📈  Exploitation Trends", expanded=True):
+    with st.expander("Exploitation Trends", expanded=True):
 
         st.markdown("## How Exploitation Trends Have Shifted Over 12 Weeks")
         st.caption("Weekly incident volume by exploitation type — hover over the chart to compare categories")
-        st.markdown(audience_badge("expert"), unsafe_allow_html=True)
+        st.markdown(audience_badge("advanced"), unsafe_allow_html=True)
 
         fig_trends = go.Figure()
         for (name, vals), color in zip(vuln_series.items(), vuln_colors):
@@ -1858,7 +1973,7 @@ with _tab_trends:
             "margin": dict(l=56, r=160, t=36, b=56),
         })
         fig_trends.update_layout(**layout)
-        st.plotly_chart(fig_trends, use_container_width=True, config={"displayModeBar": True, "displaylogo": False, "modeBarButtonsToAdd": ["toggleFullscreen"]})
+        st.plotly_chart(fig_trends, use_container_width=True, key="chart_trends", config={"displayModeBar": False, "scrollZoom": False})
         _src_tr = "Weekly incident trend by exploitation theme — 12-week window"
         _hl_tr  = "Remote Access and Vendor Risk are growing — Phishing is surprisingly stable"
         _bd_tr  = ("Remote Access exploitation is rising because hybrid work permanently expanded the Virtual Private "
@@ -1885,7 +2000,7 @@ with _tab_trends:
 # SECTION — INDUSTRIAL CONTROL SYSTEMS (ICS)
 # ─────────────────────────────────────────
 with _tab_ics:
-    with st.expander("🏭  Industrial Control System Cyber Threats", expanded=True):
+    with st.expander("Industrial Control System Cyber Threats", expanded=True):
 
         _ICS_DIR = os.path.join(os.path.dirname(__file__), "ics_data")
         _ICS_SRC = ("Kaspersky ICS-CERT — Threat Landscape for Industrial Automation Systems, Q2 2025 · "
@@ -1909,7 +2024,7 @@ with _tab_ics:
         with ics_col1:
             st.markdown("### ICS Attack Rate by Region (Q2 2025)")
             st.caption("Percentage of ICS computers on which threats were blocked, by region — each region shown in its own distinct colour")
-            st.markdown(audience_badge("expert"), unsafe_allow_html=True)
+            st.markdown(audience_badge("advanced"), unsafe_allow_html=True)
 
             _df_r    = df_ics_region[df_ics_region["Region"] != "World"].sort_values("Q2_2025_Pct")
             _world_r = float(df_ics_region.loc[df_ics_region["Region"] == "World", "Q2_2025_Pct"].iloc[0])
@@ -1940,9 +2055,8 @@ with _tab_ics:
                 "margin": dict(l=155, r=64, t=36, b=48),
             })
             fig_ics_region.update_layout(**_lay_r)
-            st.plotly_chart(fig_ics_region, use_container_width=True,
-                            config={"displayModeBar": True, "displaylogo": False,
-                                    "modeBarButtonsToAdd": ["toggleFullscreen"]})
+            st.plotly_chart(fig_ics_region, use_container_width=True, key="chart_ics_region_ics",
+                            config={"displayModeBar": False, "scrollZoom": False})
 
             _hl_icsr = "Africa and South-East Asia face the highest industrial cyber risk"
             _bd_icsr = ("In Q2 2025, 27.8% of ICS computers in Africa and 26.8% in South-East Asia were targeted — "
@@ -1966,7 +2080,7 @@ with _tab_ics:
         with ics_col2:
             st.markdown("### ICS Attack Rate by Industry Sector (Q2 2025)")
             st.caption("Percentage of ICS computers on which threats were blocked, by industry — each sector shown in its own distinct colour")
-            st.markdown(audience_badge("exec"), unsafe_allow_html=True)
+            st.markdown(audience_badge("advanced"), unsafe_allow_html=True)
 
             _df_i    = df_ics_industry[df_ics_industry["Industry"] != "World"].sort_values("Q2_2025_Pct")
             _world_i = float(df_ics_industry.loc[df_ics_industry["Industry"] == "World", "Q2_2025_Pct"].iloc[0])
@@ -1995,9 +2109,8 @@ with _tab_ics:
                 "margin": dict(l=175, r=64, t=36, b=48),
             })
             fig_ics_industry.update_layout(**_lay_i)
-            st.plotly_chart(fig_ics_industry, use_container_width=True,
-                            config={"displayModeBar": True, "displaylogo": False,
-                                    "modeBarButtonsToAdd": ["toggleFullscreen"]})
+            st.plotly_chart(fig_ics_industry, use_container_width=True, key="chart_ics_industry",
+                            config={"displayModeBar": False, "scrollZoom": False})
 
             _hl_icsi = "Biometrics and Building Automation top the ICS attack chart"
             _bd_icsi = ("Biometrics (27.2%) and Building Automation (23.4%) recorded the highest share of attacked ICS "
@@ -2023,7 +2136,7 @@ with _tab_ics:
         with ics_col3:
             st.markdown("### Global ICS Attack Rate Trend (2022 – 2025)")
             st.caption("Share of ICS computers attacked worldwide per quarter, with key threat category overlays")
-            st.markdown(audience_badge("expert"), unsafe_allow_html=True)
+            st.markdown(audience_badge("advanced"), unsafe_allow_html=True)
 
             fig_ics_hist = go.Figure()
             fig_ics_hist.add_trace(go.Scatter(
@@ -2059,9 +2172,8 @@ with _tab_ics:
                 "margin": dict(l=56, r=24, t=36, b=110),
             })
             fig_ics_hist.update_layout(**_lay_h)
-            st.plotly_chart(fig_ics_hist, use_container_width=True,
-                            config={"displayModeBar": True, "displaylogo": False,
-                                    "modeBarButtonsToAdd": ["toggleFullscreen"]})
+            st.plotly_chart(fig_ics_hist, use_container_width=True, key="chart_ics_hist",
+                            config={"displayModeBar": False, "scrollZoom": False})
 
             _hl_icsh = "Global ICS attack rates have fallen 22% since their 2022 – 2023 peak"
             _bd_icsh = ("The share of ICS computers attacked worldwide dropped from 26.8% in Q2 2023 to 20.5% in "
@@ -2087,7 +2199,7 @@ with _tab_ics:
         with ics_col4:
             st.markdown("### How Threats Reach Industrial Systems (2024 – 2025)")
             st.caption("Percentage of ICS computers attacked via each delivery pathway over the last three quarters")
-            st.markdown(audience_badge("expert"), unsafe_allow_html=True)
+            st.markdown(audience_badge("advanced"), unsafe_allow_html=True)
 
             _df_s = df_ics_src_h[df_ics_src_h["Quarter_Label"].isin(["Q2 2024", "Q1 2025", "Q2 2025"])]
             _qtrs = _df_s["Quarter_Label"].tolist()
@@ -2116,9 +2228,8 @@ with _tab_ics:
                 "margin": dict(l=56, r=24, t=36, b=90),
             })
             fig_ics_src.update_layout(**_lay_s)
-            st.plotly_chart(fig_ics_src, use_container_width=True,
-                            config={"displayModeBar": True, "displaylogo": False,
-                                    "modeBarButtonsToAdd": ["toggleFullscreen"]})
+            st.plotly_chart(fig_ics_src, use_container_width=True, key="chart_ics_src",
+                            config={"displayModeBar": False, "scrollZoom": False})
 
             _hl_icss = "The internet is the primary gateway into industrial systems — and email threats are rising"
             _bd_icss = ("In Q2 2025, 9.76% of ICS computers were attacked via internet connections — nearly three "
@@ -2159,21 +2270,48 @@ LI_LOGO = """<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" view
 # AUDIENCE GUIDES TAB
 # ─────────────────────────────────────────
 with _tab_guides:
-    st.markdown("## 📚 Audience Guides")
-    st.caption("The same data — explained three different ways. Pick the view that suits you.")
+    st.markdown("## Accessibility Level")
 
-    _AUDIENCE_KEYS   = ["simple", "expert", "exec"]
-    _AUDIENCE_LABELS = ["💡  Plain & Simple", "⚙️  Expert Console", "💼  Executive Brief"]
-    _current_idx = _AUDIENCE_KEYS.index(st.session_state.get("_audience", "simple"))
-    _chosen_label = st.radio(
-        "Select audience guide:",
-        _AUDIENCE_LABELS,
-        index=_current_idx,
-        horizontal=True,
-        label_visibility="collapsed",
+    st.markdown(
+        f'<p style="font-size:0.78rem;color:{MUTED};font-family:\'Inter\',sans-serif;margin:0.4rem 0 0.5rem 0;">'
+        'Select your accessibility level:</p>',
+        unsafe_allow_html=True,
     )
-    _chosen_key = _AUDIENCE_KEYS[_AUDIENCE_LABELS.index(_chosen_label)]
-    st.session_state["_audience"] = _chosen_key
+    _gq1, _gq2 = st.columns(2, gap="small")
+    if _gq1.button("Plain & Simple", use_container_width=True, key="_guides_go_simple"):
+        st.session_state["_audience"] = "simple"
+        st.rerun()
+    if _gq2.button("Advanced", use_container_width=True, key="_guides_go_advanced"):
+        st.session_state["_audience"] = "advanced"
+        st.rerun()
+
+    _aud_active_g = st.session_state.get("_audience", "simple")
+    components.html(f"""<script>
+(function() {{
+    var p = window.parent.document;
+    var ACTIVE = "{_aud_active_g}";
+    function tagBtns() {{
+        p.querySelectorAll('button').forEach(function(btn) {{
+            var txt = (btn.innerText || '').trim();
+            if (txt === 'Plain & Simple') {{
+                btn.setAttribute('data-aud', 'simple');
+                btn.setAttribute('data-aud-active', ACTIVE === 'simple' ? 'true' : 'false');
+            }} else if (txt === 'Advanced') {{
+                btn.setAttribute('data-aud', 'advanced');
+                btn.setAttribute('data-aud-active', ACTIVE === 'advanced' ? 'true' : 'false');
+            }}
+        }});
+    }}
+    tagBtns(); setTimeout(tagBtns, 300); setTimeout(tagBtns, 900);
+}})();
+</script>""", height=0)
+
+    st.markdown("---")
+
+    _chosen_key = st.session_state.get("_audience", "simple")
+    # Remap legacy values in case session state still holds old keys
+    if _chosen_key in ("expert", "exec"):
+        _chosen_key = "advanced"
 
 
     # ─────────────────────────────────────────
@@ -2187,60 +2325,58 @@ with _tab_guides:
                 box-shadow:0 2px 12px rgba(245,158,11,0.08);">
       <p style="margin:0 0 0.4rem 0;font-size:0.8rem;font-weight:700;letter-spacing:0.08em;
                 color:#92400e;text-transform:uppercase;font-family:'Inter',sans-serif;">
-        💡 Plain & Simple · No tech knowledge needed
+        Plain & Simple · No tech knowledge needed
       </p>
       <h2 style="margin:0 0 0.6rem 0;font-size:1.7rem;font-weight:800;color:#0f172a;
                  font-family:'Inter',sans-serif;border:none;padding:0;margin-top:0;">
         What Is Cyber Crime — And Should You Worry?
       </h2>
       <p style="margin:0;font-size:1rem;color:#475569;font-family:'Inter',sans-serif;line-height:1.7;max-width:780px;">
-        Think of this like a neighbourhood watch report — but for the internet.
-        This page breaks down everything on this dashboard into plain, everyday language.
-        No passwords required to understand it. No tech degree needed.
+        A neighbourhood watch report for the internet. Every finding on this dashboard explained in plain language — no tech background needed.
       </p>
     </div>
     """, unsafe_allow_html=True)
 
         _simple_tips = {
-            1:  ("🏦", "Watch Out for Fake Tax Emails",
+            1:  ("", "Watch Out for Fake Tax Emails",
                  "Scammers send emails pretending to be the Canada Revenue Agency saying you owe money or have a refund waiting. "
                  "The government will NEVER email you asking for your banking details. If you get one of these, delete it and call the CRA directly using the number on their official website."),
-            2:  ("💌", "Be Careful With Online Romance",
+            2:  ("", "Be Careful With Online Romance",
                  "Scammers create fake dating profiles and build a friendship over weeks before asking for money. "
                  "If someone you have only met online asks for gift cards or a wire transfer — it is a scam. Always. No exceptions."),
-            3:  ("📋", "Your Employer Will Never Email You Asking for Your Password",
+            3:  ("", "Your Employer Will Never Email You Asking for Your Password",
                  "If you get an email that looks like it is from IT or payroll asking you to verify your account details, call them on the phone first. "
                  "Real IT teams do not ask for passwords by email, ever."),
-            4:  ("✈️", "Book Travel Only on Official Websites",
+            4:  ("", "Book Travel Only on Official Websites",
                  "Fake travel deal websites steal your credit card details. "
                  "Always type the airline or hotel's web address yourself instead of clicking links in emails or social media ads."),
-            5:  ("📑", "Protect Your SIN Number Like It Is Cash",
+            5:  ("", "Protect Your SIN Number Like It Is Cash",
                  "Your Social Insurance Number is as valuable as cash to a thief. "
                  "Never give it out during a job interview or to anyone who calls you unexpectedly — a real employer will only ask for it after you are hired, through a secure system."),
-            6:  ("📶", "Free Wi-Fi at the Coffee Shop Can Be Dangerous",
+            6:  ("", "Free Wi-Fi at the Coffee Shop Can Be Dangerous",
                  "Hackers set up fake Wi-Fi networks with names like 'Tim Hortons Free WiFi'. "
                  "Once connected, they can see everything you do online. Avoid doing banking or anything personal on public Wi-Fi."),
-            7:  ("🏖️", "Set Up Alerts on Your Bank Account",
+            7:  ("", "Set Up Alerts on Your Bank Account",
                  "Ask your bank to send you a text message every time money moves in or out of your account. "
                  "That way you will know immediately if something suspicious happens while you are away on vacation."),
-            8:  ("🎒", "Talk to Your Kids About Online Scams Before School Starts",
+            8:  ("", "Talk to Your Kids About Online Scams Before School Starts",
                  "Children are targeted with fake app downloads and 'free game' links that install viruses on the family computer. "
                  "A quick 10-minute conversation about not clicking unknown links can save a lot of trouble."),
-            9:  ("📱", "Use an App for Your Security Codes — Not Text Messages",
+            9:  ("", "Use an App for Your Security Codes — Not Text Messages",
                  "Those 6-digit codes sent by text to confirm your login can be stolen by hackers. "
                  "Apps like Google Authenticator or Microsoft Authenticator are much safer. Ask your bank if they support it."),
-            10: ("🔐", "Back Up Your Photos and Important Files Today",
+            10: ("", "Back Up Your Photos and Important Files Today",
                  "Ransomware is like a digital padlock a criminal puts on all your files — then demands money to unlock them. "
                  "A simple USB drive backup or free cloud backup (like Google Photos) means you would never need to pay."),
-            11: ("🛒", "If a Deal Looks Too Good to Be True — It Is",
+            11: ("", "If a Deal Looks Too Good to Be True — It Is",
                  "Fake shopping websites surge every Black Friday. Before buying from an unfamiliar website, "
                  "search the store name plus the word 'scam' and look very carefully at the web address for subtle misspellings."),
-            12: ("🎄", "Gift Card Requests Are Always a Scam",
+            12: ("", "Gift Card Requests Are Always a Scam",
                  "No government agency, grandchild, or employer will ever ask you to buy iTunes or Google Play gift cards to solve a problem. "
                  "If someone asks this — hang up immediately and tell a family member."),
         }
         _sm = _simple_tips[datetime.datetime.now().month]
-        st.markdown("### 🗓️ Your Safety Tip This Month")
+        st.markdown("### Your Safety Tip This Month")
         st.markdown(f"""
     <div style="background:#fffbeb;border:1px solid #fde68a;border-left:5px solid #f59e0b;
                 border-radius:10px;padding:1.3rem 1.5rem;margin-bottom:1.5rem;">
@@ -2250,49 +2386,41 @@ with _tab_guides:
     </div>""", unsafe_allow_html=True)
 
         _simple_sections = [
-            ("🏠", "Who Is Getting Targeted?",
-             "Imagine thieves deciding which neighbourhood to rob. They look for the easiest targets with the most valuable stuff. "
-             "On the internet, hackers do exactly the same thing. Last year, <strong>Manufacturing companies had the most confirmed break-ins (1,607 cases)</strong>, "
-             "followed by Healthcare (1,542) and Finance (927). Why manufacturing? Because their computers control machines — "
-             "and stopping a factory floor is incredibly expensive. That gives hackers more bargaining power when they demand money.",
-             "🏭 Manufacturing · 🏥 Healthcare · 🏦 Finance are the three most targeted sectors",
-             "📡 Sector Risk"),
-            ("🔑", "How Do Hackers Get In?",
-             "Think of your home: most burglars do not break a window — they try the door if it is unlocked. Hackers are the same. "
-             "The most common way in is <strong>stolen passwords (22% of cases)</strong> — often from old data leaks where your email and password were already exposed online. "
-             "The second most common method is <strong>unpatched security gaps (20%)</strong> — like a broken lock no one bothered to fix. "
-             "Phishing emails (fake messages that trick you into clicking a link) account for 15% of break-ins.",
-             "💡 Use a different password for every account. A free password manager like Bitwarden makes this easy.",
-             "⚔️ Attack Methods"),
-            ("🔒", "What Is Ransomware — And Why Is It Everywhere?",
-             "Ransomware is like a digital padlock a thief puts on your files. They lock everything — your photos, your work documents, everything — "
-             "and demand money to unlock it. <strong>In 2024, nearly 1 in every 2 data breaches involved ransomware (44%)</strong>. That has doubled in just three years. "
-             "The good news: <strong>64% of victims now refuse to pay</strong>, and experts say this is the right call — "
-             "paying rarely gets your files back and only funds the next attack. The solution is simple: keep regular backups.",
-             "✅ Back up your important files to an external USB drive or free cloud storage regularly.",
-             "🔓 Ransomware"),
-            ("📂", "What Do Hackers Actually Steal?",
-             "Hackers are after information they can sell or use. Think of it like which drawer a burglar goes for first. "
-             "<strong>Internal work documents (contracts, plans, confidential emails)</strong> are now the most stolen type of data — "
-             "because companies will pay handsomely to keep them private. Personal information like your name, address, and birthdate is also highly valued "
-             "because it can be used to open credit cards in your name. Medical records are worth up to $1,000 each — "
-             "because unlike a credit card, you cannot change your health history.",
-             "🏥 Protect your Medicare card number and medical records as carefully as your credit card number.",
-             "🗂️ Stolen Data"),
-            ("🌍", "What About Factories and Power Plants?",
-             "Industrial facilities like water treatment plants, electricity grids, and factories are increasingly targeted by hackers. "
-             "In the spring of 2025, <strong>1 in 5 industrial computers worldwide had a cyber threat blocked on it</strong>. "
-             "The main way in is through the internet — because more factory computers are connected online than ever before. "
-             "Parts of Africa had the highest attack rates. Northern Europe was the safest region.",
-             "🔌 Industrial cyberattacks affect everyone — an attack on a power grid or water supply is a public safety issue, not just a business problem.",
-             "🏭 ICS Threats"),
-            ("🤝", "Who Is Actually Doing This?",
-             "You might picture hackers as lone individuals in dark rooms. The reality in 2024 is very different. "
-             "<strong>80% of attacks come from organized criminal groups</strong> — run like businesses, with customer service teams for ransomware victims and HR departments. "
-             "State-sponsored groups (hackers funded by foreign governments) increased their activity by 163% in 2024, targeting research, government, and critical infrastructure. "
-             "This is not random — attacks are deliberate, targeted, and increasingly professional.",
-             "🏛️ Governments and large organizations bear responsibility for protecting infrastructure — but individuals can protect themselves too.",
-             "⚔️ Attack Methods"),
+            ("", "Who Is Getting Targeted?",
+             "Hackers pick targets the same way burglars do — easiest entry, most valuable prize. "
+             "Manufacturing led with 1,607 confirmed breaches</strong>, followed by Healthcare (1,542) and Finance (927). "
+             "Factories are prime targets because shutting down a production line is so costly that companies often pay the ransom quickly.",
+             "Manufacturing · Healthcare · Finance are the three most targeted sectors",
+             "Sector Risk"),
+            ("", "How Do Hackers Get In?",
+             "The most common entry point is stolen passwords (22% of cases)</strong> — often from old data leaks. "
+             "Second is unpatched security gaps (20%)</strong> — known weaknesses that were never fixed. "
+             "Phishing emails account for 15% of break-ins.",
+             "Use a unique password for every account. A free password manager like Bitwarden makes this easy.",
+             "Attack Methods"),
+            ("", "What Is Ransomware?",
+             "Ransomware locks all your files and demands money to unlock them. "
+             "44% of breaches in 2024 involved ransomware</strong> — up from 32% the year before. "
+             "The good news: 64% of victims now refuse to pay</strong>. Paying rarely recovers files and funds future attacks. Regular backups are the best defence.",
+             "Back up important files to a USB drive or free cloud storage — for example, Google Photos.",
+             "Ransomware"),
+            ("", "What Do Hackers Steal?",
+             "Internal documents</strong> (contracts, plans, emails) are the most stolen data — companies pay dearly to keep them private. "
+             "Personal details like name, address, and date of birth are used to open fraudulent credit accounts. "
+             "Medical records can fetch up to $1,000 each because, unlike a card number, you cannot reset your health history.",
+             "Guard your Medicare number and medical records as carefully as your credit card.",
+             "Stolen Data"),
+            ("", "What About Factories and Power Plants?",
+             "1 in 5 industrial computers worldwide had a threat blocked in the second quarter of 2025.</strong> "
+             "Water plants, power grids, and factories are increasingly targeted as more of their systems go online. "
+             "Africa had the highest attack rates; Northern Europe the lowest.",
+             "Cyberattacks on infrastructure are a public safety issue — not just a business problem.",
+             "ICS Threats"),
+            ("", "Who Is Behind the Attacks?",
+             "80% of attacks come from organised criminal groups</strong> run like businesses — complete with HR and customer support for ransom victims. "
+             "State-sponsored hackers (funded by foreign governments) increased activity by 163% in 2024, targeting research and critical infrastructure.",
+             "Attacks are deliberate and professional — but good personal habits still reduce your risk significantly.",
+             "Attack Methods"),
         ]
 
         for icon, title, body, takeaway, label in _simple_sections:
@@ -2316,464 +2444,177 @@ with _tab_guides:
 
         # ── Charts for Plain & Simple ──────────────────────────────────────────
         st.markdown("---")
-        st.markdown("### 📊 The Charts — In Plain Terms")
-        st.caption("These are the actual data visualisations from the dashboard. They look complex but the numbers tell a simple story.")
+        st.markdown("### The Charts — In Plain Terms")
+        st.caption("These are the actual data visualisations from the dashboard. They look complex, but the numbers tell a simple story.")
 
         _ps_c1, _ps_c2 = st.columns(2, gap="large")
         with _ps_c1:
             st.markdown("#### Which sectors get hit hardest by ransomware?")
             st.caption(
-                "Each bar shows what share of hacks in that industry involved ransomware — criminals who lock your "
-                "files and demand money to unlock them. A longer bar means that industry gets hit more often. "
-                "Manufacturing and Education show up near the top because they often rely on older computers "
-                "that are harder to update and protect."
+                "Each bar shows how often ransomware was involved in that industry's breaches. "
+                "Manufacturing and Education rank highest — older systems make them easier targets."
             )
-            st.plotly_chart(fig_rs, use_container_width=True, config={"displayModeBar": False})
+            st.plotly_chart(fig_rs, use_container_width=True, key="chart_rs_guides_plain", config={"displayModeBar": False, "scrollZoom": False})
             st.markdown('<p style="font-size:0.72rem;color:#94a3b8;font-family:\'Inter\',sans-serif;margin-top:-10px;">Source: Verizon 2025 Data Breach Investigations Report (DBIR)</p>', unsafe_allow_html=True)
         with _ps_c2:
-            st.markdown("#### Is ransomware getting worse — or are people fighting back?")
+            st.markdown("#### Is ransomware getting worse?")
             st.caption(
-                "The rising bars show that ransomware attacks have been increasing over the past few years. "
-                "But there's good news too — more and more victims are choosing NOT to pay the ransom. "
-                "Paying doesn't guarantee you get your files back, and refusing to pay makes it less profitable "
-                "for attackers to keep doing it."
+                "Attacks have risen sharply — but so has resistance. "
+                "64% of victims now refuse to pay, making ransomware less profitable for attackers."
             )
-            st.plotly_chart(fig_fore, use_container_width=True, config={"displayModeBar": False})
+            st.plotly_chart(fig_fore, use_container_width=True, key="chart_fore_guides_plain", config={"displayModeBar": False, "scrollZoom": False})
             st.markdown('<p style="font-size:0.72rem;color:#94a3b8;font-family:\'Inter\',sans-serif;margin-top:-10px;">Source: Verizon 2025 Data Breach Investigations Report (DBIR)</p>', unsafe_allow_html=True)
 
-        st.markdown("#### What do hackers actually steal?")
+        st.markdown("#### What do hackers steal?")
         st.caption(
-            "When a hack is successful, this chart shows what kind of information gets taken most often. "
-            "Passwords and login details are the most common target because they unlock everything else. "
-            "Personal details like your name, address, or ID numbers come next. "
-            "If you've ever had an account breached, the information in this chart is probably what was stolen."
+            "Passwords unlock the most doors, so they are the top target. "
+            "Personal details (name, address, ID) and internal documents follow — all valuable on criminal markets."
         )
-        st.plotly_chart(fig_dt, use_container_width=True, config={"displayModeBar": False})
+        st.plotly_chart(fig_dt, use_container_width=True, key="chart_dt_guides_plain", config={"displayModeBar": False, "scrollZoom": False})
         st.markdown('<p style="font-size:0.72rem;color:#94a3b8;font-family:\'Inter\',sans-serif;margin-top:-10px;">Source: Verizon 2025 Data Breach Investigations Report (DBIR)</p>', unsafe_allow_html=True)
 
     # ─────────────────────────────────────────
-    # EXPERT CONSOLE — For IT & Security Professionals
+    # ADVANCED — For IT & Security Professionals
     # ─────────────────────────────────────────
-    elif _chosen_key == "expert":
+    elif _chosen_key == "advanced":
         st.markdown(f"""
-    <div style="background:linear-gradient(135deg,#eff6ff 0%,#f8fafc 100%);
-                border:1px solid #93c5fd;border-left:6px solid #1d4ed8;border-radius:16px;
+    <div style="background:linear-gradient(135deg,#eff6ff 0%,#eef2ff 100%);
+                border:1px solid #bfdbfe;border-radius:16px;
                 padding:2rem 2.4rem 1.6rem 2.4rem;margin-bottom:1.4rem;
-                box-shadow:0 2px 12px rgba(29,78,216,0.08);">
-      <p style="margin:0 0 0.4rem 0;font-size:0.8rem;font-weight:700;letter-spacing:0.1em;
-                color:#1d4ed8;text-transform:uppercase;font-family:'Inter',sans-serif;">
-        ⚙️ Expert Console · Security Practitioner View
-      </p>
-      <h2 style="margin:0 0 0.6rem 0;font-size:1.7rem;font-weight:800;color:#0f172a;
-                 font-family:'Inter',sans-serif;border:none;padding:0;margin-top:0;">
-        Threat Intelligence Deep Dive — DBIR 2025 & Kaspersky ICS-CERT Q2 2025
-      </h2>
-      <p style="margin:0;font-size:0.95rem;color:#475569;font-family:'Inter',sans-serif;line-height:1.7;max-width:780px;">
-        MITRE ATT&CK mappings, IOC context, technical controls, and detection engineering notes
-        for security practitioners, analysts, and engineers.
-      </p>
-    </div>
-    """, unsafe_allow_html=True)
-
-        _expert_tips = {
-            1:  ("🎯", "January: Hunt for Tax-Season Credential Stuffing",
-                 "Rotate canary credentials in your IdP and monitor authentication failure spikes against financial and payroll applications. "
-                 "Ingest HIBP breach feeds into your SIEM and alert on accounts appearing in new credential dumps. "
-                 "Review OAuth token lifetimes — shorten refresh token TTLs ahead of peak phishing season."),
-            2:  ("💌", "February: Harden Email Gateway Rules for BEC Season",
-                 "Enforce DMARC p=reject on all sending domains. Deploy DKIM signing verification on inbound mail. "
-                 "Tune your SEG to flag lookalike domains using homoglyph detection. "
-                 "Enable conditional access policies requiring compliant device for finance team email access."),
-            3:  ("📋", "March: Audit Privileged Access to Finance & HR Systems",
-                 "Audit service accounts with standing access to payroll and HRIS systems — enforce just-in-time access via PAM. "
-                 "Validate all direct deposit change workflows require OOB (out-of-band) callback verification. "
-                 "Run a BEC tabletop — simulate a CFO impersonation request and measure detection/response time."),
-            4:  ("✈️", "April: Validate Patch Coverage Against CISA KEV",
-                 "CVE exploitation hit 20% of initial access vectors in DBIR 2025, up 34% YoY. "
-                 "Prioritize CVEs in Ivanti, Fortinet, Citrix, and Cisco VPN products. "
-                 "Run Shodan/Censys queries against your ASN to enumerate exposed management interfaces. "
-                 "Validate patch SLA compliance against the CISA Known Exploited Vulnerabilities catalogue."),
-            5:  ("📑", "May: Validate MFA Deployment Against Bypass Techniques",
-                 "DBIR 2025 identifies three equally-prevalent MFA bypass methods: AiTM token theft (Evilginx2/Modlishka), "
-                 "MFA prompt bombing, and session cookie hijacking. "
-                 "Deploy phishing-resistant FIDO2/WebAuthn for admin and finance accounts. "
-                 "Audit Conditional Access gaps — ensure token binding or device compliance is enforced."),
-            6:  ("📶", "June: Enumerate and Harden Remote Access Attack Surface",
-                 "Remote Access exploitation is trending upward across the 12-week vulnerability theme data. "
-                 "Enumerate all VPN, RDP, and remote desktop gateway endpoints. Enforce NLA on RDP. "
-                 "Review split-tunnelling policies — ensure all DNS queries route through your resolver. "
-                 "Deploy honeypot credentials in AD to detect credential stuffing against internal services."),
-            7:  ("🏖️", "July: Implement Out-of-Office BEC Mitigations",
-                 "Configure mail flow rules to suppress internal details from OOO replies to external senders. "
-                 "Enforce dual-approval on financial transactions above threshold during peak leave periods. "
-                 "Enable UEBA rules for unusual approval chain deviations. "
-                 "Brief SOC tier 1 on escalation paths when senior analysts are OOO."),
-            8:  ("🎒", "August: Ingest Education Sector Threat Feeds",
-                 "Education institutions had 851 confirmed breaches in 2024 — disproportionate to their size. "
-                 "If your org provides services to educational institutions, review third-party access policies. "
-                 "Ingest MS-ISAC education sector threat feeds. "
-                 "Scan for exposed LDAP directories and student SSO endpoints in your partner ecosystem."),
-            9:  ("📱", "September: Harden Against SIM Swap and OTP Interception",
-                 "Deploy FIDO2 authenticators to eliminate SMS OTP dependency for high-privilege accounts. "
-                 "Work with your mobile carrier to enforce SIM lock and account PINs for corporate devices. "
-                 "Configure your IdP to alert on authentication method downgrade attempts. "
-                 "Review MDM policies — enforce full-disk encryption and remote wipe on all enrolled devices."),
-            10: ("🔐", "October: Run a Full Ransomware Recovery Validation",
-                 "Verify backup immutability — ensure backup storage cannot be deleted by a compromised account. "
-                 "Run a purple team exercise simulating TA0010 (exfiltration) + T1486 (data encrypted for impact). "
-                 "Validate EDR exclusions list is minimal and reviewed. "
-                 "Test offline bare-metal restoration — do not assume backups work without validation."),
-            11: ("🛒", "November: Hunt for Web Skimming and Magecart Indicators",
-                 "Audit all third-party JavaScript loaded on payment pages. "
-                 "Implement Subresource Integrity (SRI) hashes on external scripts. "
-                 "Deploy Content Security Policy (CSP) headers to restrict script execution domains. "
-                 "Monitor for new DNS A-record resolutions from payment page domains to unexpected CDN endpoints."),
-            12: ("🎄", "December: Activate Holiday Incident Response Posture",
-                 "December sees a 30% ransomware surge above monthly average. "
-                 "Ensure on-call runbooks are current and all IR contacts are reachable. "
-                 "Pre-stage IR tooling on critical servers (offline copies of Sysinternals, memory acquisition tools). "
-                 "Validate SIEM is ingesting holiday-period logs in real time — do not reduce retention or alerting thresholds."),
-        }
-        _ex = _expert_tips[datetime.datetime.now().month]
-        st.markdown("### 🗓️ Practitioner Action — This Month")
-        st.markdown(f"""
-    <div style="background:#eff6ff;border:1px solid #93c5fd;border-left:5px solid #2563eb;
-                border-radius:10px;padding:1.3rem 1.5rem;margin-bottom:1.5rem;">
-      <p style="margin:0 0 6px 0;font-size:1.6rem;">{_ex[0]}</p>
-      <p style="margin:0 0 8px 0;font-size:1.05rem;font-weight:700;color:#1e3a8a;font-family:'Inter',sans-serif;">{_ex[1]}</p>
-      <p style="margin:0;font-size:0.9rem;color:#334155;font-family:'Inter',sans-serif;line-height:1.8;">{_ex[2]}</p>
-    </div>""", unsafe_allow_html=True)
-
-        _expert_sections = [
-            ("⚙️", "Initial Access Vector Analysis — MITRE ATT&CK Mapping",
-             "<strong>Stolen credentials (22%)</strong> → T1078 Valid Accounts: enforce conditional access, FIDO2, and UEBA logon anomaly detection. "
-             "<strong>Vulnerability exploitation (20%, +34% YoY)</strong> → T1190 Exploit Public-Facing Application: prioritize CISA KEV patch queue — Ivanti Connect Secure, Fortinet FortiOS, Citrix NetScaler dominated 2024 exploitation. "
-             "<strong>Phishing (15%)</strong> → T1566.001/002: deploy sandbox detonation on all inbound attachments; enforce DMARC p=reject. "
-             "<strong>Edge device exploitation (22%)</strong> → T1133 External Remote Services: ASM tooling to enumerate and reduce internet-exposed management interfaces.",
-             "🔍 Detection: alert on new service account logons outside business hours, VPN auth from non-compliant devices, and first-seen ASN logons.",
-             "⚔️ Attack Methods"),
-            ("🔓", "Ransomware — TTPs, IOCs, and Defensive Architecture",
-             "44% breach involvement (2024), up from 25% in 2022. Dominant families: LockBit 3.0, BlackCat/ALPHV, Cl0p, Play. "
-             "Double-extortion is now standard: T1048 (Exfiltration over Alternative Protocol) precedes T1486 (Data Encrypted for Impact). "
-             "64% refusal-to-pay validates non-payment posture. Recovery depends on: (1) immutable backups — test S3 Object Lock or WORM NAS; "
-             "(2) offline restoration validated quarterly; (3) network segmentation limiting blast radius. "
-             "SMB orgs (<1k employees) accounted for 88% of ransomware breaches — supply chain risk for enterprise.",
-             "🔍 Purple team: simulate T1486 + T1070 (log clearing) + T1562 (disabling security tools). Validate EDR detects VSS deletion (vssadmin delete shadows).",
-             "🔓 Ransomware"),
-            ("🧩", "MFA Bypass — Detection Engineering and Hardening",
-             "Three equally-prevalent bypass methods (~31% each): "
-             "<strong>(1) AiTM (Adversary-in-the-Middle)</strong> via Evilginx2/Modlishka — bypasses session cookies; detect via impossible travel, new ASN token issuance, session reuse from different IPs. "
-             "<strong>(2) MFA Prompt Bombing</strong> — detect via >3 push denials in 5 min per user; auto-block and alert. "
-             "<strong>(3) Token Theft</strong> → T1528: enforce token binding and Continuous Access Evaluation (CAE) in Entra ID / Azure AD. "
-             "FIDO2/WebAuthn is resistant to all three bypass methods.",
-             "🔍 SIEM rule: alert on MFA method downgrade (FIDO2 → TOTP → SMS) — indicates attacker-controlled account recovery flow.",
-             "⚔️ Attack Methods"),
-            ("🏭", "ICS/OT Threat Intelligence — Kaspersky ICS-CERT Q2 2025",
-             "20.5% of ICS computers globally had threats blocked in Q2 2025. Internet-sourced threats dominate (9.76% of ICS computers reached). "
-             "Email-borne threats trending upward (+12.5% since Q4 2024) — reflects increasing IT/OT convergence on engineering workstations. "
-             "Spyware and backdoors are highest-severity ICS category — enabling persistent APT-pattern access. "
-             "Highest-risk sectors: Building Automation (23.5%), Oil & Gas (17.8%), Energy (17.2%). "
-             "OT mitigations: unidirectional gateways (data diodes) for historian replication; application allowlisting on HMI/SCADA; Purdue Model enforcement with Layer 3 segmentation.",
-             "🔍 Threat hunt: LOLBins executing on OT workstations (PowerShell, WMIC, certutil in industrial environments) are high-fidelity IOCs for initial staging.",
-             "🏭 ICS Threats"),
-            ("📊", "Data Exfiltration Targeting — Threat Actor Priorities",
-             "Internal documents now rank #1 stolen data type — double-extortion makes confidential files a direct extortion lever (T1005 Data from Local System, T1048 Exfiltration). "
-             "Credentials rank #3 — stolen credentials are resold and reused across multiple organizations, creating compounding breach cycles. "
-             "Medical records command the highest individual market price (up to $1,000/record) due to immutable PII value. "
-             "API keys and secrets (rank #5) enable lateral movement into cloud infrastructure and CI/CD pipelines — a growing target as organizations shift to cloud-native architectures.",
-             "🔍 DLP rule priority: alert on bulk download of internal documents + credential file patterns (*.kdbx, credentials.json, .env files) outside business hours.",
-             "🗂️ Stolen Data"),
-            ("🌐", "Espionage and Nation-State Activity — 163% Surge",
-             "External actor-driven espionage breaches increased 163% in 2024 (DBIR 2025). Primary attribution: groups linked to Russia (SVR/Cozy Bear), China (APT40, APT41), Iran (Charming Kitten), North Korea (Lazarus Group). "
-             "TTPs: Living-off-the-land (T1218 System Binary Proxy Execution), long dwell times (median 200+ days before detection), and supply chain staging (T1195). "
-             "The boundary between organized crime and state-sponsored groups is blurring — GRU-linked groups now operate with financial motives alongside intelligence objectives. "
-             "Detection priority: anomalous LSASS access, unusual scheduled task creation, and DNS tunnelling (T1071.004) for C2 communication.",
-             "🔍 Threat hunt: search for LOLBin execution chains originating from browser processes — a common initial foothold pattern for spear-phishing-delivered payloads.",
-             "📡 Sector Risk"),
-        ]
-
-        for icon, title, body, note, label in _expert_sections:
-            st.markdown(f"""
-    <div style="background:#ffffff;border:1px solid #bfdbfe;border-left:4px solid #1d4ed8;border-radius:12px;
-                padding:1.3rem 1.5rem;margin-bottom:1rem;
-                box-shadow:0 1px 4px rgba(29,78,216,0.07);">
-      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;">
-        <p style="margin:0;font-size:1.3rem;">{icon}</p>
-        <span style="font-size:0.72rem;font-weight:600;color:#1d4ed8;background:#eff6ff;
-                     border:1px solid #bfdbfe;border-radius:20px;padding:3px 10px;
-                     font-family:'Inter',sans-serif;white-space:nowrap;">{label}</span>
-      </div>
-      <p style="margin:0 0 10px 0;font-size:1rem;font-weight:700;color:#1e3a8a;font-family:'Inter',sans-serif;">{title}</p>
-      <p style="margin:0 0 12px 0;font-size:0.88rem;color:#334155;font-family:'Inter',sans-serif;line-height:1.85;">{body}</p>
-      <div style="background:#eff6ff;border:1px solid #93c5fd;border-radius:8px;padding:9px 14px;">
-        <p style="margin:0;font-size:0.83rem;color:#1d4ed8;font-family:'Inter',sans-serif;font-weight:600;">{note}</p>
-      </div>
-    </div>
-    """, unsafe_allow_html=True)
-
-        # ── Charts for Expert Console ──────────────────────────────────────────
-        st.markdown("---")
-        st.markdown("### 📊 Supporting Telemetry")
-        st.caption("Key charts mapped to TTPs and defensive controls — use alongside the technical notes above.")
-
-        _ex_c1, _ex_c2 = st.columns(2, gap="large")
-        with _ex_c1:
-            st.markdown("#### Initial Access Vector Distribution")
-            st.caption(
-                "DBIR 2025 initial access breakdown across 12,195 confirmed breaches. Credential compromise "
-                "(phishing, credential stuffing, brute-force) and exploitation of public-facing applications "
-                "account for ~42% of initial access entries combined — reinforcing the case for phishing-resistant "
-                "MFA and aggressive external attack surface management. Map to MITRE ATT&CK TA0001 sub-techniques "
-                "T1078, T1190, and T1566."
-            )
-            st.plotly_chart(fig_pie, use_container_width=True, config={"displayModeBar": False})
-            st.markdown('<p style="font-size:0.72rem;color:#94a3b8;font-family:\'Inter\',sans-serif;margin-top:-10px;">Source: Verizon 2025 Data Breach Investigations Report (DBIR)</p>', unsafe_allow_html=True)
-        with _ex_c2:
-            st.markdown("#### MFA Bypass Technique Split")
-            st.caption(
-                "Adversary-in-the-Middle (AiTM) proxy toolkits (Evilginx2, Modlishka), MFA fatigue / push-bombing, "
-                "and post-authentication session token theft each represent roughly equal thirds of MFA bypass "
-                "incidents. Detection priority: monitor for impossible-travel sign-in events, anomalous OAuth token "
-                "grants, and high-volume push notification bursts per-user within short windows."
-            )
-            st.plotly_chart(fig_mfa, use_container_width=True, config={"displayModeBar": False})
-            st.markdown('<p style="font-size:0.72rem;color:#94a3b8;font-family:\'Inter\',sans-serif;margin-top:-10px;">Source: Verizon 2025 Data Breach Investigations Report (DBIR)</p>', unsafe_allow_html=True)
-
-        st.markdown("#### Weekly Exploitation Trend by Attack Category (12-Week Window)")
-        st.caption(
-            "12-week rolling telemetry across attack categories. Remote-access exploitation (VPN appliances, "
-            "RDP, SSH brute-force) is the only vector on a statistically significant upward trajectory — "
-            "correlates with mass-exploitation of CVEs in edge devices (Ivanti, Palo Alto, Cisco ASA). "
-            "Prioritise patching internet-facing remote-access infrastructure and review conditional-access "
-            "policies restricting legacy authentication protocols."
-        )
-        st.plotly_chart(fig_trends, use_container_width=True, config={"displayModeBar": False})
-        st.markdown('<p style="font-size:0.72rem;color:#94a3b8;font-family:\'Inter\',sans-serif;margin-top:-10px;">Source: Verizon 2025 Data Breach Investigations Report (DBIR)</p>', unsafe_allow_html=True)
-
-        _ex_c3, _ex_c4 = st.columns(2, gap="large")
-        with _ex_c3:
-            st.markdown("#### ICS Threat Rate by Region — Q2 2025")
-            st.caption(
-                "Kaspersky ICS-CERT telemetry: percentage of ICS/SCADA endpoints where at least one malicious "
-                "object was blocked during Q2 2025. Africa and Southeast Asia show the highest rates (>40%), "
-                "likely reflecting lower EDR/OT-security maturity and delayed patch cycles on engineering "
-                "workstations. Cross-reference against your OT network segments and evaluate compensating "
-                "controls (network segmentation, application whitelisting on HMIs)."
-            )
-            st.plotly_chart(fig_ics_region, use_container_width=True, config={"displayModeBar": False})
-            st.markdown('<p style="font-size:0.72rem;color:#94a3b8;font-family:\'Inter\',sans-serif;margin-top:-10px;">Source: Kaspersky ICS-CERT — Threat Landscape for Industrial Automation Systems, Q2 2025</p>', unsafe_allow_html=True)
-        with _ex_c4:
-            st.markdown("#### ICS Historical Quarterly Trend")
-            st.caption(
-                "Quarterly ICS threat volume from Kaspersky ICS-CERT. The Q2 2025 uptick follows a trough in "
-                "Q4 2024, consistent with seasonal threat actor activity patterns and increased targeting of "
-                "energy and manufacturing sectors post-winter. Use this trend as a leading indicator when "
-                "scheduling OT vulnerability assessments and threat-hunting exercises."
-            )
-            st.plotly_chart(fig_ics_hist, use_container_width=True, config={"displayModeBar": False})
-            st.markdown('<p style="font-size:0.72rem;color:#94a3b8;font-family:\'Inter\',sans-serif;margin-top:-10px;">Source: Kaspersky ICS-CERT — Threat Landscape for Industrial Automation Systems, Q2 2025</p>', unsafe_allow_html=True)
-
-    # ─────────────────────────────────────────
-    # EXECUTIVE BRIEF — For Business Leaders
-    # ─────────────────────────────────────────
-    elif _chosen_key == "exec":
-        st.markdown(f"""
-    <div style="background:linear-gradient(135deg,#f0fdf4 0%,#f8fafc 100%);
-                border:1px solid #bbf7d0;border-radius:16px;
-                padding:2rem 2.4rem 1.6rem 2.4rem;margin-bottom:1.4rem;
-                box-shadow:0 2px 12px rgba(22,163,74,0.07);">
+                box-shadow:0 2px 12px rgba(37,99,235,0.08);">
       <p style="margin:0 0 0.4rem 0;font-size:0.8rem;font-weight:700;letter-spacing:0.08em;
-                color:#15803d;text-transform:uppercase;font-family:'Inter',sans-serif;">
-        💼 Executive Brief · Board & Leadership View
+                color:#1d4ed8;text-transform:uppercase;font-family:'Inter',sans-serif;">
+        Advanced · For Information Technology and Security Professionals
       </p>
       <h2 style="margin:0 0 0.6rem 0;font-size:1.7rem;font-weight:800;color:#0f172a;
                  font-family:'Inter',sans-serif;border:none;padding:0;margin-top:0;">
-        Cyber Risk in Business Terms — What Leaders Need to Know
+        2025 Threat Intelligence — Data-Driven View
       </h2>
       <p style="margin:0;font-size:1rem;color:#475569;font-family:'Inter',sans-serif;line-height:1.7;max-width:780px;">
-        Translated from 22,052 incidents and 12,195 confirmed breaches into financial exposure,
-        regulatory obligations, and strategic actions for C-suite and board audiences.
+        Key metrics from the Verizon Data Breach Investigations Report 2025 and Kaspersky Industrial Control Systems Cyber Emergency Response Team, second quarter 2025 — visualised for situational awareness across sectors, attack vectors, and Operational Technology environments.
       </p>
     </div>
     """, unsafe_allow_html=True)
 
-        _ex1, _ex2, _ex3, _ex4 = st.columns(4)
-        _ex1.metric("Avg. Breach Cost (Global)", "$4.9M USD", "IBM Cost of a Breach 2024", delta_color="inverse")
-        _ex2.metric("Ransomware Involvement", "44%", "↑76% since 2022", delta_color="inverse")
-        _ex3.metric("Third-Party Breaches", "30%", "↑100% YoY", delta_color="inverse")
-        _ex4.metric("Victims Refusing to Pay", "64%", "↑28% vs 2022")
-
-        _exec_tips = {
-            1:  ("📋", "January: Review Your Cyber Insurance Coverage",
-                 "Tax season brings heightened Business Email Compromise risk — $6.3B in BEC losses were recorded in 2024. "
-                 "Verify your cyber insurance policy covers BEC-related financial losses (many policies exclude social engineering by default). "
-                 "Confirm that your insurer requires MFA as a coverage condition — and that your organization is compliant."),
-            2:  ("🤝", "February: Assess Third-Party Vendor Risk",
-                 "30% of breaches now involve a third party — doubled year over year. "
-                 "Request SOC 2 Type II reports from your top 10 vendors by data access volume. "
-                 "Ensure vendor contracts include mandatory breach notification timelines and right-to-audit clauses."),
-            3:  ("📊", "March: Brief Your Board on Ransomware Exposure",
-                 "Manufacturing boards should note that 47% of breaches in their sector involve ransomware. "
-                 "Quantify your organization's downtime cost per hour — this is the number ransomware actors use to set their demand. "
-                 "Ensure the board has approved an incident response retainer with a reputable IR firm before an incident occurs."),
-            4:  ("🏢", "April: Establish a Patch Governance KPI",
-                 "Vulnerability exploitation increased 34% year over year and now equals stolen credentials as a top entry point. "
-                 "Establish a board-visible KPI for mean time to patch critical vulnerabilities. "
-                 "Require your CISO to report patch compliance against the CISA Known Exploited Vulnerabilities catalogue quarterly."),
-            5:  ("⚖️", "May: Review Your Privacy Breach Obligations",
-                 "Personal data and credentials are among the top stolen data categories. "
-                 "Under PIPEDA, organizations must report breaches posing real risk of significant harm to the Office of the Privacy Commissioner. "
-                 "Quebec Law 25 introduced GDPR-equivalent obligations including 72-hour regulatory notification. Assign a named Privacy Officer now."),
-            6:  ("🌐", "June: Map Your Supply Chain Security Exposure",
-                 "Supply chain breaches give attackers access to dozens of organizations through a single vendor compromise. "
-                 "Map your critical vendors and assess whether a compromise of any one could affect your operations or clients' data. "
-                 "Consider requiring vendors to complete the CIS Controls Self-Assessment annually."),
-            7:  ("📅", "July: Confirm Holiday Business Continuity Planning",
-                 "December sees a 30% ransomware surge — planning must start months in advance. "
-                 "Ensure business continuity plans define minimum viable operations and recovery time objectives. "
-                 "Confirm that incident response authority is clearly delegated for when key executives are unavailable."),
-            8:  ("🎓", "August: Invest in Security Awareness Training",
-                 "Human judgement failures remain a top attack vector. Security-aware employees are your most cost-effective control. "
-                 "Mandate phishing simulation training for all staff — organizations running quarterly simulations report 50–70% reductions in click rates. "
-                 "Prioritize role-based training for finance, HR, and executive assistants — the highest-value Business Email Compromise targets."),
-            9:  ("📱", "September: Strengthen Authentication Governance",
-                 "MFA bypass techniques now affect 1 in 3 MFA-protected accounts. "
-                 "Direct your CISO to upgrade high-value accounts to phishing-resistant MFA (hardware security keys). "
-                 "Include authentication standards in your vendor security requirements and supplier onboarding process."),
-            10: ("🔐", "October: Commission a Ransomware Readiness Assessment",
-                 "October is Cybersecurity Awareness Month — and ransomware is now involved in 44% of all breaches. "
-                 "Commission an independent ransomware readiness assessment covering backup integrity, detection coverage, and response capability. "
-                 "Share the findings with your cyber insurance broker — it may reduce your premium."),
-            11: ("🛒", "November: Protect Peak-Season Revenue",
-                 "Ransomware groups deliberately time attacks to coincide with peak revenue periods — Black Friday and Cyber Monday. "
-                 "Define a revenue-impact threshold that triggers executive notification and crisis management protocols. "
-                 "Ensure e-commerce infrastructure is included in scope for your next penetration test."),
-            12: ("🎄", "December: Present the Annual Cyber Risk Report to the Board",
-                 "Present a year-end cyber risk summary covering incidents year-to-date, threat landscape changes "
-                 "(ransomware +76% since 2022, espionage +163%), and planned investments for the coming year. "
-                 "Frame cyber investment as risk quantification — use the FAIR model to express risk in dollar terms the board can act on."),
+        _adv_tips = {
+            1:  ("Audit Privileged Access Paths",
+                 "Review service accounts and admin credentials exposed in your Active Directory environment. Credential abuse drove 22% of breaches in the Data Breach Investigations Report 2025 — January is a good time to rotate stale tokens and enforce Multi-Factor Authentication on all privileged roles."),
+            2:  ("Patch Your Perimeter and Edge Devices",
+                 "Exploited vulnerabilities accounted for 20% of initial access vectors. Focus patching efforts on perimeter devices such as Virtual Private Network appliances and firewalls — these are disproportionately targeted and often lag on update cycles."),
+            3:  ("Run a Ransomware Tabletop Exercise",
+                 "The first quarter is a low-change-freeze period for most organisations — ideal for a ransomware tabletop. Test your detection-to-containment playbook, including backup restore speed. The Data Breach Investigations Report shows ransom refusal rising to 64%, but only when recovery is viable."),
+            4:  ("Review Your Supply Chain Access Inventory",
+                 "Third-party and partner access remains a blind spot. Audit active Application Programming Interface integrations and vendor permissions. Revoke any that are unused or whose scope exceeds current need."),
+            5:  ("Validate Detection Coverage Against MITRE ATT&CK",
+                 "Map your current Security Information and Event Management and Endpoint Detection and Response rules against the top techniques observed in the Data Breach Investigations Report 2025. Gaps in credential access (techniques T1078 and T1110) and execution (technique T1059) are common and high-impact."),
+            6:  ("Harden Operational Technology Network Segmentation",
+                 "Kaspersky Industrial Control Systems Cyber Emergency Response Team reports 20.5% of industrial computers globally faced threats in the second quarter of 2025. Review whether your Information Technology and Operational Technology boundary controls are enforced at the switch level — not just in policy documents."),
+            7:  ("Test Your Backup Restore Process",
+                 "A backup that has never been tested is not a backup. Run a full restore drill for at least one critical system this month. Measure your actual Recovery Time Objective against your documented Service Level Agreement."),
+            8:  ("Reduce Alert Fatigue in Your Security Operations Centre",
+                 "High-volume, low-fidelity alerts desensitise analysts and cause critical signals to be missed. Audit your top 10 alert rules by volume and suppress or tune those with a false-positive rate above 90%."),
+            9:  ("Assess Phishing Simulation Coverage",
+                 "Phishing remains a top initial access vector at 15% of breaches. If your last simulation was more than six months ago, schedule a new campaign — especially targeting Finance and Human Resources roles."),
+            10: ("Review Ransomware Insurance Coverage",
+                 "With ransomware in 44% of breaches, verify your cyber insurance policy covers incident response costs, not just ransom payment. Many policies exclude response costs if basic controls such as Multi-Factor Authentication and Endpoint Detection and Response were absent."),
+            11: ("Check for Exposed Credentials in Public Repositories",
+                 "Before year-end code pushes, scan your GitHub and GitLab repositories for hardcoded secrets. Tools like TruffleHog or GitHub's native secret scanning catch credentials committed accidentally."),
+            12: ("Close Out Open Vulnerabilities Before Year-End",
+                 "Run a sweep of your vulnerability backlog and close out anything rated Critical or High that has been open longer than your Service Level Agreement. Carry-over risk compounds into the new year's attack surface."),
         }
-        _ec = _exec_tips[datetime.datetime.now().month]
-        st.markdown("### 🗓️ Leadership Priority — This Month")
+        _at = _adv_tips[datetime.datetime.now().month]
+        st.markdown("### Security Focus This Month")
         st.markdown(f"""
-    <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-left:5px solid #16a34a;
+    <div style="background:#eff6ff;border:1px solid #bfdbfe;border-left:5px solid #2563eb;
                 border-radius:10px;padding:1.3rem 1.5rem;margin-bottom:1.5rem;">
-      <p style="margin:0 0 6px 0;font-size:1.6rem;">{_ec[0]}</p>
-      <p style="margin:0 0 8px 0;font-size:1.05rem;font-weight:700;color:#0f172a;font-family:'Inter',sans-serif;">{_ec[1]}</p>
-      <p style="margin:0;font-size:0.93rem;color:#334155;font-family:'Inter',sans-serif;line-height:1.75;">{_ec[2]}</p>
-    </div>
-    """, unsafe_allow_html=True)
+      <p style="margin:0 0 8px 0;font-size:1.05rem;font-weight:700;color:#0f172a;font-family:'Inter',sans-serif;">{_at[0]}</p>
+      <p style="margin:0;font-size:0.95rem;color:#334155;font-family:'Inter',sans-serif;line-height:1.75;">{_at[1]}</p>
+    </div>""", unsafe_allow_html=True)
 
-        _exec_sections = [
-            ("📊", "Financial Exposure by Sector",
-             "Manufacturing organizations face a 47% ransomware involvement rate — and Operational Technology downtime can cost $100K–$500K per hour for large plants. "
-             "Healthcare breaches average the highest cost of any sector globally at $9.8M USD per breach (IBM 2024), driven by regulatory fines, litigation, and operational disruption. "
-             "Finance, while heavily targeted (927 breaches), has the lowest ransomware rate (18%) due to investment in segmentation and offline backups — a model other sectors should replicate. "
-             "Business Email Compromise generated $6.3B in direct financial losses in 2024 — the single highest-value cybercrime category by dollar impact.",
-             "💼 Board benchmark: compare your sector's average breach cost against your current security investment. Industry standard is 10–15% of the total IT budget.",
-             "📡 Sector Risk"),
-            ("⚖️", "Regulatory and Legal Obligations — Canada",
-             "Canadian organizations are subject to PIPEDA (federal) and provincial privacy laws (Quebec Law 25, Alberta PIPA, BC PIPA). "
-             "A breach involving personal data triggers mandatory notification to the Office of the Privacy Commissioner and affected individuals when there is real risk of significant harm. "
-             "Failure to maintain a breach log or report can result in fines up to $100,000 per violation under PIPEDA. "
-             "Quebec Law 25 introduced GDPR-equivalent obligations — including 72-hour regulatory notification and mandatory privacy impact assessments for new technology projects. "
-             "Third-party breaches do not reduce your regulatory liability — you remain responsible for data shared with vendors.",
-             "💼 Action: Appoint a named Privacy Officer, maintain a breach log, and test your notification process before an incident forces you to use it.",
-             "🗂️ Stolen Data"),
-            ("🤝", "Third-Party and Supply Chain Risk — The Fastest-Growing Threat",
-             "The 100% year-over-year increase in third-party breaches is the most urgent trend for executive teams. "
-             "A single compromised vendor credential can provide attackers access to your systems, your clients' data, and your intellectual property simultaneously. "
-             "The SolarWinds, MOVEit, and Change Healthcare incidents are examples — each affected thousands of downstream organizations through a single supply chain entry point. "
-             "Due diligence actions: annual vendor security questionnaires, contractual breach notification requirements (72-hour notice standard), "
-             "and limiting vendor access to only what is necessary (least-privilege principle).",
-             "💼 Board question for your CISO: 'What is the worst-case impact if our top three vendors by data access were compromised simultaneously?'",
-             "⚔️ Attack Methods"),
-            ("🏭", "Industrial and Critical Infrastructure — Direct Operational Risk",
-             "20.5% of industrial control system computers globally faced active cyber threats in Q2 2025. "
-             "For organizations operating or depending on industrial infrastructure (manufacturing, energy, utilities, building management), "
-             "this represents a direct operational continuity risk — not merely a data risk. "
-             "A cyberattack on Operational Technology systems can cause physical disruption including equipment damage, production halts, "
-             "and in critical infrastructure, public safety impacts. "
-             "Cyber-physical incidents are increasingly covered under 'contingent business interruption' clauses — verify your policy explicitly covers OT disruption.",
-             "💼 Board priority: ensure your business continuity plan explicitly addresses OT/ICS disruption scenarios — not just IT outages.",
-             "🏭 ICS Threats"),
-            ("🌍", "Geopolitical Cyber Risk — Espionage Surged 163%",
-             "Nation-state actors dramatically increased targeting of intellectual property and critical infrastructure in 2024. "
-             "The boundary between organized crime and state-sponsored hacking is blurring — some groups operate freely in exchange for intelligence-sharing with their governments. "
-             "Primary state actors: groups linked to Russia, China, Iran, and North Korea. Targets: government contractors, research institutions, energy companies, and financial services. "
-             "For organizations with government contracts, proprietary research, or cross-border operations, espionage risk is now a board-level governance issue — not solely an IT concern.",
-             "💼 Action: Include geopolitical cyber risk in your enterprise risk register and discuss threat actor targeting of your sector with your CISO annually.",
-             "📡 Sector Risk"),
+        _adv_sections = [
+            ("Sector Breach Exposure",
+             "Manufacturing recorded 1,607 confirmed breaches</strong> — the highest of any sector — driven largely by ransomware operators targeting production downtime as a negotiating lever. "
+             "Healthcare (1,542 breaches) and Finance (927) follow, each carrying elevated data sensitivity that increases breach cost. "
+             "Across all sectors, system intrusion and social engineering account for the majority of incident patterns.",
+             "Prioritise threat modelling and incident response planning for your sector's most prevalent attack pattern.",
+             "Sector Risk"),
+            ("Initial Access Vectors",
+             "Credential abuse (22%) and exploited vulnerabilities (20%)</strong> are the two dominant initial access vectors in the Data Breach Investigations Report 2025. "
+             "Phishing accounts for 15% of intrusions, with Business Email Compromise continuing to drive high-value financial losses. "
+             "The persistence of credential-based attacks reflects ongoing gaps in Multi-Factor Authentication adoption, particularly on legacy systems and service accounts.",
+             "Enforce Multi-Factor Authentication on all externally facing systems and audit service account credential rotation cycles.",
+             "Attack Methods"),
+            ("Ransomware Landscape",
+             "Ransomware was present in 44% of all breaches in 2024</strong>, up from 32% in 2023 — nearly doubling over three years. "
+             "Median ransom payments remain high, but 64% of victim organisations now refuse to pay</strong>, the highest rate on record. "
+             "Extortion-only variants (data theft without encryption) are increasing as attackers adapt to improved backup and recovery capabilities.",
+             "Ensure backup integrity testing and documented recovery time objectives — refusal to pay is only viable when recovery is guaranteed.",
+             "Ransomware"),
+            ("Data Compromise Categories",
+             "Internal organisational data is now the most frequently exfiltrated category</strong>, overtaking credentials in recent breach data. "
+             "This reflects the growing prevalence of double-extortion ransomware, where operators exfiltrate data before encrypting systems to maximise leverage. "
+             "Credentials, personal data, and financial records remain consistently targeted across all sectors for resale and account takeover operations.",
+             "Implement data loss prevention controls on high-value document repositories and audit access to sensitive internal file shares.",
+             "Stolen Data"),
+            ("Industrial Control Systems Threat Landscape",
+             "20.5% of industrial computers globally had a threat blocked in the second quarter of 2025</strong>, according to Kaspersky Industrial Control Systems Cyber Emergency Response Team. "
+             "The primary infection vectors are malicious scripts and phishing pages delivered over the internet — reflecting increased internet connectivity in Operational Technology environments. "
+             "Africa and Southeast Asia show the highest regional attack rates, correlating with lower Operational Technology security maturity and investment.",
+             "Review network segmentation between Information Technology and Operational Technology zones and validate that internet-facing industrial systems are minimised.",
+             "Industrial Control Systems"),
+            ("Threat Actor Landscape",
+             "Organised criminal groups account for approximately 80% of attributed attacks</strong>, operating with professionalised structures including dedicated ransomware-as-a-service affiliates and negotiation teams. "
+             "State-sponsored activity increased by 163% in 2024, with espionage-focused campaigns targeting defence, research, and critical national infrastructure. "
+             "The convergence of financially motivated and nation-state actors on similar initial access techniques increases the difficulty of attribution and response.",
+             "Align threat intelligence subscriptions to your sector's most active threat actor groups and update detection rules accordingly.",
+             "Attack Methods"),
         ]
 
-        for icon, title, body, action, label in _exec_sections:
+        for title, body, action, label in _adv_sections:
             st.markdown(f"""
     <div style="background:#ffffff;border:1px solid #e2e8f0;border-radius:12px;
                 padding:1.3rem 1.5rem;margin-bottom:1rem;
                 box-shadow:0 1px 4px rgba(0,0,0,0.05);">
       <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;">
-        <p style="margin:0;font-size:1.3rem;">{icon}</p>
-        <span style="font-size:0.72rem;font-weight:600;color:#15803d;background:#f0fdf4;
-                     border:1px solid #bbf7d0;border-radius:20px;padding:3px 10px;
+        <span></span>
+        <span style="font-size:0.72rem;font-weight:600;color:#475569;background:#f1f5f9;
+                     border:1px solid #e2e8f0;border-radius:20px;padding:3px 10px;
                      font-family:'Inter',sans-serif;white-space:nowrap;">{label}</span>
       </div>
-      <p style="margin:0 0 10px 0;font-size:1rem;font-weight:700;color:#0f172a;font-family:'Inter',sans-serif;">{title}</p>
-      <p style="margin:0 0 12px 0;font-size:0.92rem;color:#334155;font-family:'Inter',sans-serif;line-height:1.8;">{body}</p>
+      <p style="margin:0 0 10px 0;font-size:1.05rem;font-weight:700;color:#0f172a;font-family:'Inter',sans-serif;">{title}</p>
+      <p style="margin:0 0 12px 0;font-size:0.93rem;color:#334155;font-family:'Inter',sans-serif;line-height:1.8;">{body}</p>
       <div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;padding:9px 14px;">
-        <p style="margin:0;font-size:0.86rem;color:#1d4ed8;font-family:'Inter',sans-serif;font-weight:500;">{action}</p>
+        <p style="margin:0;font-size:0.88rem;color:#1d4ed8;font-family:'Inter',sans-serif;font-weight:500;">{action}</p>
       </div>
     </div>
     """, unsafe_allow_html=True)
 
-        # ── Charts for Executive Brief ─────────────────────────────────────────
         st.markdown("---")
-        st.markdown("### 📊 Key Charts for Leadership")
-        st.caption("Strategic-level visualisations to support board reporting and risk committee briefings.")
+        st.markdown("### The Charts — Technical View")
+        st.caption("Visualisations derived from the Verizon Data Breach Investigations Report 2025 and Kaspersky Industrial Control Systems Cyber Emergency Response Team, second quarter 2025.")
 
-        _eb_c1, _eb_c2 = st.columns(2, gap="large")
-        with _eb_c1:
-            st.markdown("#### Sector Breach Exposure Radar")
-            st.caption(
-                "This radar chart maps relative cyber risk across major industries. A larger shape means "
-                "higher exposure. Finance and Healthcare show consistently elevated risk due to the high "
-                "value of the data they hold. Use this to benchmark your sector's risk profile and "
-                "prioritise investment in the control areas where your industry scores highest."
-            )
-            st.plotly_chart(fig_radar, use_container_width=True, config={"displayModeBar": False})
+        _adv_c1, _adv_c2 = st.columns(2, gap="large")
+        with _adv_c1:
+            st.markdown("#### Sector Breach Exposure")
+            st.caption("Composite risk score across industries based on incident volume and data sensitivity. Finance and Healthcare carry the highest exposure.")
+            st.plotly_chart(fig_radar, use_container_width=True, key="chart_radar_guides_adv", config={"displayModeBar": False, "scrollZoom": False})
             st.markdown('<p style="font-size:0.72rem;color:#94a3b8;font-family:\'Inter\',sans-serif;margin-top:-10px;">Source: Verizon 2025 Data Breach Investigations Report (DBIR)</p>', unsafe_allow_html=True)
-        with _eb_c2:
-            st.markdown("#### Ransomware Trend: Rising Threat, Rising Refusal")
-            st.caption(
-                "Ransomware involvement in breaches has nearly doubled over three years — now affecting 44% "
-                "of all incidents. The positive signal is that 64% of victims chose not to pay the ransom in "
-                "2024, up from 50% in 2022. Organisations with tested backup and recovery plans are driving "
-                "this shift. The business case for investing in resilience — not just prevention — is clear."
-            )
-            st.plotly_chart(fig_fore, use_container_width=True, config={"displayModeBar": False})
+        with _adv_c2:
+            st.markdown("#### Ransomware by Sector")
+            st.caption("44% of all breaches involved ransomware in 2025 — up from 32% in 2023. Manufacturing and Education are the hardest-hit industries.")
+            st.plotly_chart(fig_rs, use_container_width=True, key="chart_rs_guides_adv", config={"displayModeBar": False, "scrollZoom": False})
             st.markdown('<p style="font-size:0.72rem;color:#94a3b8;font-family:\'Inter\',sans-serif;margin-top:-10px;">Source: Verizon 2025 Data Breach Investigations Report (DBIR)</p>', unsafe_allow_html=True)
 
-        _eb_c3, _eb_c4 = st.columns(2, gap="large")
-        with _eb_c3:
-            st.markdown("#### Who Is Behind the Attacks?")
-            st.caption(
-                "Roughly 80% of breaches are carried out by external criminal organisations motivated by "
-                "financial gain — not nation-states. This is relevant for risk quantification: these actors "
-                "follow the money, targeting organisations with weak controls or valuable data. "
-                "A smaller but growing share involves insiders or business partners with legitimate access, "
-                "highlighting the importance of access governance and vendor risk management."
-            )
-            st.plotly_chart(fig_act, use_container_width=True, config={"displayModeBar": False})
+        _adv_c3, _adv_c4 = st.columns(2, gap="large")
+        with _adv_c3:
+            st.markdown("#### Ransomware Trend")
+            st.caption("Ransomware in breaches nearly doubled from 2022 to 2024. Ransom refusal rose from 50% to 64% as organisations improved backup and recovery.")
+            st.plotly_chart(fig_fore, use_container_width=True, key="chart_fore_guides_adv", config={"displayModeBar": False, "scrollZoom": False})
             st.markdown('<p style="font-size:0.72rem;color:#94a3b8;font-family:\'Inter\',sans-serif;margin-top:-10px;">Source: Verizon 2025 Data Breach Investigations Report (DBIR)</p>', unsafe_allow_html=True)
-        with _eb_c4:
+        with _adv_c4:
             st.markdown("#### ICS Attack Rate by Region")
-            st.caption(
-                "1 in 5 industrial computers globally had a threat blocked in Q2 2025. For organisations "
-                "with manufacturing, logistics, or utilities operations, this represents direct operational "
-                "and safety risk — not just data loss. Regions with the highest rates often correspond to "
-                "facilities with older operational technology. Boards should ask: are our industrial "
-                "systems on a separate, monitored network?"
-            )
-            st.plotly_chart(fig_ics_region, use_container_width=True, config={"displayModeBar": False})
+            st.caption("1 in 5 industrial computers globally had a threat blocked in Q2 2025. Africa and Southeast Asia show the highest rates, reflecting lower OT security maturity.")
+            st.plotly_chart(fig_ics_region, use_container_width=True, key="chart_ics_region_guides_adv", config={"displayModeBar": False, "scrollZoom": False})
             st.markdown('<p style="font-size:0.72rem;color:#94a3b8;font-family:\'Inter\',sans-serif;margin-top:-10px;">Source: Kaspersky ICS-CERT — Threat Landscape for Industrial Automation Systems, Q2 2025</p>', unsafe_allow_html=True)
 
     # ─────────────────────────────────────────
@@ -2784,8 +2625,7 @@ st.markdown(f"""
 <div style="text-align:center;padding:1.6rem;background:{SURFACE};
             border:1px solid {BORDER};border-radius:12px;margin-top:1rem;">
   <p style="color:{MUTED};font-size:0.82rem;line-height:2;margin:0;font-family:'Inter',sans-serif;">
-    <strong style="color:{TEXT};">Data Sources:</strong>
-    Verizon 2025 Data Breach Investigations Report (DBIR) ·
+    <strong style="color:{TEXT};">Data Sources:    Verizon 2025 Data Breach Investigations Report (DBIR) ·
     22,052 incidents · 12,195 confirmed breaches · Nov 2023 – Oct 2024
     &nbsp;·&nbsp;
     Kaspersky ICS-CERT — Threat Landscape for Industrial Automation Systems, Q2 2025 ·
