@@ -2674,10 +2674,6 @@ with _tab_outlook:
     se_2030 = round(float(se_p[-1]), 1)
 
     # ── KPI cards ─────────────────────────────────────────────────────────────
-    _rw_delta = round(rw_2030 - 44,   1)
-    _ic_delta  = round(ic_2030 - 20.5, 1)
-    _se_delta  = round(se_2030 - 31,   1)
-
     st.markdown(f"""
 <div style="display:flex;flex-wrap:wrap;gap:12px;margin-bottom:1.2rem;">
 
@@ -2686,7 +2682,7 @@ with _tab_outlook:
     <p style="margin:0 0 2px 0;font-size:0.75rem;color:{MUTED};font-family:'Inter',sans-serif;">Ransomware (2024)</p>
     <p style="margin:0 0 4px 0;font-size:1.45rem;font-weight:600;color:{ACCENT};font-family:'Inter',sans-serif;">44%</p>
     <p style="margin:0;font-size:0.8rem;font-weight:600;color:{C_RED};font-family:'Inter',sans-serif;">
-      ↑ {rw_2030}% by 2030 &nbsp;<span style="font-weight:400;font-size:0.72rem;color:{MUTED};">+{_rw_delta} pp projected increase</span>
+      ↑ {rw_2030}% by 2030
     </p>
   </div>
 
@@ -2695,7 +2691,7 @@ with _tab_outlook:
     <p style="margin:0 0 2px 0;font-size:0.75rem;color:{MUTED};font-family:'Inter',sans-serif;">ICS Attack Rate (Q2 2025)</p>
     <p style="margin:0 0 4px 0;font-size:1.45rem;font-weight:600;color:{ACCENT};font-family:'Inter',sans-serif;">20.5%</p>
     <p style="margin:0;font-size:0.8rem;font-weight:600;color:{C_GREEN};font-family:'Inter',sans-serif;">
-      ↓ {ic_2030}% by 2030 &nbsp;<span style="font-weight:400;font-size:0.72rem;color:{MUTED};">{_ic_delta} pp projected decrease</span>
+      ↓ {ic_2030}% by 2030
     </p>
   </div>
 
@@ -2704,7 +2700,7 @@ with _tab_outlook:
     <p style="margin:0 0 2px 0;font-size:0.75rem;color:{MUTED};font-family:'Inter',sans-serif;">Social Engineering (2024)</p>
     <p style="margin:0 0 4px 0;font-size:1.45rem;font-weight:600;color:{ACCENT};font-family:'Inter',sans-serif;">31%</p>
     <p style="margin:0;font-size:0.8rem;font-weight:600;color:{C_RED};font-family:'Inter',sans-serif;">
-      ↑ {se_2030}% by 2030 &nbsp;<span style="font-weight:400;font-size:0.72rem;color:{MUTED};">+{_se_delta} pp projected increase</span>
+      ↑ {se_2030}% by 2030
     </p>
   </div>
 
