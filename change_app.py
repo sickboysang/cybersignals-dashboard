@@ -2674,11 +2674,49 @@ with _tab_outlook:
     se_2030 = round(float(se_p[-1]), 1)
 
     # ── KPI cards ─────────────────────────────────────────────────────────────
-    _oc1, _oc2, _oc3, _oc4 = st.columns(4)
-    _oc1.metric("Ransomware (2024)",         "44%",    f"→ {rw_2030}% by 2030",  delta_color="inverse")
-    _oc2.metric("ICS Attack Rate (Q2 2025)", "20.5%",  f"→ {ic_2030}% by 2030",  delta_color="normal")
-    _oc3.metric("Social Engineering (2024)", "31%",    f"→ {se_2030}% by 2030",  delta_color="inverse")
-    _oc4.metric("Months Until 2030",         str(_months_left), "Live countdown", delta_color="off")
+    _rw_delta = round(rw_2030 - 44,   1)
+    _ic_delta  = round(ic_2030 - 20.5, 1)
+    _se_delta  = round(se_2030 - 31,   1)
+
+    st.markdown(f"""
+<div style="display:flex;flex-wrap:wrap;gap:12px;margin-bottom:1.2rem;">
+
+  <div class="cs-stat" data-tip="Ransomware was involved in 44% of breaches in 2024 — up from 25% in 2022. DBIR trend data projects ~{rw_2030}% involvement by 2030 if the current trajectory continues. This is a worsening threat: higher numbers mean more organisations affected."
+       style="flex:1;min-width:150px;background:{BG};border:1px solid {BORDER};border-radius:10px;padding:1rem 1.2rem;">
+    <p style="margin:0 0 2px 0;font-size:0.75rem;color:{MUTED};font-family:'Inter',sans-serif;">Ransomware (2024)</p>
+    <p style="margin:0 0 4px 0;font-size:1.45rem;font-weight:600;color:{ACCENT};font-family:'Inter',sans-serif;">44%</p>
+    <p style="margin:0;font-size:0.8rem;font-weight:600;color:{C_RED};font-family:'Inter',sans-serif;">
+      ↑ {rw_2030}% by 2030 &nbsp;<span style="font-weight:400;font-size:0.72rem;color:{MUTED};">+{_rw_delta} pp projected increase</span>
+    </p>
+  </div>
+
+  <div class="cs-stat" data-tip="The share of industrial computers attacked globally fell from 26.3% in 2022 to 20.5% in Q2 2025. Improved OT security practices and network segmentation are driving this decline — forecast to reach ~{ic_2030}% by 2030. Lower numbers here are a positive trend."
+       style="flex:1;min-width:150px;background:{BG};border:1px solid {BORDER};border-radius:10px;padding:1rem 1.2rem;">
+    <p style="margin:0 0 2px 0;font-size:0.75rem;color:{MUTED};font-family:'Inter',sans-serif;">ICS Attack Rate (Q2 2025)</p>
+    <p style="margin:0 0 4px 0;font-size:1.45rem;font-weight:600;color:{ACCENT};font-family:'Inter',sans-serif;">20.5%</p>
+    <p style="margin:0;font-size:0.8rem;font-weight:600;color:{C_GREEN};font-family:'Inter',sans-serif;">
+      ↓ {ic_2030}% by 2030 &nbsp;<span style="font-weight:400;font-size:0.72rem;color:{MUTED};">{_ic_delta} pp projected decrease</span>
+    </p>
+  </div>
+
+  <div class="cs-stat" data-tip="Social engineering — phishing, pretexting, and deception — drove 31% of all breaches in 2024. AI-generated spear-phishing and deepfake attacks are expected to push this higher, with a forecast of ~{se_2030}% by 2030. Higher numbers mean more human-targeted attacks."
+       style="flex:1;min-width:150px;background:{BG};border:1px solid {BORDER};border-radius:10px;padding:1rem 1.2rem;">
+    <p style="margin:0 0 2px 0;font-size:0.75rem;color:{MUTED};font-family:'Inter',sans-serif;">Social Engineering (2024)</p>
+    <p style="margin:0 0 4px 0;font-size:1.45rem;font-weight:600;color:{ACCENT};font-family:'Inter',sans-serif;">31%</p>
+    <p style="margin:0;font-size:0.8rem;font-weight:600;color:{C_RED};font-family:'Inter',sans-serif;">
+      ↑ {se_2030}% by 2030 &nbsp;<span style="font-weight:400;font-size:0.72rem;color:{MUTED};">+{_se_delta} pp projected increase</span>
+    </p>
+  </div>
+
+  <div class="cs-stat" data-tip="Live countdown of full months remaining until January 2030 — the end of the projection window used across all forecasts on this page. All trend lines and percentage forecasts are anchored to this horizon."
+       style="flex:1;min-width:150px;background:{BG};border:1px solid {BORDER};border-radius:10px;padding:1rem 1.2rem;">
+    <p style="margin:0 0 2px 0;font-size:0.75rem;color:{MUTED};font-family:'Inter',sans-serif;">Months Until 2030</p>
+    <p style="margin:0 0 4px 0;font-size:1.45rem;font-weight:600;color:{ACCENT};font-family:'Inter',sans-serif;">{_months_left}</p>
+    <p style="margin:0;font-size:0.72rem;color:{MUTED};font-family:'Inter',sans-serif;">Live countdown to forecast horizon</p>
+  </div>
+
+</div>
+""", unsafe_allow_html=True)
 
     st.markdown("---")
 
@@ -2748,29 +2786,32 @@ with _tab_outlook:
 <div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:0;
             background:{SURFACE};border:1px solid {BORDER};border-radius:10px 10px 0 0;
             padding:8px 16px;">
-  <span style="font-size:0.7rem;font-weight:600;color:{MUTED};font-family:'Inter',sans-serif;text-transform:uppercase;letter-spacing:0.05em;">Metric</span>
-  <span style="font-size:0.7rem;font-weight:600;color:{MUTED};font-family:'Inter',sans-serif;text-transform:uppercase;letter-spacing:0.05em;">Current</span>
-  <span style="font-size:0.7rem;font-weight:600;color:{MUTED};font-family:'Inter',sans-serif;text-transform:uppercase;letter-spacing:0.05em;">2030 Forecast</span>
-  <span style="font-size:0.7rem;font-weight:600;color:{MUTED};font-family:'Inter',sans-serif;text-transform:uppercase;letter-spacing:0.05em;">Change</span>
+  <span style="font-size:0.75rem;font-weight:600;color:{MUTED};font-family:'Inter',sans-serif;">Metric</span>
+  <span style="font-size:0.75rem;font-weight:600;color:{MUTED};font-family:'Inter',sans-serif;">Current</span>
+  <span style="font-size:0.75rem;font-weight:600;color:{MUTED};font-family:'Inter',sans-serif;">2030 Forecast</span>
+  <span style="font-size:0.75rem;font-weight:600;color:{MUTED};font-family:'Inter',sans-serif;">Change</span>
 </div>"""
 
     _rows = [
-        ("Ransomware involvement in breaches",  "44%",   f"{rw_2030}%",  f"+{round(rw_2030-44,1)} percentage points",   C_RED,   True),
-        ("ICS / industrial computers attacked", "20.5%", f"{ic_2030}%",  f"{round(ic_2030-20.5,1)} percentage points",  C_BLUE,  False),
-        ("Social engineering–led breaches",     "31%",   f"{se_2030}%",  f"+{round(se_2030-31,1)} percentage points",   C_PURP,  True),
+        ("Ransomware involvement in breaches",  "44%",   f"{rw_2030}%",  round(rw_2030-44,   1),  C_RED,   True),
+        ("ICS / industrial computers attacked", "20.5%", f"{ic_2030}%",  round(ic_2030-20.5, 1),  C_GREEN, False),
+        ("Social engineering–led breaches",     "31%",   f"{se_2030}%",  round(se_2030-31,   1),  C_PURP,  True),
     ]
 
     _tbl_rows = ""
-    for i, (metric, now_val, proj_val, change, col, up) in enumerate(_rows):
+    for i, (metric, now_val, proj_val, delta, col, up) in enumerate(_rows):
         _bg = "white" if i % 2 == 0 else "#f8fafc"
         _border_bottom = f"border-bottom:1px solid {BORDER};" if i < len(_rows)-1 else ""
+        _arrow = "↑" if up else "↓"
+        _chg_col = C_RED if up else C_GREEN
+        _sign = f"+{delta}" if delta > 0 else str(delta)
         _tbl_rows += f"""
 <div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:0;
             background:{_bg};padding:10px 16px;{_border_bottom}">
   <span style="font-size:0.84rem;color:{TEXT};font-family:'Inter',sans-serif;">{metric}</span>
   <span style="font-size:0.84rem;color:{MUTED};font-family:'Inter',sans-serif;">{now_val}</span>
   <span style="font-size:0.84rem;font-weight:600;color:{col};font-family:'Inter',sans-serif;">{proj_val}</span>
-  <span style="font-size:0.84rem;color:{MUTED};font-family:'Inter',sans-serif;">{change}</span>
+  <span style="font-size:0.84rem;font-weight:600;color:{_chg_col};font-family:'Inter',sans-serif;">{_arrow} {_sign} pp</span>
 </div>"""
 
     st.markdown(
