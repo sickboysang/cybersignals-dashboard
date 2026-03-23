@@ -773,12 +773,6 @@ with st.sidebar:
 """, unsafe_allow_html=True)
 
 # ─────────────────────────────────────────
-# HEADER
-# ─────────────────────────────────────────
-
-st.title("🛡️ CyberSignals")
-
-
 # ─────────────────────────────────────────
 # TABS — top-level navigation
 # ─────────────────────────────────────────
@@ -895,15 +889,12 @@ components.html(f"""<script>
 # HOME TAB — hero + welcome
 # ─────────────────────────────────────────
 with _tab_home:
+    st.title("🛡️ CyberSignals")
     st.markdown(f"""
 <div style="background:linear-gradient(135deg,#eff6ff 0%,#f8fafc 60%,#f0fdf4 100%);
             border:1px solid #e2e8f0;border-radius:16px;
             padding:2rem 2.4rem 1.6rem 2.4rem;margin-bottom:1.4rem;
             box-shadow:0 2px 12px rgba(37,99,235,0.07);">
-  <p style="margin:0 0 0.3rem 0;font-size:0.75rem;font-weight:500;letter-spacing:0.04em;
-            color:#2563eb;font-family:'Inter',sans-serif;">
-    CyberSignals · Cyber Risk Intelligence Dashboard
-  </p>
   <h1 style="margin:0 0 0.6rem 0;font-size:1.75rem;font-weight:600;color:#0f172a;
              font-family:'Inter',sans-serif;line-height:1.2;letter-spacing:-0.01em;">
     Understanding Today's Cyber Threat Landscape
@@ -933,9 +924,6 @@ with _tab_home:
       <p style="margin:0;font-size:0.75rem;color:#64748b;font-family:'Inter',sans-serif;">Victims refusing to pay ransom</p>
     </div>
   </div>
-  <p style="margin:1rem 0 0 0;font-size:0.75rem;color:#94a3b8;font-family:'Inter',sans-serif;">
-    Sources: Verizon DBIR 2025 (Nov 2023 – Oct 2024) &nbsp;·&nbsp; Kaspersky ICS-CERT Q2 2025 &nbsp;·&nbsp; Team N5 · USI4280
-  </p>
 </div>
 """, unsafe_allow_html=True)
 
@@ -1238,7 +1226,6 @@ with _tab_home:
             for t in _tip["prevention"]
         )
 
-        st.markdown("## Tip of the Month")
         st.markdown(
     f"""
 <div style="
@@ -1298,7 +1285,6 @@ with _tab_home:
 with _tab_home:
     with st.expander("Key Risk Metrics", expanded=True):
 
-        st.markdown("## Key Risk Metrics")
         st.caption("Each percentage is an independent risk factor — a single breach can involve ransomware, a vulnerability, and a third party at the same time, which is why the figures do not total 100%.")
         st.markdown(f"""
 <div style="display:flex;flex-wrap:wrap;gap:12px;margin-top:0.5rem;">
@@ -2333,14 +2319,14 @@ with _tab_guides:
                 box-shadow:0 2px 12px rgba(245,158,11,0.08);">
       <p style="margin:0 0 0.4rem 0;font-size:0.8rem;font-weight:700;letter-spacing:0.08em;
                 color:#92400e;text-transform:uppercase;font-family:'Inter',sans-serif;">
-        Plain & Simple · No tech knowledge needed
+        Plain & Simple · Easy for everyone
       </p>
       <h2 style="margin:0 0 0.6rem 0;font-size:1.7rem;font-weight:800;color:#0f172a;
                  font-family:'Inter',sans-serif;border:none;padding:0;margin-top:0;">
         What Is Cyber Crime — And Should You Worry?
       </h2>
       <p style="margin:0;font-size:1rem;color:#475569;font-family:'Inter',sans-serif;line-height:1.7;max-width:780px;">
-        A neighbourhood watch report for the internet. Every finding on this dashboard explained in plain language — no tech background needed.
+        Think of this as a neighbourhood watch report for the internet — every finding explained in everyday language, at your own pace.
       </p>
     </div>
     """, unsafe_allow_html=True)
@@ -2384,14 +2370,6 @@ with _tab_guides:
                  "If someone asks this — hang up immediately and tell a family member."),
         }
         _sm = _simple_tips[datetime.datetime.now().month]
-        st.markdown("### Your Safety Tip This Month")
-        st.markdown(f"""
-    <div style="background:#fffbeb;border:1px solid #fde68a;border-left:5px solid #f59e0b;
-                border-radius:10px;padding:1.3rem 1.5rem;margin-bottom:1.5rem;">
-      <p style="margin:0 0 6px 0;font-size:1.6rem;">{_sm[0]}</p>
-      <p style="margin:0 0 8px 0;font-size:1.05rem;font-weight:700;color:#0f172a;font-family:'Inter',sans-serif;">{_sm[1]}</p>
-      <p style="margin:0;font-size:0.95rem;color:#334155;font-family:'Inter',sans-serif;line-height:1.75;">{_sm[2]}</p>
-    </div>""", unsafe_allow_html=True)
 
         _simple_sections = [
             ("", "Who Is Getting Targeted?",
@@ -2431,8 +2409,21 @@ with _tab_guides:
              "Attack Methods"),
         ]
 
-        for icon, title, body, takeaway, label in _simple_sections:
+        # ── Side-by-side layout: text left, charts right ──────────────────────
+        _ps_left, _ps_right = st.columns([2, 3], gap="large")
+
+        with _ps_left:
+            st.markdown("### Your Safety Tip This Month")
             st.markdown(f"""
+    <div style="background:#fffbeb;border:1px solid #fde68a;border-left:5px solid #f59e0b;
+                border-radius:10px;padding:1.3rem 1.5rem;margin-bottom:1.5rem;">
+      <p style="margin:0 0 6px 0;font-size:1.6rem;">{_sm[0]}</p>
+      <p style="margin:0 0 8px 0;font-size:1.05rem;font-weight:700;color:#0f172a;font-family:'Inter',sans-serif;">{_sm[1]}</p>
+      <p style="margin:0;font-size:0.95rem;color:#334155;font-family:'Inter',sans-serif;line-height:1.75;">{_sm[2]}</p>
+    </div>""", unsafe_allow_html=True)
+
+            for icon, title, body, takeaway, label in _simple_sections:
+                st.markdown(f"""
     <div style="background:#ffffff;border:1px solid #e2e8f0;border-radius:12px;
                 padding:1.3rem 1.5rem;margin-bottom:1rem;
                 box-shadow:0 1px 4px rgba(0,0,0,0.05);">
@@ -2450,36 +2441,33 @@ with _tab_guides:
     </div>
     """, unsafe_allow_html=True)
 
-        # ── Charts for Plain & Simple ──────────────────────────────────────────
-        st.markdown("---")
-        st.markdown("### The Charts — In Plain Terms")
-        st.caption("These are the actual data visualisations from the dashboard. They look complex, but the numbers tell a simple story.")
+        with _ps_right:
+            st.markdown("### The Charts — In Plain Terms")
+            st.caption("These are the actual data visualisations from the dashboard. They look complex, but the numbers tell a simple story.")
 
-        _ps_c1, _ps_c2 = st.columns(2, gap="large")
-        with _ps_c1:
             st.markdown("#### Which sectors get hit hardest by ransomware?")
             st.caption(
                 "Each bar shows how often ransomware was involved in that industry's breaches. "
                 "Manufacturing and Education rank highest — older systems make them easier targets."
             )
             st.plotly_chart(fig_rs, use_container_width=True, key="chart_rs_guides_plain", config={"displayModeBar": False, "scrollZoom": False})
-            st.markdown('<p style="font-size:0.72rem;color:#94a3b8;font-family:\'Inter\',sans-serif;margin-top:-10px;">Source: Verizon 2025 Data Breach Investigations Report (DBIR) · 🌍 Global</p>', unsafe_allow_html=True)
-        with _ps_c2:
+            st.markdown('<p style="font-size:0.72rem;color:#94a3b8;font-family:\'Inter\',sans-serif;margin-top:-10px;">Source: Verizon 2025 Data Breach Investigations Report (DBIR) · Global</p>', unsafe_allow_html=True)
+
             st.markdown("#### Is ransomware getting worse?")
             st.caption(
                 "Attacks have risen sharply — but so has resistance. "
                 "64% of victims now refuse to pay, making ransomware less profitable for attackers."
             )
             st.plotly_chart(fig_fore, use_container_width=True, key="chart_fore_guides_plain", config={"displayModeBar": False, "scrollZoom": False})
-            st.markdown('<p style="font-size:0.72rem;color:#94a3b8;font-family:\'Inter\',sans-serif;margin-top:-10px;">Source: Verizon 2025 Data Breach Investigations Report (DBIR) · 🌍 Global</p>', unsafe_allow_html=True)
+            st.markdown('<p style="font-size:0.72rem;color:#94a3b8;font-family:\'Inter\',sans-serif;margin-top:-10px;">Source: Verizon 2025 Data Breach Investigations Report (DBIR) · Global</p>', unsafe_allow_html=True)
 
-        st.markdown("#### What do hackers steal?")
-        st.caption(
-            "Passwords unlock the most doors, so they are the top target. "
-            "Personal details (name, address, ID) and internal documents follow — all valuable on criminal markets."
-        )
-        st.plotly_chart(fig_dt, use_container_width=True, key="chart_dt_guides_plain", config={"displayModeBar": False, "scrollZoom": False})
-        st.markdown('<p style="font-size:0.72rem;color:#94a3b8;font-family:\'Inter\',sans-serif;margin-top:-10px;">Source: Verizon 2025 Data Breach Investigations Report (DBIR) · 🌍 Global</p>', unsafe_allow_html=True)
+            st.markdown("#### What do hackers steal?")
+            st.caption(
+                "Passwords unlock the most doors, so they are the top target. "
+                "Personal details (name, address, ID) and internal documents follow — all valuable on criminal markets."
+            )
+            st.plotly_chart(fig_dt, use_container_width=True, key="chart_dt_guides_plain", config={"displayModeBar": False, "scrollZoom": False})
+            st.markdown('<p style="font-size:0.72rem;color:#94a3b8;font-family:\'Inter\',sans-serif;margin-top:-10px;">Source: Verizon 2025 Data Breach Investigations Report (DBIR) · Global</p>', unsafe_allow_html=True)
 
     # ─────────────────────────────────────────
     # ADVANCED — For IT & Security Professionals
@@ -2492,14 +2480,14 @@ with _tab_guides:
                 box-shadow:0 2px 12px rgba(37,99,235,0.08);">
       <p style="margin:0 0 0.4rem 0;font-size:0.8rem;font-weight:700;letter-spacing:0.08em;
                 color:#1d4ed8;text-transform:uppercase;font-family:'Inter',sans-serif;">
-        Advanced · For Information Technology and Security Professionals
+        Advanced · For those who want to dig deeper
       </p>
       <h2 style="margin:0 0 0.6rem 0;font-size:1.7rem;font-weight:800;color:#0f172a;
                  font-family:'Inter',sans-serif;border:none;padding:0;margin-top:0;">
         2025 Threat Intelligence — Data-Driven View
       </h2>
       <p style="margin:0;font-size:1rem;color:#475569;font-family:'Inter',sans-serif;line-height:1.7;max-width:780px;">
-        Key metrics from the Verizon Data Breach Investigations Report 2025 and Kaspersky Industrial Control Systems Cyber Emergency Response Team, second quarter 2025 — visualised for situational awareness across sectors, attack vectors, and Operational Technology environments.
+        A closer look at the data — breach patterns, attack vectors, and regional threat trends, visualised for anyone who wants the full picture.
       </p>
     </div>
     """, unsafe_allow_html=True)
@@ -2531,13 +2519,6 @@ with _tab_guides:
                  "Run a sweep of your vulnerability backlog and close out anything rated Critical or High that has been open longer than your Service Level Agreement. Carry-over risk compounds into the new year's attack surface."),
         }
         _at = _adv_tips[datetime.datetime.now().month]
-        st.markdown("### Security Focus This Month")
-        st.markdown(f"""
-    <div style="background:#eff6ff;border:1px solid #bfdbfe;border-left:5px solid #2563eb;
-                border-radius:10px;padding:1.3rem 1.5rem;margin-bottom:1.5rem;">
-      <p style="margin:0 0 8px 0;font-size:1.05rem;font-weight:700;color:#0f172a;font-family:'Inter',sans-serif;">{_at[0]}</p>
-      <p style="margin:0;font-size:0.95rem;color:#334155;font-family:'Inter',sans-serif;line-height:1.75;">{_at[1]}</p>
-    </div>""", unsafe_allow_html=True)
 
         _adv_sections = [
             ("Sector Breach Exposure",
@@ -2578,8 +2559,20 @@ with _tab_guides:
              "Attack Methods"),
         ]
 
-        for title, body, action, label in _adv_sections:
+        # ── Side-by-side layout: text left, charts right ──────────────────────
+        _adv_left, _adv_right = st.columns([2, 3], gap="large")
+
+        with _adv_left:
+            st.markdown("### Security Focus This Month")
             st.markdown(f"""
+    <div style="background:#eff6ff;border:1px solid #bfdbfe;border-left:5px solid #2563eb;
+                border-radius:10px;padding:1.3rem 1.5rem;margin-bottom:1.5rem;">
+      <p style="margin:0 0 8px 0;font-size:1.05rem;font-weight:700;color:#0f172a;font-family:'Inter',sans-serif;">{_at[0]}</p>
+      <p style="margin:0;font-size:0.95rem;color:#334155;font-family:'Inter',sans-serif;line-height:1.75;">{_at[1]}</p>
+    </div>""", unsafe_allow_html=True)
+
+            for title, body, action, label in _adv_sections:
+                st.markdown(f"""
     <div style="background:#ffffff;border:1px solid #e2e8f0;border-radius:12px;
                 padding:1.3rem 1.5rem;margin-bottom:1rem;
                 box-shadow:0 1px 4px rgba(0,0,0,0.05);">
@@ -2597,29 +2590,25 @@ with _tab_guides:
     </div>
     """, unsafe_allow_html=True)
 
-        st.markdown("---")
-        st.markdown("### The Charts — Technical View")
-        st.caption("Visualisations derived from the Verizon Data Breach Investigations Report 2025 and Kaspersky Industrial Control Systems Cyber Emergency Response Team, second quarter 2025.")
+        with _adv_right:
+            st.markdown("### The Charts — Technical View")
+            st.caption("Visualisations derived from the Verizon Data Breach Investigations Report 2025 and Kaspersky Industrial Control Systems Cyber Emergency Response Team, second quarter 2025.")
 
-        _adv_c1, _adv_c2 = st.columns(2, gap="large")
-        with _adv_c1:
             st.markdown("#### Sector Breach Exposure")
             st.caption("Composite risk score across industries based on incident volume and data sensitivity. Finance and Healthcare carry the highest exposure.")
             st.plotly_chart(fig_radar, use_container_width=True, key="chart_radar_guides_adv", config={"displayModeBar": False, "scrollZoom": False})
-            st.markdown('<p style="font-size:0.72rem;color:#94a3b8;font-family:\'Inter\',sans-serif;margin-top:-10px;">Source: Verizon 2025 Data Breach Investigations Report (DBIR) · 🌍 Global</p>', unsafe_allow_html=True)
-        with _adv_c2:
+            st.markdown('<p style="font-size:0.72rem;color:#94a3b8;font-family:\'Inter\',sans-serif;margin-top:-10px;">Source: Verizon 2025 Data Breach Investigations Report (DBIR) · Global</p>', unsafe_allow_html=True)
+
             st.markdown("#### Ransomware by Sector")
             st.caption("44% of all breaches involved ransomware in 2025 — up from 32% in 2023. Manufacturing and Education are the hardest-hit industries.")
             st.plotly_chart(fig_rs, use_container_width=True, key="chart_rs_guides_adv", config={"displayModeBar": False, "scrollZoom": False})
-            st.markdown('<p style="font-size:0.72rem;color:#94a3b8;font-family:\'Inter\',sans-serif;margin-top:-10px;">Source: Verizon 2025 Data Breach Investigations Report (DBIR) · 🌍 Global</p>', unsafe_allow_html=True)
+            st.markdown('<p style="font-size:0.72rem;color:#94a3b8;font-family:\'Inter\',sans-serif;margin-top:-10px;">Source: Verizon 2025 Data Breach Investigations Report (DBIR) · Global</p>', unsafe_allow_html=True)
 
-        _adv_c3, _adv_c4 = st.columns(2, gap="large")
-        with _adv_c3:
             st.markdown("#### Ransomware Trend")
             st.caption("Ransomware in breaches nearly doubled from 2022 to 2024. Ransom refusal rose from 50% to 64% as organisations improved backup and recovery.")
             st.plotly_chart(fig_fore, use_container_width=True, key="chart_fore_guides_adv", config={"displayModeBar": False, "scrollZoom": False})
-            st.markdown('<p style="font-size:0.72rem;color:#94a3b8;font-family:\'Inter\',sans-serif;margin-top:-10px;">Source: Verizon 2025 Data Breach Investigations Report (DBIR) · 🌍 Global</p>', unsafe_allow_html=True)
-        with _adv_c4:
+            st.markdown('<p style="font-size:0.72rem;color:#94a3b8;font-family:\'Inter\',sans-serif;margin-top:-10px;">Source: Verizon 2025 Data Breach Investigations Report (DBIR) · Global</p>', unsafe_allow_html=True)
+
             st.markdown("#### ICS Attack Rate by Region")
             st.caption("1 in 5 industrial computers globally had a threat blocked in Q2 2025. Africa and Southeast Asia show the highest rates, reflecting lower OT security maturity.")
             st.plotly_chart(fig_ics_region, use_container_width=True, key="chart_ics_region_guides_adv", config={"displayModeBar": False, "scrollZoom": False})
@@ -2834,7 +2823,7 @@ with _tab_about:
 <div style="background:linear-gradient(135deg,#eff6ff 0%,#f0fdf4 100%);
             border:1px solid #bfdbfe;border-radius:16px;
             padding:2rem 2.4rem;margin-bottom:1.6rem;">
-  <p style="font-size:1.15rem;{_p}margin-bottom:0.8rem;">What Is CyberSignals?</p>
+  <p style="font-size:1.15rem;{_p}margin-bottom:0.8rem;">&#x1F6E1;&#xFE0F; What Is CyberSignals?</p>
   <p style="{_p}margin-bottom:0.7rem;max-width:800px;">
     Think of CyberSignals like a neighbourhood watch report — but for the internet.
     Every day, criminals try to break into computers, steal personal information, and extort businesses.
@@ -2856,7 +2845,7 @@ with _tab_about:
 
     _ab1.markdown(f"""
 <div style="background:#fffbeb;border:1px solid #fde68a;border-radius:12px;padding:1.3rem;height:100%;">
-  <p style="font-size:0.88rem;color:#92400e;font-family:'Inter',sans-serif;margin:0 0 0.5rem 0;">Everyday People</p>
+  <p style="font-size:0.88rem;color:#92400e;font-family:'Inter',sans-serif;margin:0 0 0.5rem 0;">&#x1F464; Everyday People</p>
   <p style="font-size:0.88rem;color:#78350f;font-family:'Inter',sans-serif;line-height:1.75;margin:0;">
     If you use a phone, send emails, or shop online — this affects you.
     You do not need to understand technology to be at risk, and you do not need to understand it
@@ -2866,7 +2855,7 @@ with _tab_about:
 
     _ab2.markdown(f"""
 <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:12px;padding:1.3rem;height:100%;">
-  <p style="font-size:0.88rem;color:#15803d;font-family:'Inter',sans-serif;margin:0 0 0.5rem 0;">Business Owners and Leaders</p>
+  <p style="font-size:0.88rem;color:#15803d;font-family:'Inter',sans-serif;margin:0 0 0.5rem 0;">&#x1F4BC; Business Owners and Leaders</p>
   <p style="font-size:0.88rem;color:#166534;font-family:'Inter',sans-serif;line-height:1.75;margin:0;">
     44% of all confirmed breaches in 2024 involved ransomware — criminals locking your files
     and demanding payment. One attack can shut down your entire business for days or weeks.
@@ -2876,7 +2865,7 @@ with _tab_about:
 
     _ab3.markdown(f"""
 <div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:12px;padding:1.3rem;height:100%;">
-  <p style="font-size:0.88rem;color:#1d4ed8;font-family:'Inter',sans-serif;margin:0 0 0.5rem 0;">Security and IT Professionals</p>
+  <p style="font-size:0.88rem;color:#1d4ed8;font-family:'Inter',sans-serif;margin:0 0 0.5rem 0;">&#x1F510; Security and IT Professionals</p>
   <p style="font-size:0.88rem;color:#1e40af;font-family:'Inter',sans-serif;line-height:1.75;margin:0;">
     Explore breach patterns, attack vectors, threat actor profiles, ICS/OT telemetry,
     and 2030 trend projections — all sourced from Verizon DBIR 2025 and Kaspersky ICS-CERT Q2 2025.
@@ -2887,27 +2876,27 @@ with _tab_about:
     st.markdown("<br/>", unsafe_allow_html=True)
 
     # ── 5 things anyone can do ────────────────────────────────────────────────
-    st.markdown(f'<p style="{_p}margin-bottom:0.3rem;">5 things anyone can do right now</p>', unsafe_allow_html=True)
+    st.markdown(f'<p style="{_p}margin-bottom:0.3rem;">&#x2705; 5 things anyone can do right now</p>', unsafe_allow_html=True)
     st.markdown(f'<p style="{_pm}margin-bottom:1rem;">No technical knowledge needed. These five habits stop the vast majority of attacks.</p>', unsafe_allow_html=True)
 
     _tips = [
-        ("#fef3c7", "#f59e0b", "Use a different password for every account",
+        ("#fef3c7", "#f59e0b", "&#x1F511; Use a different password for every account",
          "If a criminal steals your password from one website, they will try it on your bank, email, "
          "and every other account. A free password manager (like Bitwarden or Apple Keychain) remembers "
          "them all for you — you only need to remember one."),
-        ("#dcfce7", "#22c55e", "Turn on two-step verification (2FA)",
+        ("#dcfce7", "#22c55e", "&#x1F4F1; Turn on two-step verification (2FA)",
          "This means that even if someone has your password, they still cannot get in without a second "
          "code sent to your phone. Turn it on for your email and bank accounts first — those are the "
          "most important ones to protect."),
-        ("#fee2e2", "#ef4444", "Never click links in unexpected messages",
+        ("#fee2e2", "#ef4444", "&#x1F6AB; Never click links in unexpected messages",
          "If you get a text or email saying your package is stuck, your account is locked, or you owe "
          "money — do not click any link. Instead, go directly to the website by typing the address "
          "yourself. Real companies do not demand urgent action through unexpected messages."),
-        ("#ede9fe", "#8b5cf6", "Keep your devices updated",
+        ("#ede9fe", "#8b5cf6", "&#x1F504; Keep your devices updated",
          "When your phone or computer says there is a software update, install it promptly. "
          "Those updates fix security holes that criminals actively exploit. Delaying an update "
          "is like leaving a known broken window in your home."),
-        ("#e0f2fe", "#0ea5e9", "Be careful what you share online",
+        ("#e0f2fe", "#0ea5e9", "&#x1F441;&#xFE0F; Be careful what you share online",
          "Your mother's maiden name, your pet's name, your birthday — these are all commonly used "
          "as security questions or password hints. Criminals scan social media to collect this "
          "information before targeting you. Share personal details carefully."),
@@ -2924,7 +2913,7 @@ with _tab_about:
     st.markdown("<br/>", unsafe_allow_html=True)
 
     # ── Warning signs ─────────────────────────────────────────────────────────
-    st.markdown(f'<p style="{_p}margin-bottom:0.3rem;">Warning signs to watch for</p>', unsafe_allow_html=True)
+    st.markdown(f'<p style="{_p}margin-bottom:0.3rem;">&#x26A0;&#xFE0F; Warning signs to watch for</p>', unsafe_allow_html=True)
     st.markdown(f'<p style="{_pm}margin-bottom:1rem;">If any of these happen, stop and do not proceed.</p>', unsafe_allow_html=True)
 
     _flags = [
@@ -2939,7 +2928,7 @@ with _tab_about:
     _flag_html = "".join([
         f'<div style="display:flex;align-items:flex-start;gap:10px;padding:9px 0;'
         f'border-bottom:1px solid #fee2e2;">'
-        f'<span style="font-size:0.88rem;color:#ef4444;flex-shrink:0;">—</span>'
+        f'<span style="font-size:0.88rem;color:#ef4444;flex-shrink:0;">&#x26A0;</span>'
         f'<span style="font-size:0.88rem;color:{TEXT};font-family:\'Inter\',sans-serif;line-height:1.75;">{f}</span>'
         f'</div>'
         for f in _flags
@@ -2953,13 +2942,13 @@ with _tab_about:
     st.markdown("<br/>", unsafe_allow_html=True)
 
     # ── About the data ─────────────────────────────────────────────────────────
-    st.markdown(f'<p style="{_p}margin-bottom:0.8rem;">About the data</p>', unsafe_allow_html=True)
+    st.markdown(f'<p style="{_p}margin-bottom:0.8rem;">&#x1F4CA; About the data</p>', unsafe_allow_html=True)
 
     _src1, _src2 = st.columns(2, gap="large")
     _src1.markdown(f"""
 <div style="background:{SURFACE};border:1px solid {BORDER};border-radius:12px;padding:1.2rem;">
   <p style="font-size:0.88rem;color:{TEXT};font-family:'Inter',sans-serif;margin:0 0 0.5rem 0;">
-    Verizon DBIR 2025
+    &#x1F4D6; Verizon DBIR 2025
   </p>
   <p style="font-size:0.88rem;color:{MUTED};font-family:'Inter',sans-serif;line-height:1.75;margin:0;">
     The Data Breach Investigations Report is the world's most cited cybersecurity study.
@@ -2972,7 +2961,7 @@ with _tab_about:
     _src2.markdown(f"""
 <div style="background:{SURFACE};border:1px solid {BORDER};border-radius:12px;padding:1.2rem;">
   <p style="font-size:0.88rem;color:{TEXT};font-family:'Inter',sans-serif;margin:0 0 0.5rem 0;">
-    Kaspersky ICS-CERT Q2 2025
+    &#x1F3ED; Kaspersky ICS-CERT Q2 2025
   </p>
   <p style="font-size:0.88rem;color:{MUTED};font-family:'Inter',sans-serif;line-height:1.75;margin:0;">
     Kaspersky's Industrial Control Systems threat report covers attacks on factory floors,
