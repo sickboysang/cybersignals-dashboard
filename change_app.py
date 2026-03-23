@@ -642,7 +642,6 @@ def show_full_analysis():
             fig_big.update_layout(height=480, margin=dict(l=40, r=20, t=30, b=40), dragmode=False)
             st.plotly_chart(fig_big, use_container_width=True, key="chart_big",
                             config={"displayModeBar": False, "scrollZoom": False})
-        st.markdown(source_badge(source), unsafe_allow_html=True)
 
     with col_text:
         st.markdown(f"""
@@ -1395,7 +1394,6 @@ with _tab_sector:
                           "better at stopping attacks before data is compromised. The radar shape gives an at-a-glance view of "
                           "which sectors are the most vulnerable overall: a large, jagged shape signals broad systemic risk; "
                           "a narrow shape suggests risk is concentrated in only a few sectors.")
-            st.markdown(source_badge(_src_radar), unsafe_allow_html=True)
             st.markdown(insight_box(_hl_radar, _bd_radar), unsafe_allow_html=True)
             open_analysis_btn("radar", fig_radar, "Breach Exposure by Sector",
                               _src_radar, _hl_radar, _bd_radar, _ext_radar)
@@ -1444,7 +1442,6 @@ with _tab_sector:
                          "legacy software that cannot be easily patched, and Operational Technology environments were never "
                          "designed with network segmentation in mind. The Retail sector's gap is also narrow: point-of-sale "
                          "attacks are quick, automated, and hard to detect before cards are already exfiltrated.")
-            st.markdown(source_badge(_src_pres), unsafe_allow_html=True)
             st.markdown(insight_box(_hl_pres, _bd_pres), unsafe_allow_html=True)
             open_analysis_btn("incidents_breaches", fig_pressure, "Incidents vs Confirmed Breaches",
                               _src_pres, _hl_pres, _bd_pres, _ext_pres)
@@ -1529,7 +1526,6 @@ with _tab_sector:
                          "Attackers know this, which is why 'double extortion' (stealing data before encrypting it) has "
                          "become the dominant tactic — the threat to publish is a second lever of pressure even when "
                          "backups exist.")
-            st.markdown(source_badge(_src_fore), unsafe_allow_html=True)
             st.markdown(insight_box(_hl_fore, _bd_fore), unsafe_allow_html=True)
             open_analysis_btn("ransomware_forecast", fig_fore, "Ransomware Is Rising — But More Victims Are Fighting Back",
                               _src_fore, _hl_fore, _bd_fore, _ext_fore)
@@ -1627,7 +1623,6 @@ with _tab_attacks:
                         "and can bypass many perimeter controls entirely. Miscellaneous Errors (accidental data exposures, "
                         "misconfigurations) converting at near 100% is a reminder that not all breaches are malicious — "
                         "a misconfigured cloud storage bucket can expose millions of records with no attacker involved.")
-            st.markdown(source_badge(_src_pat), unsafe_allow_html=True)
             st.markdown(insight_box(_hl_pat, _bd_pat), unsafe_allow_html=True)
             open_analysis_btn("attack_patterns", fig_pat, "Most Common Attack Patterns",
                               _src_pat, _hl_pat, _bd_pat, _ext_pat)
@@ -1672,7 +1667,6 @@ with _tab_attacks:
                         "The near-equal split across all four vectors is a warning: defenders cannot afford to fix only "
                         "one entry point. A multi-layered strategy — strong credential hygiene, rapid patching, phishing "
                         "simulation, and network segmentation — is required to meaningfully reduce initial access risk.")
-            st.markdown(source_badge(_src_pie), unsafe_allow_html=True)
             st.markdown(insight_box(_hl_pie, _bd_pie), unsafe_allow_html=True)
             open_analysis_btn("initial_access", fig_pie, "How Attackers Get In",
                               _src_pie, _hl_pie, _bd_pie, _ext_pie)
@@ -1729,7 +1723,6 @@ with _tab_ransom:
                        "Manufacturing, ransomware is statistically more likely than not to be involved in any breach you "
                        "experience. Offline, tested backups and a rehearsed response plan are the two highest-return "
                        "investments available.")
-            st.markdown(source_badge(_src_rs), unsafe_allow_html=True)
             st.markdown(insight_box(_hl_rs, _bd_rs), unsafe_allow_html=True)
             open_analysis_btn("ransom_sector", fig_rs, "Ransomware Involvement Rate by Industry Sector",
                               _src_rs, _hl_rs, _bd_rs, _ext_rs)
@@ -1778,7 +1771,6 @@ with _tab_ransom:
                         "entire partner ecosystem. State-sponsored actors at 15% are often the hardest to detect and "
                         "remove — they operate with long time horizons, prioritize stealth over speed, and are backed "
                         "by substantial intelligence resources.")
-            st.markdown(source_badge(_src_act), unsafe_allow_html=True)
             st.markdown(insight_box(_hl_act, _bd_act), unsafe_allow_html=True)
             open_analysis_btn("threat_actors", fig_act, "Who Is Behind the Attacks?",
                               _src_act, _hl_act, _bd_act, _ext_act)
@@ -1829,7 +1821,6 @@ with _tab_data:
                        "credentials in one breach may find them used to breach a partner organization months later. "
                        "Payment card data, while historically the top target, has declined in relative value as card "
                        "networks improve real-time fraud detection.")
-            st.markdown(source_badge(_src_dt), unsafe_allow_html=True)
             st.markdown(insight_box(_hl_dt, _bd_dt), unsafe_allow_html=True)
             open_analysis_btn("data_types", fig_dt, "Most Commonly Stolen Data",
                               _src_dt, _hl_dt, _bd_dt, _ext_dt)
@@ -1879,7 +1870,6 @@ with _tab_data:
                         "credentials and Multi-Factor Authentication codes as they are entered. The only effective defence "
                         "against this technique is phishing-resistant authentication — hardware security keys or passkeys "
                         "that are cryptographically bound to the legitimate domain and cannot be proxied.")
-            st.markdown(source_badge(_src_mfa), unsafe_allow_html=True)
             st.markdown(insight_box(_hl_mfa, _bd_mfa), unsafe_allow_html=True)
             open_analysis_btn("mfa_bypass", fig_mfa, "How Attackers Bypass Multi-Factor Authentication",
                               _src_mfa, _hl_mfa, _bd_mfa, _ext_mfa)
@@ -1962,7 +1952,6 @@ with _tab_trends:
                    "despite widespread training investment is a reminder that it is a people problem as much as "
                    "a technology problem — phishing-resistant authentication (hardware keys, passkeys) is more "
                    "effective than training alone at stopping credential theft via phishing.")
-        st.markdown(source_badge(_src_tr), unsafe_allow_html=True)
         st.markdown(insight_box(_hl_tr, _bd_tr), unsafe_allow_html=True)
         open_analysis_btn("trends", fig_trends, "How Exploitation Trends Have Shifted Over 12 Weeks",
                           _src_tr, _hl_tr, _bd_tr, _ext_tr)
@@ -2040,7 +2029,6 @@ with _tab_ics:
                          "Central Asia recorded the largest single-quarter improvement (−3.6 percentage points), suggesting "
                          "targeted remediation efforts. Australia and New Zealand and Northern Europe both saw small increases, "
                          "which may reflect broader detection capability expansion rather than a true rise in attacks.")
-            st.markdown(source_badge(url="https://ics-cert.kaspersky.com/publications/reports/2025/09/11/threat-landscape-for-industrial-automation-systems-q2-2025/", label="Kaspersky ICS-CERT — Threat Landscape for Industrial Automation Systems, Q2 2025"), unsafe_allow_html=True)
             st.markdown(insight_box(_hl_icsr, _bd_icsr), unsafe_allow_html=True)
             open_analysis_btn("ics_region", fig_ics_region,
                               "ICS Attack Rate by Region (Q2 2025)",
@@ -2094,7 +2082,6 @@ with _tab_ics:
                          "following the 2021 Colonial Pipeline incident, which drove sector-wide adoption of air-gapping, "
                          "network segmentation, and Purdue Model enforcement. Electric Power sits close to the global "
                          "average, consistent with ongoing nation-state interest in energy infrastructure.")
-            st.markdown(source_badge(url="https://ics-cert.kaspersky.com/publications/reports/2025/09/11/threat-landscape-for-industrial-automation-systems-q2-2025/", label="Kaspersky ICS-CERT — Threat Landscape for Industrial Automation Systems, Q2 2025 · 🌍 Global"), unsafe_allow_html=True)
             st.markdown(insight_box(_hl_icsi, _bd_icsi), unsafe_allow_html=True)
             open_analysis_btn("ics_industry", fig_ics_industry,
                               "ICS Attack Rate by Industry Sector (Q2 2025)",
@@ -2159,7 +2146,6 @@ with _tab_ics:
                          "normalising. Ransomware in ICS environments remains low in percentage terms (0.14%), but targets "
                          "operational technology directly — with the potential for physical disruption to critical "
                          "infrastructure, unlike traditional IT ransomware.")
-            st.markdown(source_badge(url="https://ics-cert.kaspersky.com/publications/reports/2025/09/11/threat-landscape-for-industrial-automation-systems-q2-2025/", label="Kaspersky ICS-CERT — Threat Landscape for Industrial Automation Systems, Q2 2025 · 🌍 Global"), unsafe_allow_html=True)
             st.markdown(insight_box(_hl_icsh, _bd_icsh), unsafe_allow_html=True)
             open_analysis_btn("ics_hist", fig_ics_hist,
                               "Global ICS Attack Rate Trend (2022 – 2025)",
@@ -2215,7 +2201,6 @@ with _tab_ics:
                          "that engineering staff are using email on machines that also run industrial software — a "
                          "dangerous convergence of IT and operational technology environments. Dedicated operational "
                          "technology workstations with no email client access are a recommended mitigation.")
-            st.markdown(source_badge(url="https://ics-cert.kaspersky.com/publications/reports/2025/09/11/threat-landscape-for-industrial-automation-systems-q2-2025/", label="Kaspersky ICS-CERT — Threat Landscape for Industrial Automation Systems, Q2 2025 · 🌍 Global"), unsafe_allow_html=True)
             st.markdown(insight_box(_hl_icss, _bd_icss), unsafe_allow_html=True)
             open_analysis_btn("ics_sources", fig_ics_src,
                               "How Threats Reach Industrial Systems (2024 – 2025)",
@@ -2432,31 +2417,14 @@ with _tab_guides:
 
         with _ps_right:
             st.markdown("### The Charts — In Plain Terms")
-            st.caption("These are the actual data visualisations from the dashboard. They look complex, but the numbers tell a simple story.")
-
             st.markdown("#### Which sectors get hit hardest by ransomware?")
-            st.caption(
-                "Each bar shows how often ransomware was involved in that industry's breaches. "
-                "Manufacturing and Education rank highest — older systems make them easier targets."
-            )
             st.plotly_chart(fig_rs, use_container_width=True, key="chart_rs_guides_plain", config={"displayModeBar": False, "scrollZoom": False})
-            st.markdown('<p style="font-size:0.72rem;color:#94a3b8;font-family:\'Inter\',sans-serif;margin-top:-10px;">Source: Verizon 2025 Data Breach Investigations Report (DBIR) · Global</p>', unsafe_allow_html=True)
 
             st.markdown("#### Is ransomware getting worse?")
-            st.caption(
-                "Attacks have risen sharply — but so has resistance. "
-                "64% of victims now refuse to pay, making ransomware less profitable for attackers."
-            )
             st.plotly_chart(fig_fore, use_container_width=True, key="chart_fore_guides_plain", config={"displayModeBar": False, "scrollZoom": False})
-            st.markdown('<p style="font-size:0.72rem;color:#94a3b8;font-family:\'Inter\',sans-serif;margin-top:-10px;">Source: Verizon 2025 Data Breach Investigations Report (DBIR) · Global</p>', unsafe_allow_html=True)
 
             st.markdown("#### What do hackers steal?")
-            st.caption(
-                "Passwords unlock the most doors, so they are the top target. "
-                "Personal details (name, address, ID) and internal documents follow — all valuable on criminal markets."
-            )
             st.plotly_chart(fig_dt, use_container_width=True, key="chart_dt_guides_plain", config={"displayModeBar": False, "scrollZoom": False})
-            st.markdown('<p style="font-size:0.72rem;color:#94a3b8;font-family:\'Inter\',sans-serif;margin-top:-10px;">Source: Verizon 2025 Data Breach Investigations Report (DBIR) · Global</p>', unsafe_allow_html=True)
 
     # ─────────────────────────────────────────
     # ADVANCED — For IT & Security Professionals
@@ -2608,27 +2576,18 @@ with _tab_guides:
 
         with _adv_right:
             st.markdown("### The Charts — Technical View")
-            st.caption("Visualisations derived from the Verizon Data Breach Investigations Report 2025 and Kaspersky Industrial Control Systems Cyber Emergency Response Team, second quarter 2025.")
 
             st.markdown("#### Sector Breach Exposure")
-            st.caption("Composite risk score across industries based on incident volume and data sensitivity. Finance and Healthcare carry the highest exposure.")
             st.plotly_chart(fig_radar, use_container_width=True, key="chart_radar_guides_adv", config={"displayModeBar": False, "scrollZoom": False})
-            st.markdown('<p style="font-size:0.72rem;color:#94a3b8;font-family:\'Inter\',sans-serif;margin-top:-10px;">Source: Verizon 2025 Data Breach Investigations Report (DBIR) · Global</p>', unsafe_allow_html=True)
 
             st.markdown("#### Ransomware by Sector")
-            st.caption("44% of all breaches involved ransomware in 2025 — up from 32% in 2023. Manufacturing and Education are the hardest-hit industries.")
             st.plotly_chart(fig_rs, use_container_width=True, key="chart_rs_guides_adv", config={"displayModeBar": False, "scrollZoom": False})
-            st.markdown('<p style="font-size:0.72rem;color:#94a3b8;font-family:\'Inter\',sans-serif;margin-top:-10px;">Source: Verizon 2025 Data Breach Investigations Report (DBIR) · Global</p>', unsafe_allow_html=True)
 
             st.markdown("#### Ransomware Trend")
-            st.caption("Ransomware in breaches nearly doubled from 2022 to 2024. Ransom refusal rose from 50% to 64% as organisations improved backup and recovery.")
             st.plotly_chart(fig_fore, use_container_width=True, key="chart_fore_guides_adv", config={"displayModeBar": False, "scrollZoom": False})
-            st.markdown('<p style="font-size:0.72rem;color:#94a3b8;font-family:\'Inter\',sans-serif;margin-top:-10px;">Source: Verizon 2025 Data Breach Investigations Report (DBIR) · Global</p>', unsafe_allow_html=True)
 
             st.markdown("#### ICS Attack Rate by Region")
-            st.caption("1 in 5 industrial computers globally had a threat blocked in Q2 2025. Africa and Southeast Asia show the highest rates, reflecting lower OT security maturity.")
             st.plotly_chart(fig_ics_region, use_container_width=True, key="chart_ics_region_guides_adv", config={"displayModeBar": False, "scrollZoom": False})
-            st.markdown('<p style="font-size:0.72rem;color:#94a3b8;font-family:\'Inter\',sans-serif;margin-top:-10px;">Source: Kaspersky ICS-CERT — Threat Landscape for Industrial Automation Systems, Q2 2025</p>', unsafe_allow_html=True)
 
     # ─────────────────────────────────────────
 
@@ -2642,8 +2601,7 @@ with _tab_outlook:
 
     st.markdown(
         f'<p style="font-size:0.8rem;color:{MUTED};font-family:\'Inter\',sans-serif;margin-bottom:1.2rem;">'
-        f'Forward projections from DBIR 2025 and Kaspersky ICS-CERT Q2 2025 · '
-        f'Auto-refreshed {_now.strftime("%B %Y")}</p>',
+        f'Where the data is heading — projected to 2030</p>',
         unsafe_allow_html=True,
     )
 
@@ -2824,7 +2782,6 @@ with _tab_outlook:
     st.markdown('<br/>', unsafe_allow_html=True)
     st.caption("Forecasts use polynomial regression on DBIR 2022–2024 and Kaspersky ICS-CERT 2022–2025 data. Dashed lines indicate projected range. Actual outcomes will vary.")
     st.caption("Trend judgements and projections assisted by Claude AI (Anthropic).")
-    st.markdown(source_badge(), unsafe_allow_html=True)
 
 # ─────────────────────────────────────────
 # ABOUT & STAY SAFE TAB
