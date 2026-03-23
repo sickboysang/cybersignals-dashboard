@@ -1217,67 +1217,43 @@ with _tab_home:
 
         _now   = datetime.datetime.now()
         _month = _now.month
-        _tip   = _TIPS[_month]
 
-        # Build prevention list HTML outside the f-string (backslashes not allowed inside f-string expressions)
+        _tip = _TIPS[_month]
         _tip_prevention_html = "".join(
             '<p style="margin:0.35rem 0 0 0;font-size:0.875rem;color:#334155;'
             'font-family:\'Inter\',sans-serif;line-height:1.55;">&#10004;&nbsp;' + t + '</p>'
             for t in _tip["prevention"]
         )
-
         st.markdown(
     f"""
-<div style="
-    background: #ffffff;
-    border: 1px solid #e2e8f0;
-    border-left: 6px solid {_tip['risk_color']};
-    border-radius: 12px;
-    padding: 1.4rem 1.6rem 1.2rem 1.6rem;
-    margin-bottom: 1.2rem;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-">
-  <!-- header row -->
+<div style="background:#ffffff;border:1px solid #e2e8f0;border-left:6px solid {_tip['risk_color']};
+            border-radius:12px;padding:1.4rem 1.6rem 1.2rem 1.6rem;margin-bottom:1.2rem;
+            box-shadow:0 2px 8px rgba(0,0,0,0.06);">
   <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:0.9rem;">
     <div style="display:flex;align-items:center;gap:10px;">
       <span style="font-size:2rem;line-height:1;">{_tip['icon']}</span>
       <div>
-        <p style="margin:0;font-size:0.72rem;font-weight:400;letter-spacing:0.04em;
-                  color:#64748b;font-family:'Inter',sans-serif;">
+        <p style="margin:0;font-size:0.72rem;color:#64748b;font-family:'Inter',sans-serif;">
           Threat Focus · {_tip['month']} {_now.year}
         </p>
-        <p style="margin:0;font-size:1rem;font-weight:600;color:#0f172a;font-family:'Inter',sans-serif;line-height:1.25;">
-          {_tip['threat']}
-        </p>
+        <p style="margin:0;font-size:1rem;font-weight:600;color:#0f172a;font-family:'Inter',sans-serif;">{_tip['threat']}</p>
       </div>
     </div>
-    <span style="
-        padding:4px 14px;border-radius:20px;font-size:0.72rem;font-weight:500;
-        letter-spacing:0.03em;font-family:'Inter',sans-serif;
-        background:{_tip['risk_color']};color:#ffffff;">
+    <span style="padding:4px 14px;border-radius:20px;font-size:0.72rem;font-weight:500;
+                 background:{_tip['risk_color']};color:#ffffff;font-family:'Inter',sans-serif;">
       {_tip['risk']} RISK
     </span>
   </div>
-
-  <!-- body -->
-  <p style="margin:0 0 1rem 0;font-size:0.9rem;line-height:1.7;color:#334155;
-            font-family:'Inter',sans-serif;">
+  <p style="margin:0 0 1rem 0;font-size:0.9rem;line-height:1.7;color:#334155;font-family:'Inter',sans-serif;">
     {_tip['summary']}
   </p>
-
-  <!-- prevention list -->
   <div style="background:#f1f5f9;border-radius:8px;padding:0.9rem 1.1rem;border:1px solid #e2e8f0;">
-    <p style="margin:0 0 0.5rem 0;font-size:0.78rem;font-weight:500;letter-spacing:0;
-              color:#2563eb;font-family:'Inter',sans-serif;">
-      🛡️ How to Protect Yourself
+    <p style="margin:0 0 0.5rem 0;font-size:0.78rem;font-weight:500;color:#2563eb;font-family:'Inter',sans-serif;">
+      &#x1F6E1;&#xFE0F; How to Protect Yourself
     </p>
     {_tip_prevention_html}
   </div>
-
-</div>
-        """,
-            unsafe_allow_html=True,
-        )
+</div>""", unsafe_allow_html=True)
 
         # ─────────────────────────────────────────
 # KPI ROW
@@ -2331,46 +2307,6 @@ with _tab_guides:
     </div>
     """, unsafe_allow_html=True)
 
-        _simple_tips = {
-            1:  ("", "Watch Out for Fake Tax Emails",
-                 "Scammers send emails pretending to be the Canada Revenue Agency saying you owe money or have a refund waiting. "
-                 "The government will NEVER email you asking for your banking details. If you get one of these, delete it and call the CRA directly using the number on their official website."),
-            2:  ("", "Be Careful With Online Romance",
-                 "Scammers create fake dating profiles and build a friendship over weeks before asking for money. "
-                 "If someone you have only met online asks for gift cards or a wire transfer — it is a scam. Always. No exceptions."),
-            3:  ("", "Your Employer Will Never Email You Asking for Your Password",
-                 "If you get an email that looks like it is from IT or payroll asking you to verify your account details, call them on the phone first. "
-                 "Real IT teams do not ask for passwords by email, ever."),
-            4:  ("", "Book Travel Only on Official Websites",
-                 "Fake travel deal websites steal your credit card details. "
-                 "Always type the airline or hotel's web address yourself instead of clicking links in emails or social media ads."),
-            5:  ("", "Protect Your SIN Number Like It Is Cash",
-                 "Your Social Insurance Number is as valuable as cash to a thief. "
-                 "Never give it out during a job interview or to anyone who calls you unexpectedly — a real employer will only ask for it after you are hired, through a secure system."),
-            6:  ("", "Free Wi-Fi at the Coffee Shop Can Be Dangerous",
-                 "Hackers set up fake Wi-Fi networks with names like 'Tim Hortons Free WiFi'. "
-                 "Once connected, they can see everything you do online. Avoid doing banking or anything personal on public Wi-Fi."),
-            7:  ("", "Set Up Alerts on Your Bank Account",
-                 "Ask your bank to send you a text message every time money moves in or out of your account. "
-                 "That way you will know immediately if something suspicious happens while you are away on vacation."),
-            8:  ("", "Talk to Your Kids About Online Scams Before School Starts",
-                 "Children are targeted with fake app downloads and 'free game' links that install viruses on the family computer. "
-                 "A quick 10-minute conversation about not clicking unknown links can save a lot of trouble."),
-            9:  ("", "Use an App for Your Security Codes — Not Text Messages",
-                 "Those 6-digit codes sent by text to confirm your login can be stolen by hackers. "
-                 "Apps like Google Authenticator or Microsoft Authenticator are much safer. Ask your bank if they support it."),
-            10: ("", "Back Up Your Photos and Important Files Today",
-                 "Ransomware is like a digital padlock a criminal puts on all your files — then demands money to unlock them. "
-                 "A simple USB drive backup or free cloud backup (like Google Photos) means you would never need to pay."),
-            11: ("", "If a Deal Looks Too Good to Be True — It Is",
-                 "Fake shopping websites surge every Black Friday. Before buying from an unfamiliar website, "
-                 "search the store name plus the word 'scam' and look very carefully at the web address for subtle misspellings."),
-            12: ("", "Gift Card Requests Are Always a Scam",
-                 "No government agency, grandchild, or employer will ever ask you to buy iTunes or Google Play gift cards to solve a problem. "
-                 "If someone asks this — hang up immediately and tell a family member."),
-        }
-        _sm = _simple_tips[datetime.datetime.now().month]
-
         _simple_sections = [
             ("", "Who Is Getting Targeted?",
              "Hackers pick targets the same way burglars do — easiest entry, most valuable prize. "
@@ -2412,14 +2348,67 @@ with _tab_guides:
         # ── Side-by-side layout: text left, charts right ──────────────────────
         _ps_left, _ps_right = st.columns([2, 3], gap="large")
 
+        # (threat heading, what is happening, what to do right now)
+        _WATCH = {
+            1:  ("Tax Refund Scams Are Peaking",
+                 "January kicks off tax season and scammers know it. You will likely receive fake emails or texts pretending to be the Canada Revenue Agency or IRS saying you have a refund waiting or owe an urgent payment. These messages look very convincing and include official-looking logos.",
+                 "Never click links in tax-related emails or texts. Go directly to the official government website by typing the address yourself. Your tax authority will never demand payment by gift card, cryptocurrency, or wire transfer."),
+            2:  ("Romance Scams Surge in February",
+                 "Valentine's month sees a sharp rise in fake dating profiles designed to build emotional trust before asking for money. Scammers may spend weeks or months chatting before making a request — usually framed as an emergency such as a medical bill, stuck package, or plane ticket.",
+                 "If someone you have only met online asks for money, gift cards, or cryptocurrency — that is a scam without exception. Reverse image-search their profile photo to check if it was stolen from someone else. Report suspicious accounts to the platform immediately."),
+            3:  ("Fake Job Offers and HR Phishing Rise This Month",
+                 "March sees a spike in fraudulent job postings and payroll phishing. Attackers impersonate HR teams asking employees to update direct deposit details, or post fake remote work listings that collect your personal information and banking details during a fake onboarding process.",
+                 "Verify any payroll change request by calling your HR department directly — never through a link in an email. For job offers, research the company independently and never pay a fee or provide banking details before starting a real job."),
+            4:  ("Travel Booking Fraud Peaks with Spring Holidays",
+                 "April holiday travel drives a surge in fake airline, hotel, and vacation rental websites. These sites appear in search results and look identical to real booking platforms. After you pay, the booking does not exist and your card details have been stolen.",
+                 "Book travel only through websites you navigate to directly — not through links in emails or social media ads. Check the URL carefully for subtle misspellings. If a deal seems unusually cheap, search the company name with the word scam before purchasing."),
+            5:  ("AI-Generated Phishing Emails Are Harder to Spot",
+                 "Phishing emails used to be easy to identify from spelling errors. In 2025, attackers use artificial intelligence to write perfect, personalised emails that reference your name, employer, and recent activity. Roughly 10% of phishing lures are now AI-written according to Verizon DBIR 2025.",
+                 "Do not judge an email as safe just because it is well-written. Look at the sender's actual email address, not just the display name. When in doubt, contact the sender through a separate channel — call them or open a fresh browser tab to log in directly."),
+            6:  ("Public Wi-Fi Attacks Are Common in Summer",
+                 "Summer travel means more people using airport, hotel, and cafe Wi-Fi. Attackers set up fake hotspots with names like Free Airport WiFi or Hotel Guest Network. Once connected, they can intercept your traffic and steal passwords or session tokens without you knowing.",
+                 "Avoid doing online banking or accessing sensitive accounts on public Wi-Fi. Use your phone's mobile data instead, or turn on a VPN before connecting. If you must use public Wi-Fi, ensure every site you visit uses HTTPS — look for the padlock in the address bar."),
+            7:  ("Vacation Rental Fraud Hits Its Annual Peak",
+                 "July is the busiest month for fake vacation rental listings on platforms like Facebook Marketplace and even Airbnb clones. Scammers list properties they do not own, collect a deposit, and disappear. Victims often only discover the fraud when they arrive at the address.",
+                 "Only book through established platforms that offer buyer protection. Never pay by bank transfer or gift card — always use a credit card or the platform's official payment system. Video call the host before paying and ask them to show you the property live."),
+            8:  ("Back-to-School Device and Software Scams",
+                 "August sees a rise in fake student software deals, counterfeit educational apps, and phishing emails impersonating schools and universities. Students are targeted with fake Microsoft 365 or Adobe activations that install malware, and fake scholarship or bursary notifications.",
+                 "Download software only from official websites or your institution's licensed portal. Be suspicious of any email offering free software, a scholarship you did not apply for, or an urgent account verification. Contact your school's IT help desk directly if you are unsure."),
+            9:  ("Subscription Renewal Scams Surge in September",
+                 "As free trials from summer sign-ups expire, scammers send fake renewal notices for Netflix, Amazon Prime, antivirus software, and cloud storage. These emails look genuine and create urgency with warnings that your account will be closed or charged unless you verify your payment details immediately.",
+                 "Never click a payment link in a renewal email. Instead, log into your account directly through the official website or app and check your subscription status from there. If you receive an unexpected charge, call your bank — do not call any number listed in the suspicious email."),
+            10: ("Cybersecurity Awareness Month — Check Your Accounts",
+                 "October is Cybersecurity Awareness Month globally. It is also when cybercriminals increase activity, targeting people who are distracted by end-of-year planning. This is the best time to do a personal security check-up before the busy holiday season begins.",
+                 "This month: turn on two-step verification on your email and bank accounts, check Have I Been Pwned at haveibeenpwned.com to see if your email has appeared in a data breach, and update any passwords you have been reusing. These three steps block the majority of common attacks."),
+            11: ("Black Friday Shopping Fraud Peaks This Month",
+                 "November is the highest-risk month for online shopping fraud. Fake retail websites appear in search results offering steep discounts on popular products. After you enter your card details, your money is gone and no item arrives. Counterfeit goods and non-delivery scams both peak sharply.",
+                 "Before buying from an unfamiliar website, search the store name plus the word scam and check their return policy. Use a credit card rather than a debit card — credit cards offer stronger fraud protection. Be very cautious of deals advertised only through social media with no verifiable company behind them."),
+            12: ("Holiday Charity Fraud and Gift Card Scams Peak",
+                 "December sees the highest volume of fake charity appeals, gift card scams, and ransomware attacks of the year. Scammers impersonate well-known charities, and criminals contact people pretending to be grandchildren or government agents demanding urgent gift card payments to resolve a crisis.",
+                 "Donate only by going directly to a charity's official website — never through a link in an email or social media post. If anyone contacts you asking for gift cards as payment for any reason, it is a scam. Hang up or ignore the message and tell a trusted family member."),
+        }
+        _watch = _WATCH[datetime.datetime.now().month]
+
         with _ps_left:
-            st.markdown("### Your Safety Tip This Month")
+            st.markdown("### Watch Out This Month")
             st.markdown(f"""
-    <div style="background:#fffbeb;border:1px solid #fde68a;border-left:5px solid #f59e0b;
-                border-radius:10px;padding:1.3rem 1.5rem;margin-bottom:1.5rem;">
-      <p style="margin:0 0 6px 0;font-size:1.6rem;">{_sm[0]}</p>
-      <p style="margin:0 0 8px 0;font-size:1.05rem;font-weight:700;color:#0f172a;font-family:'Inter',sans-serif;">{_sm[1]}</p>
-      <p style="margin:0;font-size:0.95rem;color:#334155;font-family:'Inter',sans-serif;line-height:1.75;">{_sm[2]}</p>
+    <div style="background:#fffbeb;border:1px solid #fde68a;border-radius:12px;
+                overflow:hidden;margin-bottom:1.5rem;box-shadow:0 1px 4px rgba(0,0,0,0.05);">
+      <div style="background:#f59e0b;padding:0.65rem 1.2rem;">
+        <p style="margin:0;font-size:0.75rem;font-weight:600;color:#ffffff;font-family:'Inter',sans-serif;
+                  letter-spacing:0.03em;">WHAT IS HAPPENING</p>
+      </div>
+      <div style="padding:1rem 1.2rem 0.8rem 1.2rem;">
+        <p style="margin:0 0 0.5rem 0;font-size:1rem;font-weight:600;color:#0f172a;font-family:'Inter',sans-serif;">{_watch[0]}</p>
+        <p style="margin:0;font-size:0.93rem;color:#334155;font-family:'Inter',sans-serif;line-height:1.75;">{_watch[1]}</p>
+      </div>
+      <div style="background:#f0fdf4;border-top:1px solid #bbf7d0;padding:0.65rem 1.2rem;">
+        <p style="margin:0;font-size:0.75rem;font-weight:600;color:#15803d;font-family:'Inter',sans-serif;
+                  letter-spacing:0.03em;">WHAT TO DO</p>
+      </div>
+      <div style="padding:1rem 1.2rem 1.2rem 1.2rem;">
+        <p style="margin:0;font-size:0.93rem;color:#334155;font-family:'Inter',sans-serif;line-height:1.75;">{_watch[2]}</p>
+      </div>
     </div>""", unsafe_allow_html=True)
 
             for icon, title, body, takeaway, label in _simple_sections:
@@ -2492,31 +2481,44 @@ with _tab_guides:
     </div>
     """, unsafe_allow_html=True)
 
+        # (task title, why it matters right now, specific action to take)
         _adv_tips = {
-            1:  ("Audit Privileged Access Paths",
-                 "Review service accounts and admin credentials exposed in your Active Directory environment. Credential abuse drove 22% of breaches in the Data Breach Investigations Report 2025 — January is a good time to rotate stale tokens and enforce Multi-Factor Authentication on all privileged roles."),
-            2:  ("Patch Your Perimeter and Edge Devices",
-                 "Exploited vulnerabilities accounted for 20% of initial access vectors. Focus patching efforts on perimeter devices such as Virtual Private Network appliances and firewalls — these are disproportionately targeted and often lag on update cycles."),
-            3:  ("Run a Ransomware Tabletop Exercise",
-                 "The first quarter is a low-change-freeze period for most organisations — ideal for a ransomware tabletop. Test your detection-to-containment playbook, including backup restore speed. The Data Breach Investigations Report shows ransom refusal rising to 64%, but only when recovery is viable."),
-            4:  ("Review Your Supply Chain Access Inventory",
-                 "Third-party and partner access remains a blind spot. Audit active Application Programming Interface integrations and vendor permissions. Revoke any that are unused or whose scope exceeds current need."),
-            5:  ("Validate Detection Coverage Against MITRE ATT&CK",
-                 "Map your current Security Information and Event Management and Endpoint Detection and Response rules against the top techniques observed in the Data Breach Investigations Report 2025. Gaps in credential access (techniques T1078 and T1110) and execution (technique T1059) are common and high-impact."),
-            6:  ("Harden Operational Technology Network Segmentation",
-                 "Kaspersky Industrial Control Systems Cyber Emergency Response Team reports 20.5% of industrial computers globally faced threats in the second quarter of 2025. Review whether your Information Technology and Operational Technology boundary controls are enforced at the switch level — not just in policy documents."),
-            7:  ("Test Your Backup Restore Process",
-                 "A backup that has never been tested is not a backup. Run a full restore drill for at least one critical system this month. Measure your actual Recovery Time Objective against your documented Service Level Agreement."),
-            8:  ("Reduce Alert Fatigue in Your Security Operations Centre",
-                 "High-volume, low-fidelity alerts desensitise analysts and cause critical signals to be missed. Audit your top 10 alert rules by volume and suppress or tune those with a false-positive rate above 90%."),
-            9:  ("Assess Phishing Simulation Coverage",
-                 "Phishing remains a top initial access vector at 15% of breaches. If your last simulation was more than six months ago, schedule a new campaign — especially targeting Finance and Human Resources roles."),
-            10: ("Review Ransomware Insurance Coverage",
-                 "With ransomware in 44% of breaches, verify your cyber insurance policy covers incident response costs, not just ransom payment. Many policies exclude response costs if basic controls such as Multi-Factor Authentication and Endpoint Detection and Response were absent."),
-            11: ("Check for Exposed Credentials in Public Repositories",
-                 "Before year-end code pushes, scan your GitHub and GitLab repositories for hardcoded secrets. Tools like TruffleHog or GitHub's native secret scanning catch credentials committed accidentally."),
-            12: ("Close Out Open Vulnerabilities Before Year-End",
-                 "Run a sweep of your vulnerability backlog and close out anything rated Critical or High that has been open longer than your Service Level Agreement. Carry-over risk compounds into the new year's attack surface."),
+            1:  ("Reset Stale Privileged Credentials",
+                 "January is the start of the fiscal year for most organisations — the ideal window to rotate service account passwords, revoke unused admin tokens, and audit Active Directory for dormant privileged accounts. Credential abuse was the leading initial access vector in DBIR 2025 at 22% of all breaches.",
+                 "Pull a report of all service accounts that have not rotated credentials in 90 days. Enforce MFA on every admin role, prioritising remote access and cloud console logins first."),
+            2:  ("Run a Social Engineering Awareness Campaign",
+                 "February's Valentine's Day themes are actively exploited for spear-phishing against employees. Romance-themed lures targeting HR and Finance staff to click fake e-card links or submit credentials were observed spiking in Q1 of both 2024 and 2025.",
+                 "Send a brief internal advisory to Finance and HR warning about themed phishing. Schedule a simulated phishing test this month — teams with regular simulation have measurably lower click rates within 90 days."),
+            3:  ("Patch Perimeter Devices and VPN Appliances",
+                 "Spring patching cycles begin now for most organisations as change freezes lift after Q1 reporting. Exploited vulnerabilities accounted for 20% of initial access in DBIR 2025, with VPN and firewall appliances consistently among the most targeted entry points.",
+                 "Prioritise CVEs rated CVSS 9.0 and above on perimeter-facing devices. Check vendor advisories for your firewall and VPN products and confirm patches are applied within 14 days of release."),
+            4:  ("Audit Third-Party and API Access",
+                 "Q2 brings vendor renewals and new integrations. Third-party breaches doubled year-over-year in DBIR 2025 — 30% of breaches involved a partner or supplier with excessive or outdated access to internal systems.",
+                 "Inventory all active API keys and vendor access credentials. Revoke anything unused in the last 60 days. For active vendors, confirm their access scope still matches their current business need — not what was approved two years ago."),
+            5:  ("Validate SIEM and EDR Detection Coverage",
+                 "Mid-year is the right time to stress-test detection before summer skeleton crews reduce response capacity. Gaps in credential access (T1078, T1110) and lateral movement remain the most common coverage blind spots, based on MITRE ATT&CK evaluation data from 2024 and 2025.",
+                 "Run a purple team exercise or use an adversary simulation tool to test detection of credential dumping and lateral movement. Tune any SIEM rules generating over 90% false positives — alert fatigue is a real threat to your analysts."),
+            6:  ("Review IT and OT Network Segmentation",
+                 "Summer maintenance windows are used by industrial and manufacturing organisations to update operational systems — and by attackers to target them. Kaspersky ICS-CERT found 20.5% of industrial computers globally faced a threat in Q2 2025, with internet-connected OT being the primary risk factor.",
+                 "Verify that IT and OT networks are segmented at the switch level, not just in policy documents. Confirm no OT devices have unrestricted outbound internet access. Use this window to apply firmware updates to industrial controllers and PLCs."),
+            7:  ("Test Backup Restore Speed Against Your RTO",
+                 "July sees the highest annual ransomware attack volume — attackers target reduced summer staffing and slower response times. A backup is only valuable if it can be restored within your Recovery Time Objective before operational impact becomes irreversible.",
+                 "Run a full restore drill on at least one Tier 1 system this month and time it against your documented RTO. Confirm backups are stored offline or air-gapped. If recovery takes longer than your SLA allows, fix the process now rather than during an incident."),
+            8:  ("Address Vulnerabilities Disclosed at Black Hat and DEF CON",
+                 "August's Black Hat and DEF CON conferences produce the highest volume of new vulnerability disclosures of the year. Many findings target widely deployed enterprise software and networking gear, and weaponised proof-of-concept code typically appears within days of public disclosure.",
+                 "Subscribe to vendor security advisories for your core infrastructure stack. In the two weeks after the conferences, treat any CVSS 7.5+ disclosure for in-scope products as a P1 patch item. Consider emergency change approval processes for actively exploited CVEs."),
+            9:  ("Run a Phishing Simulation Targeting Finance and HR",
+                 "September marks the end of Q3 and the start of financial close processes, making Finance and HR the highest-value phishing targets of the quarter. Business Email Compromise targeting wire transfers and payroll redirects spikes consistently in September and October.",
+                 "Run a targeted phishing simulation against Finance and HR staff using a business email compromise template — a fake urgent wire request or payroll update. Follow up with brief training for those who clicked. Track improvement against your last simulation baseline."),
+            10: ("Verify Cyber Insurance Policy Coverage",
+                 "October is Cybersecurity Awareness Month and also the insurance renewal season for many organisations. With ransomware present in 44% of breaches in 2024, many policies have quietly added exclusions for incidents where basic controls such as MFA and EDR were absent at the time of the breach.",
+                 "Pull your current policy and check the minimum controls required to maintain coverage. Confirm MFA, EDR, and offsite backup are in place — these are the three most commonly cited exclusion triggers. Brief your CISO and CFO on any gaps before the renewal date."),
+            11: ("Harden for the Holiday Ransomware Surge",
+                 "Ransomware attacks increase 30% above average in November and December as attackers target reduced IT staffing over the holiday period. Skeleton crew conditions mean slower detection and containment — attackers count on this. Healthcare, retail, and logistics are the most targeted sectors.",
+                 "Ensure on-call coverage is documented and tested before the holiday schedule begins. Confirm your incident response runbook is accessible offline. Lower your SIEM alert threshold for after-hours lateral movement. Brief your team on the surge risk so no one treats a holiday alert as a false positive by default."),
+            12: ("Close the Year's Vulnerability Backlog",
+                 "December is the worst month to carry unresolved critical vulnerabilities into a new year — and the best month to close them. Carry-over risk compounds as attackers trade exploits over the holiday period. A clean backlog also simplifies your Q1 risk reporting and audit preparation.",
+                 "Pull all open CVSS 7.0+ items that have exceeded your SLA. Triage and close as many as possible before year-end. For anything that cannot be patched, document compensating controls and owner accountability. This is also the time to archive stale assets from your attack surface inventory."),
         }
         _at = _adv_tips[datetime.datetime.now().month]
 
@@ -2564,11 +2566,25 @@ with _tab_guides:
 
         with _adv_left:
             st.markdown("### Security Focus This Month")
+            _at = _adv_tips[datetime.datetime.now().month]
             st.markdown(f"""
-    <div style="background:#eff6ff;border:1px solid #bfdbfe;border-left:5px solid #2563eb;
-                border-radius:10px;padding:1.3rem 1.5rem;margin-bottom:1.5rem;">
-      <p style="margin:0 0 8px 0;font-size:1.05rem;font-weight:700;color:#0f172a;font-family:'Inter',sans-serif;">{_at[0]}</p>
-      <p style="margin:0;font-size:0.95rem;color:#334155;font-family:'Inter',sans-serif;line-height:1.75;">{_at[1]}</p>
+    <div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:12px;
+                overflow:hidden;margin-bottom:1.5rem;box-shadow:0 1px 4px rgba(0,0,0,0.05);">
+      <div style="background:#2563eb;padding:0.65rem 1.2rem;">
+        <p style="margin:0;font-size:0.75rem;font-weight:600;color:#ffffff;font-family:'Inter',sans-serif;
+                  letter-spacing:0.03em;">THIS MONTH'S FOCUS</p>
+      </div>
+      <div style="padding:1rem 1.2rem 0.8rem 1.2rem;">
+        <p style="margin:0 0 0.5rem 0;font-size:1rem;font-weight:600;color:#0f172a;font-family:'Inter',sans-serif;">{_at[0]}</p>
+        <p style="margin:0;font-size:0.93rem;color:#334155;font-family:'Inter',sans-serif;line-height:1.75;">{_at[1]}</p>
+      </div>
+      <div style="background:#dbeafe;border-top:1px solid #bfdbfe;padding:0.65rem 1.2rem;">
+        <p style="margin:0;font-size:0.75rem;font-weight:600;color:#1d4ed8;font-family:'Inter',sans-serif;
+                  letter-spacing:0.03em;">ACTION THIS MONTH</p>
+      </div>
+      <div style="padding:1rem 1.2rem 1.2rem 1.2rem;">
+        <p style="margin:0;font-size:0.93rem;color:#334155;font-family:'Inter',sans-serif;line-height:1.75;">{_at[2]}</p>
+      </div>
     </div>""", unsafe_allow_html=True)
 
             for title, body, action, label in _adv_sections:
