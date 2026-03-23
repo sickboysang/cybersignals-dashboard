@@ -1283,7 +1283,7 @@ with _tab_home:
     <p style="margin:0 0 4px 0;font-size:1.45rem;font-weight:600;color:#ef4444;font-family:'Inter',sans-serif;">20%</p>
     <p style="margin:0;font-size:0.72rem;color:#ef4444;font-family:'Inter',sans-serif;">↑34% Year-over-Year</p>
   </div>
-  <div class="cs-stat" data-tip="Third-party breaches doubled year-over-year — supply chain and partner access is now a primary attack vector. One vendor compromise can expose hundreds of organisations." style="flex:1;min-width:150px;background:{BG};border:1px solid {BORDER};border-radius:10px;padding:1rem 1.2rem;">
+  <div class="cs-stat" data-tip="Third-party breaches doubled year-over-year — supply chain and partner access is now a primary attack vector. One vendor compromise can expose hundreds of organizations." style="flex:1;min-width:150px;background:{BG};border:1px solid {BORDER};border-radius:10px;padding:1rem 1.2rem;">
     <p style="margin:0 0 2px 0;font-size:0.75rem;color:{MUTED};font-family:'Inter',sans-serif;">Breaches via Third Party</p>
     <p style="margin:0 0 4px 0;font-size:1.45rem;font-weight:600;color:#ef4444;font-family:'Inter',sans-serif;">30%</p>
     <p style="margin:0;font-size:0.72rem;color:#ef4444;font-family:'Inter',sans-serif;">↑100% Year-over-Year</p>
@@ -1387,7 +1387,7 @@ with _tab_sector:
                           "target industrial operations because any production downtime creates immediate financial pressure to pay. "
                           "Healthcare follows closely — patient records fetch 10× the price of credit card data on criminal "
                           "markets, making hospitals a permanent high-value target.")
-            _ext_radar = ("The score on each spoke is normalised: the sector with the most confirmed breaches scores 10, and all "
+            _ext_radar = ("The score on each spoke is normalized: the sector with the most confirmed breaches scores 10, and all "
                           "others are scaled proportionally. This means the chart shows <em>relative risk</em> — not absolute "
                           "counts. Finance appears lower not because it is safe, but because it has fewer confirmed breaches "
                           "relative to Manufacturing and Healthcare. Finance actually leads in total incidents — it is simply "
@@ -2074,7 +2074,7 @@ with _tab_ics:
             _bd_icsi = ("Biometrics (27.2%) and Building Automation (23.4%) recorded the highest share of attacked ICS "
                         "computers in Q2 2025. Oil and Gas (16.1%) and Manufacturing (16.7%) sit below the global average, "
                         "possibly reflecting stronger perimeter controls following high-profile pipeline incidents.")
-            _ext_icsi = ("Biometrics systems are often network-connected for centralised identity management, making them "
+            _ext_icsi = ("Biometrics systems are often network-connected for centralized identity management, making them "
                          "an overlooked entry point into physical security infrastructure. Building Automation systems "
                          "(heating, ventilation, air conditioning, access control) are increasingly Internet-connected but "
                          "frequently managed by facilities teams rather than cybersecurity professionals, creating gaps. "
@@ -2324,7 +2324,7 @@ with _tab_guides:
              "Cyberattacks on infrastructure are a public safety issue — not just a business problem.",
              "ICS Threats"),
             ("", "Who Is Behind the Attacks?",
-             "80% of attacks come from organised criminal groups</strong> run like businesses — complete with HR and customer support for ransom victims. "
+             "80% of attacks come from organized criminal groups</strong> run like businesses — complete with HR and customer support for ransom victims. "
              "State-sponsored hackers (funded by foreign governments) increased activity by 163% in 2024, targeting research and critical infrastructure.",
              "Attacks are deliberate and professional — but good personal habits still reduce your risk significantly.",
              "Attack Methods"),
@@ -2452,14 +2452,14 @@ with _tab_guides:
         # (task title, why it matters right now, specific action to take)
         _adv_tips = {
             1:  ("Reset Stale Privileged Credentials",
-                 "January is the start of the fiscal year for most organisations — the ideal window to rotate service account passwords, revoke unused admin tokens, and audit Active Directory for dormant privileged accounts. Credential abuse was the leading initial access vector in DBIR 2025 at 22% of all breaches.",
+                 "January is the start of the fiscal year for most organizations — the ideal window to rotate service account passwords, revoke unused admin tokens, and audit Active Directory for dormant privileged accounts. Credential abuse was the leading initial access vector in DBIR 2025 at 22% of all breaches.",
                  "Pull a report of all service accounts that have not rotated credentials in 90 days. Enforce MFA on every admin role, prioritising remote access and cloud console logins first."),
             2:  ("Run a Social Engineering Awareness Campaign",
                  "February's Valentine's Day themes are actively exploited for spear-phishing against employees. Romance-themed lures targeting HR and Finance staff to click fake e-card links or submit credentials were observed spiking in Q1 of both 2024 and 2025.",
                  "Send a brief internal advisory to Finance and HR warning about themed phishing. Schedule a simulated phishing test this month — teams with regular simulation have measurably lower click rates within 90 days."),
             3:  ("Patch Perimeter Devices and VPN Appliances",
-                 "Spring patching cycles begin now for most organisations as change freezes lift after Q1 reporting. Exploited vulnerabilities accounted for 20% of initial access in DBIR 2025, with VPN and firewall appliances consistently among the most targeted entry points.",
-                 "Prioritise CVEs rated CVSS 9.0 and above on perimeter-facing devices. Check vendor advisories for your firewall and VPN products and confirm patches are applied within 14 days of release."),
+                 "Spring patching cycles begin now for most organizations as change freezes lift after Q1 reporting. Exploited vulnerabilities accounted for 20% of initial access in DBIR 2025, with VPN and firewall appliances consistently among the most targeted entry points.",
+                 "Prioritize CVEs rated CVSS 9.0 and above on perimeter-facing devices. Check vendor advisories for your firewall and VPN products and confirm patches are applied within 14 days of release."),
             4:  ("Audit Third-Party and API Access",
                  "Q2 brings vendor renewals and new integrations. Third-party breaches doubled year-over-year in DBIR 2025 — 30% of breaches involved a partner or supplier with excessive or outdated access to internal systems.",
                  "Inventory all active API keys and vendor access credentials. Revoke anything unused in the last 60 days. For active vendors, confirm their access scope still matches their current business need — not what was approved two years ago."),
@@ -2467,7 +2467,7 @@ with _tab_guides:
                  "Mid-year is the right time to stress-test detection before summer skeleton crews reduce response capacity. Gaps in credential access (T1078, T1110) and lateral movement remain the most common coverage blind spots, based on MITRE ATT&CK evaluation data from 2024 and 2025.",
                  "Run a purple team exercise or use an adversary simulation tool to test detection of credential dumping and lateral movement. Tune any SIEM rules generating over 90% false positives — alert fatigue is a real threat to your analysts."),
             6:  ("Review IT and OT Network Segmentation",
-                 "Summer maintenance windows are used by industrial and manufacturing organisations to update operational systems — and by attackers to target them. Kaspersky ICS-CERT found 20.5% of industrial computers globally faced a threat in Q2 2025, with internet-connected OT being the primary risk factor.",
+                 "Summer maintenance windows are used by industrial and manufacturing organizations to update operational systems — and by attackers to target them. Kaspersky ICS-CERT found 20.5% of industrial computers globally faced a threat in Q2 2025, with internet-connected OT being the primary risk factor.",
                  "Verify that IT and OT networks are segmented at the switch level, not just in policy documents. Confirm no OT devices have unrestricted outbound internet access. Use this window to apply firmware updates to industrial controllers and PLCs."),
             7:  ("Test Backup Restore Speed Against Your RTO",
                  "July sees the highest annual ransomware attack volume — attackers target reduced summer staffing and slower response times. A backup is only valuable if it can be restored within your Recovery Time Objective before operational impact becomes irreversible.",
@@ -2479,7 +2479,7 @@ with _tab_guides:
                  "September marks the end of Q3 and the start of financial close processes, making Finance and HR the highest-value phishing targets of the quarter. Business Email Compromise targeting wire transfers and payroll redirects spikes consistently in September and October.",
                  "Run a targeted phishing simulation against Finance and HR staff using a business email compromise template — a fake urgent wire request or payroll update. Follow up with brief training for those who clicked. Track improvement against your last simulation baseline."),
             10: ("Verify Cyber Insurance Policy Coverage",
-                 "October is Cybersecurity Awareness Month and also the insurance renewal season for many organisations. With ransomware present in 44% of breaches in 2024, many policies have quietly added exclusions for incidents where basic controls such as MFA and EDR were absent at the time of the breach.",
+                 "October is Cybersecurity Awareness Month and also the insurance renewal season for many organizations. With ransomware present in 44% of breaches in 2024, many policies have quietly added exclusions for incidents where basic controls such as MFA and EDR were absent at the time of the breach.",
                  "Pull your current policy and check the minimum controls required to maintain coverage. Confirm MFA, EDR, and offsite backup are in place — these are the three most commonly cited exclusion triggers. Brief your CISO and CFO on any gaps before the renewal date."),
             11: ("Harden for the Holiday Ransomware Surge",
                  "Ransomware attacks increase 30% above average in November and December as attackers target reduced IT staffing over the holiday period. Skeleton crew conditions mean slower detection and containment — attackers count on this. Healthcare, retail, and logistics are the most targeted sectors.",
@@ -2495,7 +2495,7 @@ with _tab_guides:
              "Manufacturing recorded 1,607 confirmed breaches</strong> — the highest of any sector — driven largely by ransomware operators targeting production downtime as a negotiating lever. "
              "Healthcare (1,542 breaches) and Finance (927) follow, each carrying elevated data sensitivity that increases breach cost. "
              "Across all sectors, system intrusion and social engineering account for the majority of incident patterns.",
-             "Prioritise threat modelling and incident response planning for your sector's most prevalent attack pattern.",
+             "Prioritize threat modeling and incident response planning for your sector's most prevalent attack pattern.",
              "Sector Risk"),
             ("Initial Access Vectors",
              "Credential abuse (22%) and exploited vulnerabilities (20%)</strong> are the two dominant initial access vectors in the Data Breach Investigations Report 2025. "
@@ -2505,12 +2505,12 @@ with _tab_guides:
              "Attack Methods"),
             ("Ransomware Landscape",
              "Ransomware was present in 44% of all breaches in 2024</strong>, up from 32% in 2023 — nearly doubling over three years. "
-             "Median ransom payments remain high, but 64% of victim organisations now refuse to pay</strong>, the highest rate on record. "
+             "Median ransom payments remain high, but 64% of victim organizations now refuse to pay</strong>, the highest rate on record. "
              "Extortion-only variants (data theft without encryption) are increasing as attackers adapt to improved backup and recovery capabilities.",
              "Ensure backup integrity testing and documented recovery time objectives — refusal to pay is only viable when recovery is guaranteed.",
              "Ransomware"),
             ("Data Compromise Categories",
-             "Internal organisational data is now the most frequently exfiltrated category</strong>, overtaking credentials in recent breach data. "
+             "Internal organizational data is now the most frequently exfiltrated category</strong>, overtaking credentials in recent breach data. "
              "This reflects the growing prevalence of double-extortion ransomware, where operators exfiltrate data before encrypting systems to maximise leverage. "
              "Credentials, personal data, and financial records remain consistently targeted across all sectors for resale and account takeover operations.",
              "Implement data loss prevention controls on high-value document repositories and audit access to sensitive internal file shares.",
@@ -2519,10 +2519,10 @@ with _tab_guides:
              "20.5% of industrial computers globally had a threat blocked in the second quarter of 2025</strong>, according to Kaspersky Industrial Control Systems Cyber Emergency Response Team. "
              "The primary infection vectors are malicious scripts and phishing pages delivered over the internet — reflecting increased internet connectivity in Operational Technology environments. "
              "Africa and Southeast Asia show the highest regional attack rates, correlating with lower Operational Technology security maturity and investment.",
-             "Review network segmentation between Information Technology and Operational Technology zones and validate that internet-facing industrial systems are minimised.",
+             "Review network segmentation between Information Technology and Operational Technology zones and validate that internet-facing industrial systems are minimized.",
              "Industrial Control Systems"),
             ("Threat Actor Landscape",
-             "Organised criminal groups account for approximately 80% of attributed attacks</strong>, operating with professionalised structures including dedicated ransomware-as-a-service affiliates and negotiation teams. "
+             "Organized criminal groups account for approximately 80% of attributed attacks</strong>, operating with professionalized structures including dedicated ransomware-as-a-service affiliates and negotiation teams. "
              "State-sponsored activity increased by 163% in 2024, with espionage-focused campaigns targeting defence, research, and critical national infrastructure. "
              "The convergence of financially motivated and nation-state actors on similar initial access techniques increases the difficulty of attribution and response.",
              "Align threat intelligence subscriptions to your sector's most active threat actor groups and update detection rules accordingly.",
@@ -2640,7 +2640,7 @@ with _tab_outlook:
     st.markdown(f"""
 <div style="display:flex;flex-wrap:wrap;gap:12px;margin-bottom:1.2rem;">
 
-  <div class="cs-stat" data-tip="Ransomware was involved in 44% of breaches in 2024 — up from 25% in 2022. DBIR trend data projects ~{rw_2030}% involvement by 2030 if the current trajectory continues. This is a worsening threat: higher numbers mean more organisations affected."
+  <div class="cs-stat" data-tip="Ransomware was involved in 44% of breaches in 2024 — up from 25% in 2022. DBIR trend data projects ~{rw_2030}% involvement by 2030 if the current trajectory continues. This is a worsening threat: higher numbers mean more organizations affected."
        style="flex:1;min-width:150px;background:{BG};border:1px solid {BORDER};border-radius:10px;padding:1rem 1.2rem;">
     <p style="margin:0 0 2px 0;font-size:0.75rem;color:{MUTED};font-family:'Inter',sans-serif;">Ransomware (2024)</p>
     <p style="margin:0 0 4px 0;font-size:1.45rem;font-weight:600;color:{ACCENT};font-family:'Inter',sans-serif;">44%</p>
@@ -2801,7 +2801,7 @@ with _tab_about:
     Think of CyberSignals like a neighbourhood watch report — but for the internet.
     Every day, criminals try to break into computers, steal personal information, and extort businesses.
     This dashboard tracks those attacks using real data from two of the world's leading cybersecurity
-    research organisations, and presents it in plain language so anyone can understand the risks.
+    research organizations, and presents it in plain language so anyone can understand the risks.
   </p>
   <p style="{_pm}max-width:800px;">
     You do not need to be a technology expert to use this site.
