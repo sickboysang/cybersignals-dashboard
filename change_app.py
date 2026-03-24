@@ -747,16 +747,16 @@ with st.sidebar:
 """, unsafe_allow_html=True)
 
     _NAV = [
-        ("Home",           0),
-        ("Sector Risk",    1),
-        ("Attack Methods", 2),
-        ("Ransomware",     3),
-        ("Stolen Data",    4),
-        ("Trends",         5),
-        ("ICS Threats",    6),
-        ("Accessibility Levels", 7),
-        ("2030 Outlook",         8),
-        ("About",    9),
+        ("Home",                 0),
+        ("About",                1),
+        ("Accessibility Levels", 2),
+        ("Sector Risk",          3),
+        ("Attack Methods",       4),
+        ("Ransomware",           5),
+        ("Stolen Data",          6),
+        ("Trends",               7),
+        ("ICS Threats",          8),
+        ("2030 Outlook",         9),
     ]
     for _nl, _nidx in _NAV:
         if st.button(_nl, key=f"_nav_{_nidx}", use_container_width=True):
@@ -775,17 +775,17 @@ with st.sidebar:
 # ─────────────────────────────────────────
 # TABS — top-level navigation
 # ─────────────────────────────────────────
-_tab_home, _tab_sector, _tab_attacks, _tab_ransom, _tab_data, _tab_trends, _tab_ics, _tab_guides, _tab_outlook, _tab_about = st.tabs([
+_tab_home, _tab_about, _tab_guides, _tab_sector, _tab_attacks, _tab_ransom, _tab_data, _tab_trends, _tab_ics, _tab_outlook = st.tabs([
     "Home",
+    "About",
+    "Accessibility Levels",
     "Sector Risk",
     "Attack Methods",
     "Ransomware",
     "Stolen Data",
     "Trends",
     "ICS Threats",
-    "Accessibility Levels",
     "2030 Outlook",
-    "About",
 ])
 
 # ── Tab switcher (fires only when explicitly requested) + brand injector ──────
@@ -937,11 +937,11 @@ with _tab_home:
     _aq1, _aq2 = st.columns(2, gap="small")
     if _aq1.button("Plain & Simple", use_container_width=True, key="_go_simple"):
         st.session_state["_audience"] = "simple"
-        st.session_state["_nav_tab"] = 7
+        st.session_state["_nav_tab"] = 2
         st.rerun()
     if _aq2.button("Advanced", use_container_width=True, key="_go_advanced"):
         st.session_state["_audience"] = "advanced"
-        st.session_state["_nav_tab"] = 7
+        st.session_state["_nav_tab"] = 2
         st.rerun()
 
     _aud_active = st.session_state.get("_audience", "simple")
@@ -2283,36 +2283,42 @@ with _tab_guides:
              "Manufacturing led with 1,607 confirmed breaches</strong>, followed by Healthcare (1,542) and Finance (927). "
              "Factories are prime targets because shutting down a production line is so costly that companies often pay the ransom quickly.",
              "Manufacturing · Healthcare · Finance are the three most targeted sectors",
-             "Sector Risk"),
+             "Sector Risk",
+             "Which industries face the most cyber risk? Each spoke shows relative exposure."),
             ("", "How Do Hackers Get In?",
              "The most common entry point is stolen passwords (22% of cases)</strong> — often from old data leaks. "
              "Second is unpatched security gaps (20%)</strong> — known weaknesses that were never fixed. "
              "Phishing emails account for 15% of break-ins.",
              "Use a unique password for every account. A free password manager like Bitwarden makes this easy.",
-             "Attack Methods"),
+             "Attack Methods",
+             "The most common ways attackers break in — and how often each leads to a confirmed breach."),
             ("", "What Is Ransomware?",
              "Ransomware locks all your files and demands money to unlock them. "
              "44% of breaches in 2024 involved ransomware</strong> — up from 32% the year before. "
              "The good news: 64% of victims now refuse to pay</strong>. Paying rarely recovers files and funds future attacks. Regular backups are the best defence.",
              "Back up important files to a USB drive or free cloud storage — for example, Google Photos.",
-             "Ransomware"),
+             "Ransomware",
+             "Ransomware is rising — but more victims are fighting back by refusing to pay."),
             ("", "What Do Hackers Steal?",
              "Internal documents</strong> (contracts, plans, emails) are the most stolen data — companies pay dearly to keep them private. "
              "Personal details like name, address, and date of birth are used to open fraudulent credit accounts. "
              "Medical records can fetch up to $1,000 each because, unlike a card number, you cannot reset your health history.",
              "Guard your Medicare number and medical records as carefully as your credit card.",
-             "Stolen Data"),
+             "Stolen Data",
+             "The most commonly stolen types of data in confirmed breach incidents."),
             ("", "What About Factories and Power Plants?",
              "1 in 5 industrial computers worldwide had a threat blocked in the second quarter of 2025.</strong> "
              "Water plants, power grids, and factories are increasingly targeted as more of their systems go online. "
              "Africa had the highest attack rates; Northern Europe the lowest.",
              "Cyberattacks on infrastructure are a public safety issue — not just a business problem.",
-             "ICS Threats"),
+             "ICS Threats",
+             "Percentage of industrial computers that had a threat blocked, by world region."),
             ("", "Who Is Behind the Attacks?",
              "80% of attacks come from organized criminal groups</strong> run like businesses — complete with HR and customer support for ransom victims. "
              "State-sponsored hackers (funded by foreign governments) increased activity by 163% in 2024, targeting research and critical infrastructure.",
              "Attacks are deliberate and professional — but good personal habits still reduce your risk significantly.",
-             "Attack Methods"),
+             "Attack Methods",
+             "Who is responsible for breaches — external criminals, insiders, or state-sponsored actors."),
         ]
 
         # Monthly tip full-width; each section paired with its chart
@@ -2381,7 +2387,7 @@ with _tab_guides:
             "chart_radar_ps", "chart_pat_ps", "chart_fore_ps",
             "chart_dt_ps",    "chart_ics_ps", "chart_act_ps",
         ]
-        for (icon, title, body, takeaway, label), fig, fkey in zip(_simple_sections, _simple_figs, _simple_fig_keys):
+        for (icon, title, body, takeaway, label, chart_cap), fig, fkey in zip(_simple_sections, _simple_figs, _simple_fig_keys):
             _ps_c1, _ps_c2 = st.columns(2, gap="large")
             with _ps_c1:
                 st.markdown(f"""
@@ -2402,6 +2408,8 @@ with _tab_guides:
     </div>
     """, unsafe_allow_html=True)
             with _ps_c2:
+                st.markdown(f"#### {title}")
+                st.caption(chart_cap)
                 st.plotly_chart(fig, use_container_width=True, key=fkey,
                                 config={"displayModeBar": False, "scrollZoom": False})
 
@@ -2475,37 +2483,43 @@ with _tab_guides:
              "Healthcare (1,542 breaches) and Finance (927) follow, each carrying elevated data sensitivity that increases breach cost. "
              "Across all sectors, system intrusion and social engineering account for the majority of incident patterns.",
              "Prioritize threat modeling and incident response planning for your sector's most prevalent attack pattern.",
-             "Sector Risk"),
+             "Sector Risk",
+             "Relative cyber risk across major industries — each spoke represents a sector's overall breach exposure."),
             ("Initial Access Vectors",
              "Credential abuse (22%) and exploited vulnerabilities (20%)</strong> are the two dominant initial access vectors in the Data Breach Investigations Report 2025. "
              "Phishing accounts for 15% of intrusions, with Business Email Compromise continuing to drive high-value financial losses. "
              "The persistence of credential-based attacks reflects ongoing gaps in Multi-Factor Authentication adoption, particularly on legacy systems and service accounts.",
              "Enforce Multi-Factor Authentication on all externally facing systems and audit service account credential rotation cycles.",
-             "Attack Methods"),
+             "Attack Methods",
+             "Attack pattern frequency and the share of incidents that escalated to confirmed breaches."),
             ("Ransomware Landscape",
              "Ransomware was present in 44% of all breaches in 2024</strong>, up from 32% in 2023 — nearly doubling over three years. "
              "Median ransom payments remain high, but 64% of victim organizations now refuse to pay</strong>, the highest rate on record. "
              "Extortion-only variants (data theft without encryption) are increasing as attackers adapt to improved backup and recovery capabilities.",
              "Ensure backup integrity testing and documented recovery time objectives — refusal to pay is only viable when recovery is guaranteed.",
-             "Ransomware"),
+             "Ransomware",
+             "Ransomware involvement in breaches 2022–2024 alongside victim payment refusal rates."),
             ("Data Compromise Categories",
              "Internal organizational data is now the most frequently exfiltrated category</strong>, overtaking credentials in recent breach data. "
              "This reflects the growing prevalence of double-extortion ransomware, where operators exfiltrate data before encrypting systems to maximise leverage. "
              "Credentials, personal data, and financial records remain consistently targeted across all sectors for resale and account takeover operations.",
              "Implement data loss prevention controls on high-value document repositories and audit access to sensitive internal file shares.",
-             "Stolen Data"),
+             "Stolen Data",
+             "Distribution of exfiltrated data categories across confirmed breach incidents."),
             ("Industrial Control Systems Threat Landscape",
              "20.5% of industrial computers globally had a threat blocked in the second quarter of 2025</strong>, according to Kaspersky Industrial Control Systems Cyber Emergency Response Team. "
              "The primary infection vectors are malicious scripts and phishing pages delivered over the internet — reflecting increased internet connectivity in Operational Technology environments. "
              "Africa and Southeast Asia show the highest regional attack rates, correlating with lower Operational Technology security maturity and investment.",
              "Review network segmentation between Information Technology and Operational Technology zones and validate that internet-facing industrial systems are minimized.",
-             "Industrial Control Systems"),
+             "Industrial Control Systems",
+             "Share of industrial computers with at least one blocked threat by world region — Kaspersky ICS-CERT Q2 2025."),
             ("Threat Actor Landscape",
              "Organized criminal groups account for approximately 80% of attributed attacks</strong>, operating with professionalized structures including dedicated ransomware-as-a-service affiliates and negotiation teams. "
              "State-sponsored activity increased by 163% in 2024, with espionage-focused campaigns targeting defence, research, and critical national infrastructure. "
              "The convergence of financially motivated and nation-state actors on similar initial access techniques increases the difficulty of attribution and response.",
              "Align threat intelligence subscriptions to your sector's most active threat actor groups and update detection rules accordingly.",
-             "Attack Methods"),
+             "Attack Methods",
+             "Breakdown of attributed breach actors by type — external, internal, partner, and state-sponsored."),
         ]
 
         # Monthly tip full-width; each section paired with its chart
@@ -2536,7 +2550,7 @@ with _tab_guides:
             "chart_radar_adv", "chart_pat_adv", "chart_fore_adv",
             "chart_dt_adv",    "chart_ics_adv", "chart_act_adv",
         ]
-        for (title, body, action, label), fig, fkey in zip(_adv_sections, _adv_figs, _adv_fig_keys):
+        for (title, body, action, label, chart_cap), fig, fkey in zip(_adv_sections, _adv_figs, _adv_fig_keys):
             _adv_c1, _adv_c2 = st.columns(2, gap="large")
             with _adv_c1:
                 st.markdown(f"""
@@ -2557,6 +2571,8 @@ with _tab_guides:
     </div>
     """, unsafe_allow_html=True)
             with _adv_c2:
+                st.markdown(f"#### {title}")
+                st.caption(chart_cap)
                 st.plotly_chart(fig, use_container_width=True, key=fkey,
                                 config={"displayModeBar": False, "scrollZoom": False})
     # ─────────────────────────────────────────
