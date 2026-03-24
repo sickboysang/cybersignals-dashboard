@@ -896,10 +896,10 @@ with _tab_home:
             box-shadow:0 2px 12px rgba(37,99,235,0.07);">
   <h1 style="margin:0 0 0.6rem 0;font-size:1.75rem;font-weight:600;color:#0f172a;
              font-family:'Inter',sans-serif;line-height:1.2;letter-spacing:-0.01em;">
-    Understanding Today's Cyber Threat Landscape
+    Understanding the Cyber Threat Landscape
   </h1>
   <p style="margin:0 0 1.4rem 0;font-size:0.93rem;color:#475569;font-family:'Inter',sans-serif;line-height:1.65;max-width:780px;">
-    Two 2025 threat intelligence reports — DBIR and Kaspersky ICS-CERT — translated into clear visuals covering sector risk, attack methods, stolen data, and what to do about it.
+    Two 2025 threat intelligence reports translated into clear visuals covering sector risk, attack methods, stolen data, and what to do about it.
   </p>
   <div style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:1.4rem;">
     <div class="cs-stat" data-tip="All security events reported to Verizon between Nov 2023 – Oct 2024, including near-misses and unconfirmed incidents alongside confirmed breaches." style="background:#ffffff;border:1px solid #e2e8f0;border-radius:10px;padding:0.75rem 1.1rem;flex:1;min-width:140px;text-align:center;">
@@ -1295,9 +1295,7 @@ with _tab_home:
 # SECTION 1 — RADAR + INCIDENT PRESSURE
 # ─────────────────────────────────────────
 with _tab_sector:
-    with st.expander("Sector Risk Analysis", expanded=True):
-
-        st.markdown("## Which Sectors Are Most at Risk?")
+    with st.expander("Which Sectors Are Most at Risk?", expanded=True):
         filtered = df_industry[df_industry["Industry"].isin(selected_sectors)]
         if selected_sectors and filtered.empty:
             st.warning("No sectors selected – showing all sectors instead.")
@@ -1536,7 +1534,6 @@ with _tab_sector:
 with _tab_attacks:
     with st.expander("How Attacks Happen", expanded=True):
 
-        st.markdown("## How Attacks Happen")
         st.caption("The most common attack patterns — and how many of those incidents turn into real breaches")
 
         col5, col6 = st.columns([3,2], gap="large")
@@ -1675,9 +1672,8 @@ with _tab_attacks:
 # SECTION 4 — RANSOMWARE + THREAT ACTORS
 # ─────────────────────────────────────────
 with _tab_ransom:
-    with st.expander("Ransomware and Threat Actors", expanded=True):
+    with st.expander("Ransomware & Who Is Behind Attacks", expanded=True):
 
-        st.markdown("## Ransomware & Who Is Behind Attacks")
         col7, col8 = st.columns(2, gap="large")
 
         with col7:
@@ -1779,9 +1775,8 @@ with _tab_ransom:
 # SECTION 5 — DATA TYPES + MFA BYPASS
 # ─────────────────────────────────────────
 with _tab_data:
-    with st.expander("Stolen Data and Security Controls", expanded=True):
+    with st.expander("What Gets Stolen and How Attackers Bypass Security Controls", expanded=True):
 
-        st.markdown("## What Gets Stolen and How Attackers Bypass Security Controls")
         col9, col10 = st.columns(2, gap="large")
 
         with col9:
@@ -1895,9 +1890,8 @@ with _tab_data:
 # SECTION 6 — VULNERABILITY EXPLOITATION THEMES
 # ─────────────────────────────────────────
 with _tab_trends:
-    with st.expander("Exploitation Trends", expanded=True):
+    with st.expander("How Exploitation Trends Have Shifted Over 12 Weeks", expanded=True):
 
-        st.markdown("## How Exploitation Trends Have Shifted Over 12 Weeks")
         st.caption("Weekly incident volume by exploitation type — hover over the chart to compare categories")
         st.markdown(audience_badge("advanced"), unsafe_allow_html=True)
 
@@ -1970,10 +1964,7 @@ with _tab_ics:
         df_ics_hist     = pd.read_csv(os.path.join(_ICS_DIR, "06_historical_quarterly_trends.csv"))
         df_ics_src_h    = pd.read_csv(os.path.join(_ICS_DIR, "07_threat_sources_historical.csv"))
 
-        st.markdown("---")
-        st.markdown("## Industrial Control System Cyber Threats")
         st.caption(
-            "Data from Kaspersky ICS-CERT covering Q2 2025 (April – June 2025). "
             "Percentages show the share of ICS computers on which malicious objects were blocked during the quarter."
         )
 
@@ -2225,13 +2216,7 @@ LI_LOGO = """<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" view
 # AUDIENCE GUIDES TAB
 # ─────────────────────────────────────────
 with _tab_guides:
-    st.markdown("## Accessibility Level")
-
-    st.markdown(
-        f'<p style="font-size:0.78rem;color:{MUTED};font-family:\'Inter\',sans-serif;margin:0.4rem 0 0.5rem 0;">'
-        'Select your accessibility level:</p>',
-        unsafe_allow_html=True,
-    )
+    st.markdown("## Select Your Accessibility Level")
     _gq1, _gq2 = st.columns(2, gap="small")
     if _gq1.button("Plain & Simple", use_container_width=True, key="_guides_go_simple"):
         st.session_state["_audience"] = "simple"
@@ -2286,7 +2271,7 @@ with _tab_guides:
                  font-family:'Inter',sans-serif;border:none;padding:0;margin-top:0;">
         What Is Cyber Crime — And Should You Worry?
       </h2>
-      <p style="margin:0;font-size:1rem;color:#475569;font-family:'Inter',sans-serif;line-height:1.7;max-width:780px;">
+      <p style="margin:0;font-size:1rem;color:#475569;font-family:'Inter',sans-serif;line-height:1.7;">
         Think of this as a neighbourhood watch report for the internet — every finding explained in everyday language, at your own pace.
       </p>
     </div>
@@ -2330,10 +2315,7 @@ with _tab_guides:
              "Attack Methods"),
         ]
 
-        # ── Side-by-side layout: text left, charts right ──────────────────────
-        _ps_left, _ps_right = st.columns([2, 3], gap="large")
-
-        # (threat heading, what is happening, what to do right now)
+        # Monthly tip full-width; each section paired with its chart
         _WATCH = {
             1:  ("Tax Refund Scams Are Peaking",
                  "January kicks off tax season and scammers know it. You will likely receive fake emails or texts pretending to be the Canada Revenue Agency or IRS saying you have a refund waiting or owe an urgent payment. These messages look very convincing and include official-looking logos.",
@@ -2373,10 +2355,8 @@ with _tab_guides:
                  "Donate only by going directly to a charity's official website — never through a link in an email or social media post. If anyone contacts you asking for gift cards as payment for any reason, it is a scam. Hang up or ignore the message and tell a trusted family member."),
         }
         _watch = _WATCH[datetime.datetime.now().month]
-
-        with _ps_left:
-            st.markdown("### Watch Out This Month")
-            st.markdown(f"""
+        st.markdown("### Watch Out This Month")
+        st.markdown(f"""
     <div style="background:#fffbeb;border:1px solid #fde68a;border-radius:12px;
                 overflow:hidden;margin-bottom:1.5rem;box-shadow:0 1px 4px rgba(0,0,0,0.05);">
       <div style="background:#f59e0b;padding:0.65rem 1.2rem;">
@@ -2396,7 +2376,14 @@ with _tab_guides:
       </div>
     </div>""", unsafe_allow_html=True)
 
-            for icon, title, body, takeaway, label in _simple_sections:
+        _simple_figs = [fig_radar, fig_pat, fig_fore, fig_dt, fig_ics_region, fig_act]
+        _simple_fig_keys = [
+            "chart_radar_ps", "chart_pat_ps", "chart_fore_ps",
+            "chart_dt_ps",    "chart_ics_ps", "chart_act_ps",
+        ]
+        for (icon, title, body, takeaway, label), fig, fkey in zip(_simple_sections, _simple_figs, _simple_fig_keys):
+            _ps_c1, _ps_c2 = st.columns(2, gap="large")
+            with _ps_c1:
                 st.markdown(f"""
     <div style="background:#ffffff;border:1px solid #e2e8f0;border-radius:12px;
                 padding:1.3rem 1.5rem;margin-bottom:1rem;
@@ -2414,17 +2401,9 @@ with _tab_guides:
       </div>
     </div>
     """, unsafe_allow_html=True)
-
-        with _ps_right:
-            st.markdown("### The Charts — In Plain Terms")
-            st.markdown("#### Which sectors get hit hardest by ransomware?")
-            st.plotly_chart(fig_rs, use_container_width=True, key="chart_rs_guides_plain", config={"displayModeBar": False, "scrollZoom": False})
-
-            st.markdown("#### Is ransomware getting worse?")
-            st.plotly_chart(fig_fore, use_container_width=True, key="chart_fore_guides_plain", config={"displayModeBar": False, "scrollZoom": False})
-
-            st.markdown("#### What do hackers steal?")
-            st.plotly_chart(fig_dt, use_container_width=True, key="chart_dt_guides_plain", config={"displayModeBar": False, "scrollZoom": False})
+            with _ps_c2:
+                st.plotly_chart(fig, use_container_width=True, key=fkey,
+                                config={"displayModeBar": False, "scrollZoom": False})
 
     # ─────────────────────────────────────────
     # ADVANCED — For IT & Security Professionals
@@ -2443,7 +2422,7 @@ with _tab_guides:
                  font-family:'Inter',sans-serif;border:none;padding:0;margin-top:0;">
         2025 Threat Intelligence — Data-Driven View
       </h2>
-      <p style="margin:0;font-size:1rem;color:#475569;font-family:'Inter',sans-serif;line-height:1.7;max-width:780px;">
+      <p style="margin:0;font-size:1rem;color:#475569;font-family:'Inter',sans-serif;line-height:1.7;">
         A closer look at the data — breach patterns, attack vectors, and regional threat trends, visualised for anyone who wants the full picture.
       </p>
     </div>
@@ -2529,18 +2508,15 @@ with _tab_guides:
              "Attack Methods"),
         ]
 
-        # ── Side-by-side layout: text left, charts right ──────────────────────
-        _adv_left, _adv_right = st.columns([2, 3], gap="large")
-
-        with _adv_left:
-            st.markdown("### Security Focus This Month")
-            _at = _adv_tips[datetime.datetime.now().month]
-            st.markdown(f"""
+        # Monthly tip full-width; each section paired with its chart
+        st.markdown("### Security Focus This Month")
+        _at = _adv_tips[datetime.datetime.now().month]
+        st.markdown(f"""
     <div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:12px;
                 overflow:hidden;margin-bottom:1.5rem;box-shadow:0 1px 4px rgba(0,0,0,0.05);">
       <div style="background:#2563eb;padding:0.65rem 1.2rem;">
-        <p style="margin:0;font-size:0.75rem;font-weight:600;color:#ffffff;font-family:'Inter',sans-serif;
-                  letter-spacing:0.03em;">THIS MONTH'S FOCUS</p>
+        <p style="margin:0;font-size:0.75rem;font-weight:600;color:#ffffff;font-family:'Inter',sans-serif;"
+                  "letter-spacing:0.03em;">THIS MONTH'S FOCUS</p>
       </div>
       <div style="padding:1rem 1.2rem 0.8rem 1.2rem;">
         <p style="margin:0 0 0.5rem 0;font-size:1rem;font-weight:600;color:#0f172a;font-family:'Inter',sans-serif;">{_at[0]}</p>
@@ -2555,7 +2531,14 @@ with _tab_guides:
       </div>
     </div>""", unsafe_allow_html=True)
 
-            for title, body, action, label in _adv_sections:
+        _adv_figs = [fig_radar, fig_pat, fig_fore, fig_dt, fig_ics_region, fig_act]
+        _adv_fig_keys = [
+            "chart_radar_adv", "chart_pat_adv", "chart_fore_adv",
+            "chart_dt_adv",    "chart_ics_adv", "chart_act_adv",
+        ]
+        for (title, body, action, label), fig, fkey in zip(_adv_sections, _adv_figs, _adv_fig_keys):
+            _adv_c1, _adv_c2 = st.columns(2, gap="large")
+            with _adv_c1:
                 st.markdown(f"""
     <div style="background:#ffffff;border:1px solid #e2e8f0;border-radius:12px;
                 padding:1.3rem 1.5rem;margin-bottom:1rem;
@@ -2573,22 +2556,9 @@ with _tab_guides:
       </div>
     </div>
     """, unsafe_allow_html=True)
-
-        with _adv_right:
-            st.markdown("### The Charts — Technical View")
-
-            st.markdown("#### Sector Breach Exposure")
-            st.plotly_chart(fig_radar, use_container_width=True, key="chart_radar_guides_adv", config={"displayModeBar": False, "scrollZoom": False})
-
-            st.markdown("#### Ransomware by Sector")
-            st.plotly_chart(fig_rs, use_container_width=True, key="chart_rs_guides_adv", config={"displayModeBar": False, "scrollZoom": False})
-
-            st.markdown("#### Ransomware Trend")
-            st.plotly_chart(fig_fore, use_container_width=True, key="chart_fore_guides_adv", config={"displayModeBar": False, "scrollZoom": False})
-
-            st.markdown("#### ICS Attack Rate by Region")
-            st.plotly_chart(fig_ics_region, use_container_width=True, key="chart_ics_region_guides_adv", config={"displayModeBar": False, "scrollZoom": False})
-
+            with _adv_c2:
+                st.plotly_chart(fig, use_container_width=True, key=fkey,
+                                config={"displayModeBar": False, "scrollZoom": False})
     # ─────────────────────────────────────────
 
 # ─────────────────────────────────────────
@@ -2742,7 +2712,7 @@ with _tab_outlook:
 
     # ── Now vs 2030 comparison table ──────────────────────────────────────────
     _tbl_header = f"""
-<div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:0;
+<div style="display:grid;grid-template-columns:2fr 1fr 1fr 2fr;gap:0;
             background:{SURFACE};border:1px solid {BORDER};border-radius:10px 10px 0 0;
             padding:8px 16px;">
   <span style="font-size:0.75rem;font-weight:600;color:{MUTED};font-family:'Inter',sans-serif;">Metric</span>
@@ -2761,16 +2731,15 @@ with _tab_outlook:
     for i, (metric, now_val, proj_val, delta, col, up) in enumerate(_rows):
         _bg = "white" if i % 2 == 0 else "#f8fafc"
         _border_bottom = f"border-bottom:1px solid {BORDER};" if i < len(_rows)-1 else ""
-        _arrow = "↑" if up else "↓"
-        _chg_col = C_RED if up else C_GREEN
-        _sign = f"+{delta}" if delta > 0 else str(delta)
+        _abs_delta = abs(round(delta, 1))
+        _chg_text = f"Projected to rise by {_abs_delta} percentage points" if up else f"Projected to fall by {_abs_delta} percentage points"
         _tbl_rows += f"""
-<div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:0;
+<div style="display:grid;grid-template-columns:2fr 1fr 1fr 2fr;gap:0;
             background:{_bg};padding:10px 16px;{_border_bottom}">
   <span style="font-size:0.84rem;color:{TEXT};font-family:'Inter',sans-serif;">{metric}</span>
   <span style="font-size:0.84rem;color:{MUTED};font-family:'Inter',sans-serif;">{now_val}</span>
-  <span style="font-size:0.84rem;font-weight:600;color:{col};font-family:'Inter',sans-serif;">{proj_val}</span>
-  <span style="font-size:0.84rem;font-weight:600;color:{_chg_col};font-family:'Inter',sans-serif;">{_arrow} {_sign} pp</span>
+  <span style="font-size:0.84rem;color:{MUTED};font-family:'Inter',sans-serif;">{proj_val}</span>
+  <span style="font-size:0.84rem;color:{MUTED};font-family:'Inter',sans-serif;">{_chg_text}</span>
 </div>"""
 
     st.markdown(
@@ -2797,13 +2766,13 @@ with _tab_about:
             border:1px solid #bfdbfe;border-radius:16px;
             padding:2rem 2.4rem;margin-bottom:1.6rem;">
   <p style="font-size:1.15rem;{_p}margin-bottom:0.8rem;">&#x1F6E1;&#xFE0F; What Is CyberSignals?</p>
-  <p style="{_p}margin-bottom:0.7rem;max-width:800px;">
+  <p style="{_p}margin-bottom:0.7rem;">
     Think of CyberSignals like a neighbourhood watch report — but for the internet.
     Every day, criminals try to break into computers, steal personal information, and extort businesses.
     This dashboard tracks those attacks using real data from two of the world's leading cybersecurity
     research organizations, and presents it in plain language so anyone can understand the risks.
   </p>
-  <p style="{_pm}max-width:800px;">
+  <p style="{_pm}">
     You do not need to be a technology expert to use this site.
     Whether you are a grandparent, a small business owner, or a cybersecurity professional —
     this page is written for you.
@@ -2850,7 +2819,7 @@ with _tab_about:
 
     # ── 5 things anyone can do ────────────────────────────────────────────────
     st.markdown(f'<p style="{_p}margin-bottom:0.3rem;">&#x2705; 5 things anyone can do right now</p>', unsafe_allow_html=True)
-    st.markdown(f'<p style="{_pm}margin-bottom:1rem;">No technical knowledge needed. These five habits stop the vast majority of attacks.</p>', unsafe_allow_html=True)
+    st.markdown(f'<p style="{_pm}margin-bottom:1rem;">These five habits stop the vast majority of attacks.</p>', unsafe_allow_html=True)
 
     _tips = [
         ("#fef3c7", "#f59e0b", "&#x1F511; Use a different password for every account",
