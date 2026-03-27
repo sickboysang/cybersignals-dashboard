@@ -841,8 +841,12 @@ components.html(f"""<script>
             'margin-right:18px',
             'padding-right:18px',
             'border-right:1px solid rgba(255,255,255,0.15)',
-            'pointer-events:none'
+            'cursor:pointer'
         ].join(';');
+        brand.title = 'Go to Home';
+        brand.addEventListener('click', function() {{
+            window.parent.location.reload();
+        }});
         tabList.insertBefore(brand, tabList.firstChild);
     }}
     injectBrand();
