@@ -30,7 +30,7 @@ SURFACE = "#f1f5f9"
 BORDER  = "#e2e8f0"
 BORDER2 = "#cbd5e1"
 TEXT    = "#0f172a"
-MUTED   = "#475569"
+MUTED   = "#334155"
 ACCENT  = "#2563eb"
 ACCENT2 = "#7c3aed"
 RED     = "#dc2626"
@@ -282,6 +282,7 @@ section[data-testid="stSidebar"],
 /* Push tab panel content below the fixed nav */
 [data-testid="stTabs"] [data-baseweb="tab-panel"] {{
     padding-top: 12px !important;
+    transition: opacity 0.18s ease !important;
 }}
 
 /* ── METRICS ── */
@@ -821,10 +822,20 @@ components.html(f"""<script>
     }}
 
     // Inject CyberSignals brand as first item in the fixed nav bar
+    function _csGoHome() {{
+        var tabs = p.querySelectorAll('[data-testid="stTabs"] [data-baseweb="tab-list"] button[role="tab"]');
+        window.parent.scrollTo({{top: 0, behavior: 'instant'}});
+        if (tabs.length > 0) {{ tabs[0].click(); }}
+    }}
     function injectBrand() {{
         var tabList = p.querySelector('[data-testid="stTabs"] [data-baseweb="tab-list"]');
         if (!tabList) {{ setTimeout(injectBrand, 250); return; }}
-        if (tabList.querySelector('#cs-nav-brand')) return;
+        var existing = p.getElementById('cs-nav-brand');
+        if (existing) {{
+            // Just refresh the handler — no DOM removal, no flicker
+            existing.onclick = _csGoHome;
+            return;
+        }}
         var brand = p.createElement('div');
         brand.id = 'cs-nav-brand';
         brand.innerHTML = '&#x1F6E1;&#xFE0F; <span>CyberSignals</span>';
@@ -844,10 +855,15 @@ components.html(f"""<script>
             'cursor:pointer'
         ].join(';');
         brand.title = 'Go to Home';
-        brand.addEventListener('click', function() {{
-            window.parent.location.reload();
-        }});
+        brand.onclick = _csGoHome;
         tabList.insertBefore(brand, tabList.firstChild);
+        // Lightweight watcher — only fires when direct children of tab-list change
+        if (!p._csBrandObserver) {{
+            p._csBrandObserver = new MutationObserver(function() {{
+                if (!p.getElementById('cs-nav-brand')) {{ setTimeout(injectBrand, 100); }}
+            }});
+            p._csBrandObserver.observe(tabList, {{childList: true, subtree: false}});
+        }}
     }}
     injectBrand();
     // Re-check after Streamlit may recreate the DOM
@@ -1735,13 +1751,14 @@ with _tab_ransom:
                 width=0.55,
             ))
             fig_act.add_annotation(
-                x="External", y=85, text="163% rise in espionage",
-                showarrow=False, font=dict(color=RED, size=11, family="Inter, sans-serif"),
+                x="External", y=96, yanchor="bottom", text="163% rise in espionage",
+                showarrow=True, arrowhead=2, arrowcolor=RED, arrowsize=0.8, ax=0, ay=-28,
+                font=dict(color=RED, size=11, family="Inter, sans-serif"),
                 bgcolor="rgba(255,255,255,0.95)", bordercolor=BORDER2, borderwidth=1, borderpad=4,
             )
             layout = chart_layout(height=400, show_legend=False)
             layout.update({
-                "yaxis": dict(title="Prevalence in Breaches (%)", range=[0,105],
+                "yaxis": dict(title="Prevalence in Breaches (%)", range=[0,115],
                               gridcolor="#f1f5f9", tickfont=dict(color=MUTED, size=11)),
                 "xaxis": dict(tickfont=dict(color=TEXT, size=12), gridcolor="#f1f5f9"),
             })
@@ -2210,10 +2227,8 @@ with _tab_guides:
     _gq1, _gq2 = st.columns(2, gap="small")
     if _gq1.button("Plain & Simple", use_container_width=True, key="_guides_go_simple"):
         st.session_state["_audience"] = "simple"
-        st.rerun()
     if _gq2.button("Advanced", use_container_width=True, key="_guides_go_advanced"):
         st.session_state["_audience"] = "advanced"
-        st.rerun()
 
     _aud_active_g = st.session_state.get("_audience", "simple")
     components.html(f"""<script>
@@ -2269,12 +2284,19 @@ with _tab_guides:
 
         _simple_sections = [
             ("", "Which Industries Get Hit the Most?",
-             "Think of it like a pie — some industries take a much bigger slice of cyberattacks than others. "
-             "Manufacturing, Healthcare, and Finance together account for the majority of all confirmed breaches. "
-             "Hospitals are hit hard because patient records are extremely valuable, and factories pay quickly to restart production lines.",
-             "If you work in healthcare, finance, or manufacturing, your organization is a high-value target.",
+             "The chart shows two bars for each industry — one for how many attacks were attempted, one for how many actually succeeded in stealing data. "
+             "Industries where both bars are almost the same size are struggling to stop attacks before damage is done. "
+             "Manufacturing and Healthcare have the smallest gap, meaning most attacks there lead to a real breach.",
+             "If you work in manufacturing or healthcare, assume attackers will eventually get through — have a plan for when, not if.",
              "Sector Risk",
-             "Share of confirmed breaches across major industries — the bigger the slice, the more attacks that sector faces."),
+             "Reported incidents vs confirmed breaches per sector — the narrower the gap, the harder that sector finds it to stop attacks before data is stolen."),
+            ("", "How Do Hackers Actually Get In?",
+             "Attackers do not usually break through walls — they walk through open doors. "
+             "The chart shows the four main ways hackers gain access: stolen or guessed passwords, tricking people with fake emails, exploiting software bugs, and compromising suppliers you already trust. "
+             "Stolen passwords and phishing emails together account for the majority of all breaches.",
+             "The single best protection is a strong, unique password plus two-step verification on every important account.",
+             "Attack Methods",
+             "The four main ways attackers first break into systems — each slice is one method."),
             ("", "How Bad Is the Ransomware Problem by Industry?",
              "Ransomware locks all your files and demands money to get them back. "
              "Some industries get hit far more than others — manufacturing and healthcare lead the list. "
@@ -2282,13 +2304,6 @@ with _tab_guides:
              "The longer the bar for your industry, the more likely a ransomware attack is headed your way.",
              "Ransomware",
              "Number of ransomware incidents per industry in 2024 — longer bar means more attacks."),
-            ("", "Does Two-Step Verification Actually Help?",
-             "Two-step verification (also called Multi-Factor Authentication or Multi-Factor Authentication) asks for a second proof of identity — like a code sent to your phone — after you enter your password. "
-             "When Multi-Factor Authentication is turned on, stolen passwords become almost useless to attackers. "
-             "The chart shows what share of organizations have it turned on versus those still relying on passwords alone.",
-             "Turn on two-step verification for your email and bank accounts today — it takes under two minutes.",
-             "Attack Methods",
-             "How many organizations use Multi-Factor Authentication versus password-only login."),
             ("", "What Do Hackers Actually Steal?",
              "When a breach happens, attackers do not just take one type of data. "
              "Internal business documents are the most stolen item — things like contracts, strategy plans, and emails. "
@@ -2303,13 +2318,13 @@ with _tab_guides:
              "Cyberattacks on infrastructure are a public safety issue, not just a business one.",
              "ICS Threats",
              "Percentage of industrial computers that had at least one threat blocked, by world region."),
-            ("", "Who Is Actually Behind These Attacks?",
-             "Most people picture a lone hacker in a dark room — but the reality is very different. "
-             "About 80% of attacks come from organized criminal groups that run like businesses, with employees and even customer service teams for ransom victims. "
-             "Governments also sponsor hackers, and that activity jumped 163% in 2024, targeting hospitals, universities, and infrastructure.",
-             "Attacks are professional and deliberate — but strong basic habits like unique passwords and two-step login still stop most of them.",
-             "Attack Methods",
-             "Breakdown of who is responsible for breaches — criminal groups, government-sponsored actors, and insiders."),
+            ("", "Are Cyber Threats Getting Worse Over Time?",
+             "The chart tracks different types of cyber attacks week by week over 12 weeks in 2025. "
+             "Some attack types rise sharply at certain times — often after a major software weakness is discovered publicly. "
+             "Others stay steady. Seeing these patterns helps organizations prepare before the next wave hits.",
+             "Attacks follow predictable patterns — knowing the trend helps you stay one step ahead.",
+             "Trends",
+             "Weekly incident volume by exploitation type over 12 weeks in 2025 — shows which attack methods are rising and falling."),
         ]
 
         # Monthly tip full-width; each section paired with its chart
@@ -2325,13 +2340,13 @@ with _tab_guides:
                  "Verify any payroll change request by calling your Human Resources department directly — never through a link in an email. For job offers, research the company independently and never pay a fee or provide banking details before starting a real job."),
             4:  ("Travel Booking Fraud Peaks with Spring Holidays",
                  "April holiday travel drives a surge in fake airline, hotel, and vacation rental websites. These sites appear in search results and look identical to real booking platforms. After you pay, the booking does not exist and your card details have been stolen.",
-                 "Book travel only through websites you navigate to directly — not through links in emails or social media ads. Check the URL carefully for subtle misspellings. If a deal seems unusually cheap, search the company name with the word scam before purchasing."),
+                 "Book travel only through websites you navigate to directly — not through links in emails or social media ads. Check the web address in your browser carefully for subtle misspellings. If a deal seems unusually cheap, search the company name with the word scam before purchasing."),
             5:  ("Artificially Intelligent Phishing Emails Are Harder to Spot",
                  "Phishing emails used to be easy to identify from spelling errors. In 2025, attackers use artificial intelligence to write perfect, personalised emails that reference your name, employer, and recent activity. Roughly 10% of phishing lures are now artificially written according to Verizon Data Breach Investigations Report 2025.",
                  "Do not judge an email as safe just because it is well-written. Look at the sender's actual email address, not just the display name. When in doubt, contact the sender through a separate channel — call them or open a fresh browser tab to log in directly."),
             6:  ("Public Wi-Fi Attacks Are Common in Summer",
-                 "Summer travel means more people using airport, hotel, and cafe Wi-Fi. Attackers set up fake hotspots with names like Free Airport WiFi or Hotel Guest Network. Once connected, they can intercept your traffic and steal passwords or session tokens without you knowing.",
-                 "Avoid doing online banking or accessing sensitive accounts on public Wi-Fi. Use your phone's mobile data instead, or turn on a Virtual Private Network before connecting. If you must use public Wi-Fi, ensure every site you visit uses HTTPS — look for the padlock in the address bar."),
+                 "Summer travel means more people using airport, hotel, and cafe Wi-Fi. Attackers set up fake hotspots with names like Free Airport WiFi or Hotel Guest Network. Once connected, they can intercept your traffic and steal your passwords or keep you logged in to accounts they control — all without you knowing.",
+                 "Avoid doing online banking or accessing sensitive accounts on public Wi-Fi. Use your phone's mobile data instead, or turn on a Virtual Private Network before connecting. If you must use public Wi-Fi, look for the padlock icon in your browser's address bar before entering any personal information — if there is no padlock, do not type anything sensitive."),
             7:  ("Vacation Rental Fraud Hits Its Annual Peak",
                  "July is the busiest month for fake vacation rental listings on platforms like Facebook Marketplace and even Airbnb clones. Scammers list properties they do not own, collect a deposit, and disappear. Victims often only discover the fraud when they arrive at the address.",
                  "Only book through established platforms that offer buyer protection. Never pay by bank transfer or gift card — always use a credit card or the platform's official payment system. Video call the host before paying and ask them to show you the property live."),
@@ -2373,31 +2388,31 @@ with _tab_guides:
       </div>
     </div>""", unsafe_allow_html=True)
 
-        _simple_figs = [fig_pie, fig_rs, fig_mfa, fig_dt, fig_ics_region, fig_act]
+        _simple_figs = [fig_pressure, fig_pie, fig_rs, fig_dt, fig_ics_region, fig_trends]
         _simple_fig_keys = [
-            "chart_pie_ps", "chart_rs_ps", "chart_mfa_ps",
-            "chart_dt_ps",  "chart_ics_ps", "chart_act_ps",
+            "chart_pressure_ps", "chart_pie_ps", "chart_rs_ps",
+            "chart_dt_ps",       "chart_ics_ps", "chart_trends_ps",
         ]
         _simple_analysis = [
             # (headline, body, extended)
-            ("Manufacturing, healthcare, and finance take the biggest share",
-             "The pie chart divides all confirmed breaches in 2024 across industries. Each slice represents one industry's share of the total. The bigger the slice, the more that industry was targeted. Manufacturing had the most breaches by a wide margin — mostly because attackers know that stopping a factory floor for even a few hours costs millions.",
-             "Why do some industries have bigger slices? Attackers follow the money and the pressure. Hospitals cannot afford downtime because lives depend on their systems. Banks hold financial data worth stealing. Factories lose enormous sums every hour production is paused. If your industry is a large slice, your organization is a priority target — not by accident, but by design."),
+            ("Some industries are much better at stopping attacks than others",
+             "The chart pairs two bars for each industry. The taller bar shows how many attacks were tried. The shorter bar shows how many actually succeeded in stealing data. A big gap means that industry is good at stopping attacks before they do real harm. A tiny gap means most attacks succeed once they start.",
+             "Manufacturing and Healthcare stand out because their gaps are small — almost every attack that starts there ends in a confirmed breach. This is partly because their systems are old, hard to update, and too critical to take offline for patching. Finance, by contrast, has a much larger gap — banks invest heavily in stopping attacks early. The lesson for everyday workers: if your industry has a small gap, the security team needs every employee to be an extra layer of defence."),
+            ("Most breaches start with a stolen password or a convincing fake email",
+             "The donut chart splits all confirmed breaches by how attackers first got in. Stolen passwords and phishing emails together account for the majority. Phishing means an attacker sends a message pretending to be your bank, your boss, or a courier company to trick you into clicking a link or handing over your password.",
+             "The important takeaway is that most breaches do not start with sophisticated hacking — they start with a human mistake or a reused password. Two-step verification (where your phone gets a code after you enter your password) makes stolen passwords completely useless, because the attacker cannot log in without also having your phone. If every person reading this turned on two-step verification for their email and bank account today, a significant portion of breaches would simply not happen."),
             ("Some industries get hit with ransomware far more than others",
              "Each bar shows how many ransomware attacks hit that industry in 2024. Ransomware is a type of attack that locks all your files and demands a payment to unlock them. Manufacturing leads because a locked factory line is so costly that companies often pay quickly rather than wait for a fix. Healthcare follows because hospitals cannot risk delays in patient care.",
              "The length of the bar matters. A longer bar means attackers have found that industry to be a reliable target — either because it pays, because it cannot afford downtime, or because its security is weaker. If your industry has a long bar, ransomware should be one of your top concerns when thinking about digital safety."),
-            ("Most organizations still rely on passwords alone — and that is a problem",
-             "Two-step verification (sometimes called two-factor login) adds a second check after your password — usually a code sent to your phone. The chart shows how many organizations have this turned on versus those still using passwords only. Stolen passwords are behind roughly one in five breaches, and two-step verification stops most of those attacks cold.",
-             "Think of your password as a front door key. If someone copies that key, they can walk right in. Two-step verification is like adding a second lock that only opens with a code sent to your personal phone — even if someone steals your password, they still cannot get in without your phone. Turning this on for your email and bank account takes about two minutes and dramatically reduces your risk."),
             ("Internal company documents are now the most stolen item",
              "The chart shows the most common types of data stolen in confirmed breaches. Internal business documents — things like contracts, strategy plans, and internal emails — top the list. Attackers use these to demand ransom payments or sell them to competitors. Personal information like your name, address, and date of birth comes next, and is used to open fake credit accounts in your name.",
              "Medical records are particularly valuable because you cannot cancel your health history the way you can cancel a credit card. A stolen card number becomes worthless once you call your bank. But your medical history, Medicare number, and prescription details stay the same forever — making them a long-term asset for criminals. Guard health information as carefully as you guard your wallet."),
             ("Parts of the world with less digital protection face far more attacks",
              "Each bar shows the percentage of industrial computers in that region that had at least one threat blocked in 2025. Industrial computers control things like power stations, water treatment plants, and factory machines. Africa and Southeast Asia have the highest rates — not because attackers target those regions specifically, but because security investment tends to be lower there.",
              "As more industrial equipment gets connected to the internet — even indirectly — it becomes reachable by attackers from anywhere in the world. A water treatment plant in any country faces the same global pool of attackers. The difference between a high bar and a low bar on this chart often comes down to whether the organization running that equipment has invested in proper protection."),
-            ("Organized crime is behind most attacks — not teenagers in hoodies",
-             "The chart shows who is actually responsible for breaches. About 80 percent come from organized criminal groups that operate like businesses — with employees, managers, and even customer service teams for ransom victims. A much smaller portion comes from government-sponsored attackers targeting research, defence, and public services. Insiders (people within organizations) account for a small but notable share.",
-             "The 163 percent rise in government-sponsored attacks in 2024 is significant. These attackers are not after your bank account — they are after research data, government systems, energy infrastructure, and anything that gives their country a strategic advantage. For most everyday people, criminal groups are the primary threat. But if you work in research, government, or critical services like energy or water, state-sponsored attackers are a real and growing concern."),
+            ("Some attack types surge suddenly — and the pattern repeats",
+             "Each line on the chart tracks a different type of exploitation week by week. When a new software weakness becomes public, one of these lines jumps sharply — attackers race to exploit it before organizations patch. The chart shows that attack activity is not random; it follows predictable cycles tied to software releases, news events, and public disclosures.",
+             "For everyday people, this means that when you hear news about a major software company releasing an urgent update, installing that update quickly is genuinely important — attackers are already scanning for systems that have not patched yet. The gap between when a weakness is announced and when most people update is the window attackers exploit. Keeping your devices set to automatic updates closes that window automatically."),
         ]
         for (icon, title, body, takeaway, label, chart_cap), fig, fkey, (ahl, abody, aext) in zip(_simple_sections, _simple_figs, _simple_fig_keys, _simple_analysis):
             _ps_c1, _ps_c2 = st.columns(2, gap="large")
@@ -2496,7 +2511,7 @@ with _tab_guides:
             ("Composite Sector Risk Score",
              "The radar chart normalizes breach volume across 12 industries into a 0–10 risk score, allowing cross-sector comparison independent of raw size. "
              "Manufacturing scores 10 (maximum) with 1,607 confirmed breaches — driven by operational downtime leverage and legacy Operational Technology connectivity. "
-             "Healthcare (1,542 breaches, score ~9.6) carries compounded risk from the Health Insurance Portability and Accountability Act breach costs and critical care disruption. "
+             "Healthcare (1,542 breaches, score ~9.6) carries compounded risk from Health Insurance Portability and Accountability Act breach costs and critical care disruption. "
              "The low-risk spokes (Education, Public Sector) reflect lower monetizable data density rather than stronger security posture.",
              "Use your sector's risk score to benchmark controls against peers and justify board-level security investment.",
              "Sector Risk",
@@ -2505,37 +2520,37 @@ with _tab_guides:
              "This dual-series chart separates incident frequency from breach confirmation rate — a critical distinction for prioritization. "
              "System intrusion leads in confirmed breaches despite lower total incident volume, indicating high attacker success rates when this pattern is used. "
              "Social engineering incidents convert to confirmed breaches at a high rate (driven by credential and Business Email Compromise outcomes), while Denial of Service generates high incident volume but only 2 confirmed breaches, suggesting containment effectiveness.",
-             "Prioritize controls against system intrusion and social engineering over denial-of-service mitigations — the confirmed breach rate is the metric that matters.",
+             "Prioritize controls against system intrusion and social engineering over Denial of Service attack defences — the confirmed breach rate is the metric that matters.",
              "Attack Methods",
              "Incident count vs. confirmed breach count per attack pattern — divergence highlights attacker effectiveness by technique."),
-            ("Ransomware Trajectory Forecast to 2030",
-             "Linear regression on Data Breach Investigations Report 2022–2024 data projects ransomware involvement reaching approximately 95% of breaches by 2030 if the current growth rate continues. "
-             "The 2024 data point (44%) represents a 37% year-over-year increase — the steepest single-year growth in the Data Breach Investigations Report's history. "
-             "Extortion-only variants (data exfiltration without encryption) are accelerating the trend as attackers decouple leverage from backup recovery capability.",
-             "Model ransomware as a near-certain event in your threat scenarios, not a probabilistic one — design controls and insurance accordingly.",
+            ("Threat Actor Profile — Who Is Behind the Breaches?",
+             "The chart disaggregates breach responsibility by actor category: external organized crime (80%), internal threats (20%), partner or third-party actors (30%), and state-sponsored groups (15%). "
+             "The 163% year-over-year rise in espionage-motivated breaches is the most operationally significant finding in the 2025 report — state actors are now targeting intellectual property and critical infrastructure at scale, blurring the line between financially motivated crime and geopolitical operations. "
+             "The 30% partner or third-party figure reflects the continued expansion of supply chain attack surface as organizations extend trust to vendor ecosystems.",
+             "Classify threat actor categories in your risk register and map controls to each — state-sponsored attackers use very different tactics and techniques compared to criminal ransomware groups, and your defences should reflect that difference.",
              "Ransomware",
-             "Historical ransomware involvement rate (2022–2024) with linear regression projection to 2030."),
-            ("Incident Pressure by Sector",
-             "Incident pressure measures the ratio of total reported incidents to confirmed breaches — a high ratio indicates effective detection and containment before data exposure. "
-             "Finance shows the highest incident-to-breach conversion gap, reflecting mature security operations capable of stopping intrusions before confirmation. "
-             "Manufacturing's lower gap indicates that when incidents occur, breaches follow quickly — consistent with limited Security Operations Center capacity in Operational Technology environments.",
-             "Use the incident pressure ratio as an internal key performance indicator for Security Operations Center effectiveness — a widening gap signals improving detection before data loss.",
-             "Sector Risk",
-             "Total reported incidents vs. confirmed breaches per sector — the gap measures pre-breach containment effectiveness."),
+             "Prevalence of each threat actor category across confirmed breaches — external, internal, partner, and state-sponsored."),
+            ("Multi-Factor Authentication Bypass — Attack Technique Breakdown",
+             "With Multi-Factor Authentication adoption rising, attackers have pivoted to bypass techniques rather than brute force. "
+             "The three dominant methods — session token theft, approval request flooding, and real-time interception — each account for approximately one-third of two-step verification bypass incidents. "
+             "Session token theft steals the digital pass that keeps you logged in after authentication; approval request flooding sends so many verification prompts that the user gives in and taps approve; real-time interception tools sit invisibly between the user and the real website, capturing login details as they pass through.",
+             "Switch to phishing-resistant two-step verification such as a hardware security key or passkey — these physical devices are immune to all three bypass techniques because they verify the exact website you are connecting to before releasing any credentials.",
+             "Stolen Data",
+             "Share of Multi-Factor Authentication bypass incidents by technique — token theft, prompt bombing, and adversary-in-the-middle each contribute roughly equally."),
             ("ICS Threat History — Global Attack Rate Trend",
              "Kaspersky Industrial Control Systems Cyber Emergency Response Team data from 2022 through Q2 2025 shows a declining global attack rate (from 26.3% to 20.5%), but the absolute number of targeted systems is rising as Operational Technology connectivity expands. "
-             "The declining rate masks a composition shift: internet-delivered threats (malicious scripts, phishing) are growing as a share of ICS vectors, replacing removable media as the primary infection path. "
-             "This reflects Information Technology and Operational Technology convergence — industrial systems are inheriting Information Technology threat vectors as they go online.",
-             "Treat internet-facing Operational Technology as a priority hardening target; the declining headline rate obscures an expanding absolute attack surface.",
+             "The declining rate masks a shift in how attacks arrive: internet-delivered threats such as malicious scripts and phishing pages are growing as a share of industrial attack pathways, replacing physical media like USB drives as the primary infection route. "
+             "This reflects the increasing connection of industrial systems to corporate and internet networks — those systems are now exposed to the same threats as office computers.",
+             "Treat any industrial system with internet connectivity as a top hardening priority — the declining headline rate hides the fact that the total number of at-risk systems is growing as more equipment goes online.",
              "ICS Threats",
-             "Global share of industrial computers with at least one blocked threat — quarterly trend 2022–Q2 2025."),
-            ("ICS Initial Access — Threat Source Breakdown",
-             "The ICS threat source chart disaggregates which delivery mechanisms are responsible for blocked threats on industrial computers. "
-             "Internet-sourced threats (malicious scripts and phishing pages) have overtaken removable media for the first time in 2025, driven by increased Operational Technology internet connectivity. "
-             "Email remains a secondary but persistent vector in environments where operational staff use shared workstations connected to both Information Technology and Operational Technology networks.",
-             "Segment Operational Technology networks from Information Technology email and internet traffic at the switch level — policy-level separation is insufficient against this threat profile.",
-             "ICS Threats",
-             "Percentage contribution of each threat delivery mechanism to total blocked threats on ICS endpoints — Kaspersky Industrial Control Systems Cyber Emergency Response Team Q2 2025."),
+             "Global share of industrial computers with at least one blocked threat — quarterly trend from 2022 through the second quarter of 2025."),
+            ("Exploitation Trend Analysis — 12-Week Vector Velocity",
+             "The multi-line chart tracks weekly incident volume across exploitation categories over 12 weeks in 2025. "
+             "Velocity spikes — sharp week-over-week increases in a single category — typically correlate with public vulnerability disclosures or proof-of-concept code releases. "
+             "Categories that sustain elevated volume over multiple weeks indicate mature exploitation tooling with a low barrier to entry, while brief spikes followed by rapid decline suggest opportunistic campaigns that burned out quickly.",
+             "Use the velocity pattern to prioritize threat intelligence subscriptions and adjust Security Operations Center alert thresholds dynamically — a sustained multi-week rise in a category warrants detection rule tuning, not just a one-time patch advisory.",
+             "Trends",
+             "Weekly incident volume by exploitation type over 12 weeks — velocity spikes indicate active exploitation campaigns."),
         ]
 
         # Monthly tip full-width; each section paired with its chart
@@ -2561,10 +2576,10 @@ with _tab_guides:
       </div>
     </div>""", unsafe_allow_html=True)
 
-        _adv_figs = [fig_radar, fig_pat, fig_fore, fig_pressure, fig_ics_hist, fig_ics_src]
+        _adv_figs = [fig_radar, fig_pat, fig_act, fig_mfa, fig_ics_hist, fig_trends]
         _adv_fig_keys = [
-            "chart_radar_adv", "chart_pat_adv",  "chart_fore_adv",
-            "chart_pres_adv",  "chart_icsh_adv", "chart_icss_adv",
+            "chart_radar_adv", "chart_pat_adv",  "chart_act_adv",
+            "chart_mfa_adv",   "chart_icsh_adv", "chart_trends_adv",
         ]
         _adv_analysis = [
             # (headline, body, extended)
@@ -2574,18 +2589,18 @@ with _tab_guides:
             ("Confirmed breach rate is the operationally relevant metric — not raw incident volume",
              "Incident volume measures how often an attack pattern is attempted or detected. Confirmed breach rate measures how often it succeeds. System intrusion has a high confirmed breach conversion rate relative to its incident count — indicating that when this pattern is used, containment fails more often than with other vectors. Social engineering similarly converts at a high rate due to the human element bypassing technical controls.",
              "Denial of Service generates the highest raw incident volume but has only 2 confirmed breaches in 2024 — the largest gap between incident count and breach confirmation of any pattern. This reflects effective perimeter absorption rather than attacker restraint. Security Operations Center prioritization should be weighted by confirmed breach conversion rate, not alert volume. A pattern that generates thousands of alerts but zero confirmed breaches warrants lower escalation priority than one generating fewer alerts with high conversion."),
-            ("Linear projection to 2030 models a near-certainty scenario for ransomware involvement",
-             "The forecast applies a linear regression to Verizon Data Breach Investigations Report data points from 2022 (25%), 2023 (32%), and 2024 (44%). The 12-percentage-point year-over-year increase from 2023 to 2024 is the steepest on record and was driven by the growth of ransomware-as-a-service affiliate programs that dramatically lowered the skill barrier for attacks.",
-             "The 2030 projection assumes the current linear growth rate holds — a conservative model given that exponential growth is plausible as affiliate networks scale. The more strategically relevant trend is the decoupling of ransomware from encryption: extortion-only variants that exfiltrate data without deploying encryptors are growing as organizations improve backup resilience. This means refusal-to-pay strategies, while valuable, do not eliminate extortion leverage. Incident response planning must account for data theft as a separate outcome from system recovery."),
-            ("Incident pressure ratio quantifies pre-breach containment effectiveness at the sector level",
-             "The gap between total incidents and confirmed breaches represents incidents that were detected and contained before data was confirmed as exposed. A large gap indicates effective detection and response capability. Finance consistently shows the widest gap — reflecting mature security operations, strong regulatory incentives, and high investment in threat detection tooling relative to other sectors.",
-             "Manufacturing's narrow gap is operationally significant: it indicates that when incidents occur in that sector, they typically progress to confirmed breaches before containment. This pattern is consistent with limited security operations capacity in Operational Technology environments, where detection tooling coverage is lower and response playbooks are less mature. For organizations in low-gap sectors, the priority is not more detection alerts — it is faster triage and containment workflows to widen the gap between detection and confirmed data loss."),
-            ("Declining global attack rate masks an expanding absolute attack surface",
-             "The historical trend from 2022 to Q2 2025 shows a declining share of industrial computers with blocked threats — from 26.3% to 20.5%. This is directionally positive, but the absolute number of targeted industrial systems is rising as Operational Technology connectivity expands globally. The declining rate reflects improved threat blocking on connected systems, not a reduction in attacker targeting.",
-             "The composition of threats is shifting: internet-sourced malicious scripts and phishing pages now exceed removable media as primary infection vectors in industrial environments for the first time. This reflects the Information Technology and Operational Technology convergence trend — industrial systems are inheriting Information Technology threat vectors as they gain internet connectivity. The strategic implication is that Operational Technology security can no longer be treated as physically isolated. Perimeter controls, application whitelisting, and network segmentation must be re-evaluated against an internet-connected threat model, not a physically-isolated one."),
-            ("Internet-sourced threats have overtaken removable media as the primary industrial infection vector",
-             "The source breakdown chart disaggregates which delivery mechanisms account for blocked threats on industrial computers. For the first time in 2025, internet-sourced threats — malicious scripts and phishing pages — represent a larger share than removable media (USB drives and portable storage). This inversion reflects the accelerating connectivity of Operational Technology systems to corporate networks and directly to the internet.",
-             "Email as a vector in industrial environments deserves specific attention: it persists because operational staff often use workstations that are connected to both Information Technology networks (for email and business systems) and Operational Technology networks (for machine control). This dual-connected workstation model is a common network architecture shortcut that creates a direct path from a phishing email to an industrial control system. Eliminating this path — either through dedicated Operational Technology workstations or strict network access control — is the highest-return architectural intervention available for industrial environments."),
+            ("The 163% espionage surge signals a structural shift in threat actor motivation",
+             "External actors account for 80% of breaches, but the composition within that category changed materially in 2024. State-sponsored espionage grew 163% year-over-year — a rate that suggests deliberate strategic expansion rather than opportunistic targeting. Nation-state groups (primarily attributed to Russia, China, Iran, and North Korea) are increasingly operating through cybercriminal proxies, creating attribution ambiguity that complicates incident response and legal action.",
+             "The 30% partner or third-party figure is the highest on record and reflects the expanding trust surface created by cloud service adoption and software supply chain integration. A single compromised vendor credential can provide lateral access across an entire client ecosystem. Organizations should treat third-party access reviews as a continuous control rather than an annual audit — access scopes, credential rotation policies, and vendor security posture assessments should align with breach data that now shows partner breaches doubling year-over-year."),
+            ("Session token theft and real-time interception bypass two-step verification without ever needing your password",
+             "The three bypass techniques each target a different weakness. Session token theft steals the saved login pass that keeps you authenticated after sign-in — the attacker does not need your password at all, just the token stored in your browser. Approval request flooding exploits human fatigue by sending so many two-step verification prompts that the user eventually taps approve out of frustration or confusion. Real-time interception tools such as purpose-built proxy toolkits sit between you and the real website, relaying your login details and capturing your authenticated session transparently.",
+             "The equal spread across three techniques reflects a well-developed bypass market — no single technique dominates, which means no single control removes the risk entirely. The most effective defence is switching from text message or notification-based two-step verification to hardware security keys or passkeys. These physical devices verify the exact website you are logging into before releasing any credentials, making all three bypass techniques structurally ineffective. Organizations still relying on text message codes or push notifications should treat migration to hardware-based verification as a top-priority security fix."),
+            ("Declining global attack rate masks an expanding total number of at-risk industrial systems",
+             "The historical trend from 2022 through the second quarter of 2025 shows a declining share of industrial computers with blocked threats — from 26.3% to 20.5%. This is directionally positive, but the total number of targeted industrial systems is rising as more operational equipment connects to corporate networks and the internet. The declining rate reflects better threat blocking on already-connected systems, not fewer attackers trying.",
+             "The makeup of threats is changing: internet-sourced malicious scripts and phishing pages now exceed removable physical media such as USB drives as the primary infection route in industrial environments for the first time. This is a direct result of industrial systems gaining internet connectivity — they are now exposed to the same threat landscape as office computers. The strategic implication is that industrial security can no longer rely on physical separation as a defence. Network boundary controls, strict application controls, and proper network segmentation must all be evaluated against a model where industrial equipment is internet-connected, not physically isolated."),
+            ("How fast a category is rising week-over-week is a more useful signal than its total volume",
+             "The week-over-week rate of change in a category — how quickly it is climbing — is a more actionable early signal than raw numbers alone. A category that doubles in two weeks points to active tool development or a newly exploitable software weakness being turned into working attack code. The 12-week window captures both sustained campaigns (elevated volume across many weeks) and short burst activity (a spike that resolves quickly). Telling these apart prevents over-investing in defences for opportunistic activity that burns out on its own.",
+             "In practice, this chart works best as a leading indicator to reprioritize your weekly patching schedule. A category showing three consecutive weeks of rising volume warrants an immediate review of recent known vulnerability disclosures in that attack class and targeted searching in your security monitoring platform for matching signs of activity. Organizations that routinely take more than 30 days to patch high-severity software weaknesses are the primary victims of sustained exploitation campaigns — the trend line gives advance warning of when those campaigns are scaling up, before they appear in broader threat intelligence reports."),
         ]
         for (title, body, action, label, chart_cap), fig, fkey, (ahl, abody, aext) in zip(_adv_sections, _adv_figs, _adv_fig_keys, _adv_analysis):
             _adv_c1, _adv_c2 = st.columns(2, gap="large")
