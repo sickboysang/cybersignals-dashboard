@@ -681,9 +681,10 @@ def show_full_analysis():
 
 def open_analysis_btn(key, fig, title, source, headline, body, extended="", ctype=None):
     """Renders Full Chart Analysis and (optionally) Compare to Today side by side."""
-    _btn_cols = st.columns([1, 1, 3]) if ctype else st.columns([1, 4])
+    _btn_cols = st.columns([1, 1, 2]) if ctype else st.columns([1, 4])
     with _btn_cols[0]:
         if st.button("Full Chart Analysis", key=f"dlg_{key}", type="primary",
+                     use_container_width=True,
                      help="Open enlarged chart with extended analysis"):
             st.session_state["_dlg_title"]    = title
             st.session_state["_dlg_fig"]      = fig.to_json()
@@ -695,6 +696,8 @@ def open_analysis_btn(key, fig, title, source, headline, body, extended="", ctyp
     if ctype:
         with _btn_cols[1]:
             if st.button("Compare to Today", key=f"cmpbtn_{key}",
+                         type="primary",
+                         use_container_width=True,
                          help="Fetch current threat data and compare against the dashboard baseline"):
                 with st.spinner("Fetching current data…"):
                     data = _build_comparison(ctype)
@@ -728,25 +731,16 @@ def _fetch_cisa_kev():
 @st.cache_data(ttl=7*24*3600, show_spinner=False)
 def _fetch_ransomware_victims():
     cur_year = datetime.date.today().year
-    # Try endpoints in parallel, return first success
-    urls = [
-        f"https://api.ransomware.live/victims/{cur_year}",
-        "https://api.ransomware.live/v2/recentvictims",
-    ]
-    def _try(url):
-        r = _req.get(url, timeout=_TIMEOUT, headers=_HDR)
-        r.raise_for_status()
-        data = r.json()
-        if not data:
-            raise ValueError("empty")
-        return data
-    with _cf.ThreadPoolExecutor(max_workers=2) as ex:
-        futs = {ex.submit(_try, u): u for u in urls}
-        for fut in _cf.as_completed(futs):
-            try:
-                return fut.result()
-            except Exception:
-                continue
+    for url in [f"https://api.ransomware.live/victims/{cur_year}",
+                "https://api.ransomware.live/v2/recentvictims"]:
+        try:
+            r = _req.get(url, timeout=_TIMEOUT, headers=_HDR)
+            r.raise_for_status()
+            data = r.json()
+            if data:
+                return data
+        except Exception:
+            continue
     raise RuntimeError("ransomware.live: all endpoints failed")
 
 @st.cache_data(ttl=7*24*3600, show_spinner=False)
@@ -877,15 +871,16 @@ def _ransomware_by_industry(victims, days=30):
     raw = victims if isinstance(victims, list) else victims.get("data", victims.get("victims", []))
     if not raw:
         return None, 0
+    # Keys match exact ransomware.live `activity` field values where possible
     sector_map = {
-        "Manufacturing":     ["manufactur","industrial","automotive","aerospace","chemical","steel","electronics","construct"],
-        "Healthcare":        ["health","hospital","clinic","medical","pharma","dental","care","biotech"],
-        "Finance":           ["bank","financ","insurance","credit","invest","capital","wealth","accounting"],
-        "Technology":        ["tech","software","it service","cloud","telecom","media","saas","cyber","data"],
-        "Retail / Consumer": ["retail","shop","ecommerce","restaurant","food","wholesale","consumer","hospitality"],
-        "Education":         ["school","university","college","education","academic","research"],
-        "Government":        ["government","municipal","city","county","federal","ministry","public sector","defence","defense"],
-        "Professional Svcs": ["consult","law","legal","audit","advisory","engineer","architect"],
+        "Manufacturing":     ["manufacturing","manufactur","industrial","automotive","aerospace","chemical","steel","electronics"],
+        "Healthcare":        ["healthcare","health","hospital","clinic","medical","pharma","dental","biotech"],
+        "Finance":           ["financial services","finance","bank","insurance","credit","invest","capital","wealth"],
+        "Technology":        ["technology","tech","software","it service","cloud","telecom","saas","cyber"],
+        "Retail / Consumer": ["consumer services","retail","shop","ecommerce","restaurant","food","wholesale","hospitality and tourism","hospitality"],
+        "Education":         ["education","school","university","college","academic"],
+        "Government":        ["public sector","government","municipal","city","county","federal","ministry","defence","defense"],
+        "Professional Svcs": ["business services","consult","law","legal","audit","advisory","engineer"],
     }
     counts = {k: 0 for k in sector_map}
     counts["Other"] = 0
@@ -2689,7 +2684,7 @@ with _tab_data:
 # SECTION 6 — VULNERABILITY EXPLOITATION THEMES
 # ─────────────────────────────────────────
 with _tab_trends:
-    with st.expander("How Exploitation Trends Have Shifted Over 12 Weeks", expanded=True):
+    with st.expander("Attack Type Velocity: 12-Week Exploitation Activity (2025)", expanded=True):
 
         st.caption("Weekly incident volume by exploitation type, hover over the chart to compare categories")
 
@@ -2745,7 +2740,7 @@ with _tab_trends:
                    "a technology problem, phishing-resistant authentication (hardware keys, passkeys) is more "
                    "effective than training alone at stopping credential theft via phishing.")
         st.markdown(insight_box(_hl_tr, _bd_tr), unsafe_allow_html=True)
-        open_analysis_btn("trends", fig_trends, "How Exploitation Trends Have Shifted Over 12 Weeks",
+        open_analysis_btn("trends", fig_trends, "Attack Type Velocity: 12-Week Exploitation Activity (2025)",
                           _src_tr, _hl_tr, _bd_tr, _ext_tr, ctype="trends")
         # ─────────────────────────────────────────
 # SECTION — INDUSTRIAL CONTROL SYSTEMS (ICS)
