@@ -1,5 +1,10 @@
 import os
 import datetime
+from PIL import Image as _PILImage
+_brand_pil_raw = _PILImage.open(os.path.join(os.path.dirname(__file__), "image.png"))
+_bw, _bh = _brand_pil_raw.size
+_bside = min(_bw, _bh)
+_brand_pil = _brand_pil_raw.crop(((_bw - _bside) // 2, (_bh - _bside) // 2, (_bw + _bside) // 2, (_bh + _bside) // 2))
 import numpy as np
 import streamlit as st
 import streamlit.components.v1 as components
@@ -12,7 +17,7 @@ import requests as _req
 # ─────────────────────────────────────────
 st.set_page_config(
     page_title="CyberSignals: Cyber Risk Intelligence",
-    page_icon="🛡️",
+    page_icon=_brand_pil,
     layout="wide",
     initial_sidebar_state="expanded",
 )
@@ -24,6 +29,17 @@ if "_nav_tab" not in st.session_state:
     st.session_state["_nav_tab"] = 0
 
 # ─────────────────────────────────────────
+# ── Brand SVG shield (consistent icon used everywhere in the UI) ───────────────
+_SHIELD_SVG = (
+    '<svg width="18" height="18" viewBox="0 0 64 64" fill="none" '
+    'xmlns="http://www.w3.org/2000/svg" style="vertical-align:middle;margin-right:5px;">'
+    '<path d="M32 4L8 14v18c0 13.25 10.2 25.6 24 28 13.8-2.4 24-14.75 24-28V14L32 4z" '
+    'fill="#2563eb" stroke="rgba(147,197,253,0.5)" stroke-width="1.5"/>'
+    '<path d="M22 32l7 7 13-13" stroke="#ffffff" stroke-width="3" '
+    'stroke-linecap="round" stroke-linejoin="round"/>'
+    '</svg>'
+)
+
 # DESIGN TOKENS — light mode
 # ─────────────────────────────────────────
 BG      = "#ffffff"
@@ -663,17 +679,30 @@ def show_full_analysis():
   <p style="margin:0;font-size:0.83rem;color:{TEXT};line-height:1.7;">{extended}</p>
 </div>""", unsafe_allow_html=True)
 
-def open_analysis_btn(key, fig, title, source, headline, body, extended=""):
-    """Renders a small button that opens the full analysis dialog."""
-    if st.button("Full Chart Analysis", key=f"dlg_{key}", type="primary",
-                 help="Open enlarged chart with extended analysis"):
-        st.session_state["_dlg_title"]    = title
-        st.session_state["_dlg_fig"]      = fig.to_json()
-        st.session_state["_dlg_source"]   = source
-        st.session_state["_dlg_headline"] = headline
-        st.session_state["_dlg_body"]     = body
-        st.session_state["_dlg_extended"] = extended
-        show_full_analysis()
+def open_analysis_btn(key, fig, title, source, headline, body, extended="", ctype=None):
+    """Renders Full Chart Analysis and (optionally) Compare to Today side by side."""
+    _btn_cols = st.columns([1, 1, 3]) if ctype else st.columns([1, 4])
+    with _btn_cols[0]:
+        if st.button("Full Chart Analysis", key=f"dlg_{key}", type="primary",
+                     help="Open enlarged chart with extended analysis"):
+            st.session_state["_dlg_title"]    = title
+            st.session_state["_dlg_fig"]      = fig.to_json()
+            st.session_state["_dlg_source"]   = source
+            st.session_state["_dlg_headline"] = headline
+            st.session_state["_dlg_body"]     = body
+            st.session_state["_dlg_extended"] = extended
+            show_full_analysis()
+    if ctype:
+        with _btn_cols[1]:
+            if st.button("Compare to Today", key=f"cmpbtn_{key}",
+                         help="Fetch current threat data and compare against the dashboard baseline"):
+                with st.spinner("Fetching current data…"):
+                    data = _build_comparison(ctype)
+                if data is None:
+                    st.warning("Live data unavailable right now, please try again in a moment.")
+                    return
+                st.session_state["_cmp_dlg_data"] = data
+                _show_comparison_dialog()
 
 # ─────────────────────────────────────────
 # LIVE COMPARISON INFRASTRUCTURE
@@ -684,74 +713,67 @@ def open_analysis_btn(key, fig, title, source, headline, body, extended=""):
 _CURATED_AS_OF = "March 2026"   # update when curated blocks are refreshed
 
 # ── Live data fetchers ──────────────────────────────────────────────────────
+_HDR = {"User-Agent": "CyberSignals/1.0"}
+_TIMEOUT = 15  # seconds per request
 
-@st.cache_data(ttl=30*24*3600, show_spinner=False)
+@st.cache_data(ttl=7*24*3600, show_spinner=False)
 def _fetch_cisa_kev():
-    try:
-        r = _req.get(
-            "https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json",
-            timeout=15, headers={"User-Agent": "CyberSignals/1.0"}
-        )
-        r.raise_for_status()
-        return r.json()
-    except Exception:
-        return None
+    r = _req.get(
+        "https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json",
+        timeout=_TIMEOUT, headers=_HDR
+    )
+    r.raise_for_status()
+    return r.json()
 
-@st.cache_data(ttl=30*24*3600, show_spinner=False)
+@st.cache_data(ttl=7*24*3600, show_spinner=False)
 def _fetch_ransomware_victims():
     cur_year = datetime.date.today().year
-    endpoints = [
+    # Try endpoints in parallel, return first success
+    urls = [
         f"https://api.ransomware.live/victims/{cur_year}",
         "https://api.ransomware.live/v2/recentvictims",
-        "https://api.ransomware.live/v1/recentvictims",
     ]
-    for url in endpoints:
-        try:
-            r = _req.get(url, timeout=15, headers={"User-Agent": "CyberSignals/1.0"})
-            r.raise_for_status()
-            data = r.json()
-            if data:
-                return data
-        except Exception:
-            continue
-    return None
+    def _try(url):
+        r = _req.get(url, timeout=_TIMEOUT, headers=_HDR)
+        r.raise_for_status()
+        data = r.json()
+        if not data:
+            raise ValueError("empty")
+        return data
+    with _cf.ThreadPoolExecutor(max_workers=2) as ex:
+        futs = {ex.submit(_try, u): u for u in urls}
+        for fut in _cf.as_completed(futs):
+            try:
+                return fut.result()
+            except Exception:
+                continue
+    raise RuntimeError("ransomware.live: all endpoints failed")
 
-@st.cache_data(ttl=30*24*3600, show_spinner=False)
+@st.cache_data(ttl=7*24*3600, show_spinner=False)
 def _fetch_ransomware_groups():
-    try:
-        r = _req.get("https://api.ransomware.live/v1/groups",
-                     timeout=15, headers={"User-Agent": "CyberSignals/1.0"})
-        r.raise_for_status()
-        return r.json()
-    except Exception:
-        return None
+    r = _req.get("https://api.ransomware.live/v1/groups",
+                 timeout=_TIMEOUT, headers=_HDR)
+    r.raise_for_status()
+    return r.json()
 
-@st.cache_data(ttl=30*24*3600, show_spinner=False)
+@st.cache_data(ttl=7*24*3600, show_spinner=False)
 def _fetch_hibp_breaches():
-    try:
-        r = _req.get("https://haveibeenpwned.com/api/v3/breaches",
-                     timeout=15, headers={"User-Agent": "CyberSignals/1.0"})
-        r.raise_for_status()
-        return r.json()
-    except Exception:
-        return None
+    # HIBP v3 requires a paid API key — skip to avoid wasted round-trip
+    raise RuntimeError("HIBP requires API key")
 
-@st.cache_data(ttl=30*24*3600, show_spinner=False)
+@st.cache_data(ttl=7*24*3600, show_spinner=False)
 def _fetch_nvd_recent(days=90):
-    try:
-        end   = datetime.datetime.utcnow()
-        start = end - datetime.timedelta(days=days)
-        url = (
-            "https://services.nvd.nist.gov/rest/json/cves/2.0"
-            f"?pubStartDate={start.strftime('%Y-%m-%dT00:00:00.000')}"
-            f"&pubEndDate={end.strftime('%Y-%m-%dT23:59:59.000')}"
-            "&resultsPerPage=500"
-        )
-        r = _req.get(url, timeout=30, headers={"User-Agent": "CyberSignals/1.0"})
-        r.raise_for_status()
-        return r.json()
-    except Exception:
-        return None
+    end   = datetime.datetime.now(datetime.timezone.utc)
+    start = end - datetime.timedelta(days=days)
+    url = (
+        "https://services.nvd.nist.gov/rest/json/cves/2.0"
+        f"?pubStartDate={start.strftime('%Y-%m-%dT00:00:00.000')}"
+        f"&pubEndDate={end.strftime('%Y-%m-%dT23:59:59.000')}"
+        "&resultsPerPage=500"
+    )
+    r = _req.get(url, timeout=_TIMEOUT, headers=_HDR)
+    r.raise_for_status()
+    return r.json()
 
 # ── Processors ─────────────────────────────────────────────────────────────
 
@@ -847,38 +869,36 @@ def _kev_by_sector(kev, days=90):
     return sectors, len(entries)
 
 def _ransomware_by_industry(victims, days=30):
-    """Count ransomware.live victims by industry in last `days` days."""
+    """Count ransomware.live victims by industry. The year endpoint already scopes
+    to the current year so we skip date filtering to avoid dropping records when
+    field names vary across API versions."""
     if not victims:
         return None, 0
-    raw = victims if isinstance(victims, list) else victims.get("data", [])
-    cutoff = datetime.datetime.now() - datetime.timedelta(days=days)
+    raw = victims if isinstance(victims, list) else victims.get("data", victims.get("victims", []))
+    if not raw:
+        return None, 0
     sector_map = {
-        "Manufacturing":     ["manufactur","industrial","automotive","aerospace","chemical","steel","electronics"],
-        "Healthcare":        ["health","hospital","clinic","medical","pharma","dental","care"],
-        "Finance":           ["bank","financ","insurance","credit","invest","capital","wealth"],
-        "Technology":        ["tech","software","it service","cloud","telecom","media","saas"],
-        "Retail / Consumer": ["retail","shop","ecommerce","restaurant","food","wholesale","consumer"],
-        "Education":         ["school","university","college","education","academic"],
-        "Government":        ["government","municipal","city","county","federal","ministry"],
-        "Professional Svcs": ["consult","law","legal","accounting","audit","advisory"],
+        "Manufacturing":     ["manufactur","industrial","automotive","aerospace","chemical","steel","electronics","construct"],
+        "Healthcare":        ["health","hospital","clinic","medical","pharma","dental","care","biotech"],
+        "Finance":           ["bank","financ","insurance","credit","invest","capital","wealth","accounting"],
+        "Technology":        ["tech","software","it service","cloud","telecom","media","saas","cyber","data"],
+        "Retail / Consumer": ["retail","shop","ecommerce","restaurant","food","wholesale","consumer","hospitality"],
+        "Education":         ["school","university","college","education","academic","research"],
+        "Government":        ["government","municipal","city","county","federal","ministry","public sector","defence","defense"],
+        "Professional Svcs": ["consult","law","legal","audit","advisory","engineer","architect"],
     }
     counts = {k: 0 for k in sector_map}
     counts["Other"] = 0
     total = 0
     for v in raw:
-        date_str = v.get("discovered", v.get("date", v.get("published", "")))
-        if date_str:
-            try:
-                vd = datetime.datetime.fromisoformat(date_str[:10])
-                if vd < cutoff:
-                    continue
-            except Exception:
-                pass
         activity = " ".join([
-            str(v.get("activity","")),
-            str(v.get("sector","")),
-            str(v.get("domain","")),
-            str(v.get("description","")),
+            str(v.get("activity", "")),
+            str(v.get("sector", "")),
+            str(v.get("industry", "")),
+            str(v.get("domain", "")),
+            str(v.get("description", "")),
+            str(v.get("post_title", "")),
+            str(v.get("victim", "")),
         ]).lower()
         matched = False
         for sec, kws in sector_map.items():
@@ -1024,7 +1044,10 @@ def _build_comparison(ctype):
     ytd_days   = _ytd_days()
 
     if ctype == "trends":
-        kev  = _fetch_cisa_kev()
+        try:
+            kev = _fetch_cisa_kev()
+        except Exception:
+            kev = None
         cats, total = _kev_by_trend_category(kev, days=84)  # 12 weeks
         baseline = {"Remote Access": 32, "Vendor Risk": 18, "Phishing": 25,
                     "Misconfiguration": 15, "Legacy & Unpatched": 10}
@@ -1049,8 +1072,14 @@ def _build_comparison(ctype):
                 "fetched_at": fetched_at}
 
     if ctype == "sector_risk":
-        kev  = _fetch_cisa_kev()
-        victims = _fetch_ransomware_victims()
+        try:
+            kev = _fetch_cisa_kev()
+        except Exception:
+            kev = None
+        try:
+            victims = _fetch_ransomware_victims()
+        except Exception:
+            victims = None
         kev_sectors, kev_total = _kev_by_sector(kev, days=ytd_days)
         rv_counts, rv_total    = _ransomware_by_industry(victims, days=ytd_days)
         if kev_total == 0 and rv_total == 0:
@@ -1092,7 +1121,10 @@ def _build_comparison(ctype):
                 "fetched_at": fetched_at}
 
     if ctype == "attack_methods":
-        kev  = _fetch_cisa_kev()
+        try:
+            kev = _fetch_cisa_kev()
+        except Exception:
+            kev = None
         buckets, total = _kev_by_attack_type(kev, days=ytd_days)
         baseline = {"Stolen Credentials": 22, "Vulnerability Exploitation": 20,
                     "Phishing / Social Engineering": 15, "Edge Devices & Virtual Private Networks": 22}
@@ -1119,7 +1151,10 @@ def _build_comparison(ctype):
                 "fetched_at": fetched_at}
 
     if ctype == "ransomware":
-        victims = _fetch_ransomware_victims()
+        try:
+            victims = _fetch_ransomware_victims()
+        except Exception:
+            victims = None
         counts, total = _ransomware_by_industry(victims, days=ytd_days)
         if total == 0:
             return None
@@ -1146,8 +1181,14 @@ def _build_comparison(ctype):
         c = _CURATED["threat_actors"].copy()
         c["fetched_at"] = f"Curated data, last reviewed {_CURATED_AS_OF}"
         # Augment with live ransomware group counts if available
-        victims = _fetch_ransomware_victims()
-        groups  = _fetch_ransomware_groups()
+        try:
+            victims = _fetch_ransomware_victims()
+        except Exception:
+            victims = None
+        try:
+            groups = _fetch_ransomware_groups()
+        except Exception:
+            groups = None
         top_groups = _ransomware_groups_top(groups, victims, n=5)
         if top_groups:
             c["live_groups"] = top_groups
@@ -1157,7 +1198,10 @@ def _build_comparison(ctype):
     if ctype == "stolen_data":
         c = _CURATED["stolen_data"].copy()
         # Augment with HIBP recent breach data classes
-        hibp = _fetch_hibp_breaches()
+        try:
+            hibp = _fetch_hibp_breaches()
+        except Exception:
+            hibp = None
         top_classes = _hibp_data_types(hibp, days=365)
         if top_classes:
             c["live_classes"] = top_classes
@@ -1177,7 +1221,10 @@ def _build_comparison(ctype):
         return c
 
     if ctype == "ransomware_forecast":
-        victims = _fetch_ransomware_victims()
+        try:
+            victims = _fetch_ransomware_victims()
+        except Exception:
+            victims = None
         counts, total = _ransomware_by_industry(victims, days=ytd_days)
         note = ""
         if total > 0:
@@ -1362,7 +1409,7 @@ selected_sectors = [
 with st.sidebar:
     st.markdown(f"""
 <div style="padding:0.5rem 0.25rem 1rem 0.25rem;border-bottom:1px solid rgba(255,255,255,0.1);margin-bottom:0.6rem;">
-  <p style="margin:0;font-size:1rem;font-weight:600;color:#ffffff;font-family:'Inter',sans-serif;letter-spacing:-0.01em;">🛡️ CyberSignals</p>
+  <p style="margin:0;font-size:1rem;font-weight:600;color:#ffffff;font-family:'Inter',sans-serif;letter-spacing:-0.01em;">{_SHIELD_SVG} CyberSignals</p>
   <p style="margin:2px 0 0 0;font-size:0.68rem;color:rgba(255,255,255,0.4);font-family:'Inter',sans-serif;">Cyber Risk Intelligence</p>
 </div>
 """, unsafe_allow_html=True)
@@ -1458,7 +1505,7 @@ components.html(f"""<script>
         }}
         var brand = p.createElement('div');
         brand.id = 'cs-nav-brand';
-        brand.innerHTML = '&#x1F6E1;&#xFE0F; <span>CyberSignals</span>';
+        brand.innerHTML = '<svg width="18" height="18" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" style="vertical-align:middle;margin-right:5px;"><path d="M32 4L8 14v18c0 13.25 10.2 25.6 24 28 13.8-2.4 24-14.75 24-28V14L32 4z" fill="#2563eb" stroke="rgba(147,197,253,0.5)" stroke-width="1.5"/><path d="M22 32l7 7 13-13" stroke="#ffffff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg> <span>CyberSignals</span>';
         brand.style.cssText = [
             'color:#ffffff',
             'font-weight:700',
@@ -1529,14 +1576,14 @@ components.html(f"""<script>
 # HOME TAB — hero + welcome
 # ─────────────────────────────────────────
 with _tab_home:
-    st.markdown("""
+    st.markdown(f"""
 <style>
-@keyframes cs-pulse-ring {
-    0%   { transform: scale(0.92); opacity: 0.6; }
-    70%  { transform: scale(1.08); opacity: 0; }
-    100% { transform: scale(0.92); opacity: 0; }
-}
-.cs-banner-wrap {
+@keyframes cs-pulse-ring {{
+    0%   {{ transform: scale(0.92); opacity: 0.6; }}
+    70%  {{ transform: scale(1.08); opacity: 0; }}
+    100% {{ transform: scale(0.92); opacity: 0; }}
+}}
+.cs-banner-wrap {{
     position: relative;
     width: 100%;
     border-radius: 18px;
@@ -1545,31 +1592,31 @@ with _tab_home:
     min-height: 200px;
     background: linear-gradient(135deg, #0a1628 0%, #0d2137 40%, #0f2d4a 70%, #0a2240 100%);
     box-shadow: 0 4px 32px rgba(0,0,0,0.18);
-}
-.cs-banner-grid {
+}}
+.cs-banner-grid {{
     position: absolute; inset: 0;
     background-image:
         linear-gradient(rgba(37,99,235,0.12) 1px, transparent 1px),
         linear-gradient(90deg, rgba(37,99,235,0.12) 1px, transparent 1px);
     background-size: 40px 40px;
-}
-.cs-banner-glow {
+}}
+.cs-banner-glow {{
     position: absolute;
     border-radius: 50%;
     background: radial-gradient(circle, rgba(37,99,235,0.35) 0%, transparent 70%);
     width: 500px; height: 500px;
     top: -180px; right: -80px;
     pointer-events: none;
-}
-.cs-banner-glow2 {
+}}
+.cs-banner-glow2 {{
     position: absolute;
     border-radius: 50%;
     background: radial-gradient(circle, rgba(124,58,237,0.18) 0%, transparent 70%);
     width: 300px; height: 300px;
     bottom: -120px; left: 60px;
     pointer-events: none;
-}
-.cs-banner-content {
+}}
+.cs-banner-content {{
     position: relative;
     z-index: 2;
     padding: 2.2rem 2.8rem 2rem 2.8rem;
@@ -1579,24 +1626,12 @@ with _tab_home:
     justify-content: center;
     text-align: center;
     gap: 1rem;
-}
-.cs-banner-shield {
-    position: relative;
-    flex-shrink: 0;
-}
-.cs-banner-shield-icon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-.cs-banner-shield-ring {
-    position: absolute;
-    inset: -10px;
-    border-radius: 50%;
-    border: 2px solid rgba(37,99,235,0.4);
-    animation: cs-pulse-ring 2.8s ease-out infinite;
-}
-.cs-banner-text h2 {
+}}
+.cs-banner-icon svg {{
+    filter: drop-shadow(0 0 18px rgba(59,130,246,0.7));
+    margin-bottom: 0.5rem;
+}}
+.cs-banner-text h2 {{
     margin: 0 0 0.4rem 0 !important;
     font-size: 2rem !important;
     font-weight: 700 !important;
@@ -1606,16 +1641,16 @@ with _tab_home:
     font-family: 'Inter', sans-serif !important;
     border: none !important;
     padding: 0 !important;
-}
-.cs-banner-text p {
+}}
+.cs-banner-text p {{
     margin: 0 !important;
     font-size: 0.95rem !important;
     color: #93c5fd !important;
     font-family: 'Inter', sans-serif !important;
     line-height: 1.6 !important;
     max-width: 560px;
-}
-.cs-banner-badge {
+}}
+.cs-banner-badge {{
     display: inline-flex;
     align-items: center;
     gap: 6px;
@@ -1630,33 +1665,30 @@ with _tab_home:
     letter-spacing: 0.06em;
     text-transform: uppercase;
     font-family: 'Inter', sans-serif;
-}
-.cs-banner-dot {
+}}
+.cs-banner-dot {{
     width: 7px; height: 7px;
     background: #22c55e;
     border-radius: 50%;
     box-shadow: 0 0 6px #22c55e;
-}
+}}
 </style>
 <div class="cs-banner-wrap">
   <div class="cs-banner-grid"></div>
   <div class="cs-banner-glow"></div>
   <div class="cs-banner-glow2"></div>
   <div class="cs-banner-content">
-    <div class="cs-banner-shield">
-      <div class="cs-banner-shield-ring"></div>
-      <div class="cs-banner-shield-icon">
-        <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" style="filter:drop-shadow(0 0 18px rgba(37,99,235,0.7));">
-          <path d="M32 4L8 14v18c0 13.25 10.2 25.6 24 28 13.8-2.4 24-14.75 24-28V14L32 4z" fill="url(#shield-grad)" stroke="rgba(147,197,253,0.6)" stroke-width="1.5"/>
-          <path d="M22 32l7 7 13-13" stroke="#ffffff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-          <defs>
-            <linearGradient id="shield-grad" x1="32" y1="4" x2="32" y2="60" gradientUnits="userSpaceOnUse">
-              <stop offset="0%" stop-color="#3b82f6"/>
-              <stop offset="100%" stop-color="#1d4ed8"/>
-            </linearGradient>
-          </defs>
-        </svg>
-      </div>
+    <div class="cs-banner-icon">
+      <svg width="90" height="90" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M32 4L8 14v18c0 13.25 10.2 25.6 24 28 13.8-2.4 24-14.75 24-28V14L32 4z" fill="url(#bshield-g)" stroke="rgba(147,197,253,0.6)" stroke-width="1.5"/>
+        <path d="M22 32l7 7 13-13" stroke="#ffffff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+        <defs>
+          <linearGradient id="bshield-g" x1="32" y1="4" x2="32" y2="60" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stop-color="#3b82f6"/>
+            <stop offset="100%" stop-color="#1d4ed8"/>
+          </linearGradient>
+        </defs>
+      </svg>
     </div>
     <div class="cs-banner-text">
       <h2>CyberSignals</h2>
@@ -2168,8 +2200,7 @@ with _tab_sector:
                           "a narrow shape suggests risk is concentrated in only a few sectors.")
             st.markdown(insight_box(_hl_radar, _bd_radar), unsafe_allow_html=True)
             open_analysis_btn("radar", fig_radar, "Breach Exposure by Sector",
-                              _src_radar, _hl_radar, _bd_radar, _ext_radar)
-            compare_today_btn("radar", "sector_risk")
+                              _src_radar, _hl_radar, _bd_radar, _ext_radar, ctype="sector_risk")
 
         with col2:
             st.markdown("### Incidents vs Confirmed Breaches")
@@ -2216,8 +2247,7 @@ with _tab_sector:
                          "attacks are quick, automated, and hard to detect before cards are already exfiltrated.")
             st.markdown(insight_box(_hl_pres, _bd_pres), unsafe_allow_html=True)
             open_analysis_btn("incidents_breaches", fig_pressure, "Incidents vs Confirmed Breaches",
-                              _src_pres, _hl_pres, _bd_pres, _ext_pres)
-            compare_today_btn("incidents_breaches", "sector_risk")
+                              _src_pres, _hl_pres, _bd_pres, _ext_pres, ctype="sector_risk")
 
         # ─────────────────────────────────────────
         # SECTION 2 — FORECAST OUTLOOK
@@ -2300,8 +2330,7 @@ with _tab_sector:
                          "backups exist.")
             st.markdown(insight_box(_hl_fore, _bd_fore), unsafe_allow_html=True)
             open_analysis_btn("ransomware_forecast", fig_fore, "Ransomware Is Rising, But More Victims Are Fighting Back",
-                              _src_fore, _hl_fore, _bd_fore, _ext_fore)
-            compare_today_btn("ransomware_forecast", "ransomware_forecast")
+                              _src_fore, _hl_fore, _bd_fore, _ext_fore, ctype="ransomware_forecast")
 
         # ─────────────────────────────────────────
 # SECTION 3 — THREAT TYPE TRENDS
@@ -2396,8 +2425,7 @@ with _tab_attacks:
                         "a misconfigured cloud storage bucket can expose millions of records with no attacker involved.")
             st.markdown(insight_box(_hl_pat, _bd_pat), unsafe_allow_html=True)
             open_analysis_btn("attack_patterns", fig_pat, "Most Common Attack Patterns",
-                              _src_pat, _hl_pat, _bd_pat, _ext_pat)
-            compare_today_btn("attack_patterns", "attack_methods")
+                              _src_pat, _hl_pat, _bd_pat, _ext_pat, ctype="attack_methods")
 
         with col6:
             st.markdown("#### How Attackers Get In")
@@ -2440,8 +2468,7 @@ with _tab_attacks:
                         "simulation, and network segmentation, is required to meaningfully reduce initial access risk.")
             st.markdown(insight_box(_hl_pie, _bd_pie), unsafe_allow_html=True)
             open_analysis_btn("initial_access", fig_pie, "How Attackers Get In",
-                              _src_pie, _hl_pie, _bd_pie, _ext_pie)
-            compare_today_btn("initial_access", "attack_methods")
+                              _src_pie, _hl_pie, _bd_pie, _ext_pie, ctype="attack_methods")
 
         # ─────────────────────────────────────────
 # SECTION 4 — RANSOMWARE + THREAT ACTORS
@@ -2495,8 +2522,7 @@ with _tab_ransom:
                        "investments available.")
             st.markdown(insight_box(_hl_rs, _bd_rs), unsafe_allow_html=True)
             open_analysis_btn("ransom_sector", fig_rs, "Ransomware Involvement Rate by Industry Sector",
-                              _src_rs, _hl_rs, _bd_rs, _ext_rs)
-            compare_today_btn("ransom_sector", "ransomware")
+                              _src_rs, _hl_rs, _bd_rs, _ext_rs, ctype="ransomware")
 
         with col8:
             st.markdown("#### Who Is Behind the Attacks?")
@@ -2544,8 +2570,7 @@ with _tab_ransom:
                         "by substantial intelligence resources.")
             st.markdown(insight_box(_hl_act, _bd_act), unsafe_allow_html=True)
             open_analysis_btn("threat_actors", fig_act, "Who Is Behind the Attacks?",
-                              _src_act, _hl_act, _bd_act, _ext_act)
-            compare_today_btn("threat_actors", "threat_actors")
+                              _src_act, _hl_act, _bd_act, _ext_act, ctype="threat_actors")
 
         # ─────────────────────────────────────────
 # SECTION 5 — DATA TYPES + MFA BYPASS
@@ -2593,8 +2618,7 @@ with _tab_data:
                        "networks improve real-time fraud detection.")
             st.markdown(insight_box(_hl_dt, _bd_dt), unsafe_allow_html=True)
             open_analysis_btn("data_types", fig_dt, "Most Commonly Stolen Data",
-                              _src_dt, _hl_dt, _bd_dt, _ext_dt)
-            compare_today_btn("data_types", "stolen_data")
+                              _src_dt, _hl_dt, _bd_dt, _ext_dt, ctype="stolen_data")
 
         with col10:
             st.markdown("#### How Attackers Bypass Multi-Factor Authentication")
@@ -2642,8 +2666,7 @@ with _tab_data:
                         "that are cryptographically bound to the legitimate domain and cannot be proxied.")
             st.markdown(insight_box(_hl_mfa, _bd_mfa), unsafe_allow_html=True)
             open_analysis_btn("mfa_bypass", fig_mfa, "How Attackers Bypass Multi-Factor Authentication",
-                              _src_mfa, _hl_mfa, _bd_mfa, _ext_mfa)
-            compare_today_btn("mfa_bypass", "mfa_bypass")
+                              _src_mfa, _hl_mfa, _bd_mfa, _ext_mfa, ctype="mfa_bypass")
 
     st.markdown(f"""
 <div style="display:flex;flex-wrap:wrap;gap:12px;margin-top:8px;">
@@ -2723,8 +2746,7 @@ with _tab_trends:
                    "effective than training alone at stopping credential theft via phishing.")
         st.markdown(insight_box(_hl_tr, _bd_tr), unsafe_allow_html=True)
         open_analysis_btn("trends", fig_trends, "How Exploitation Trends Have Shifted Over 12 Weeks",
-                          _src_tr, _hl_tr, _bd_tr, _ext_tr)
-        compare_today_btn("trends", "trends")
+                          _src_tr, _hl_tr, _bd_tr, _ext_tr, ctype="trends")
         # ─────────────────────────────────────────
 # SECTION — INDUSTRIAL CONTROL SYSTEMS (ICS)
 # ─────────────────────────────────────────
@@ -2798,8 +2820,7 @@ with _tab_ics:
             st.markdown(insight_box(_hl_icsr, _bd_icsr), unsafe_allow_html=True)
             open_analysis_btn("ics_region", fig_ics_region,
                               "ICS Attack Rate by Region (Q2 2025)",
-                              _ICS_SRC, _hl_icsr, _bd_icsr, _ext_icsr)
-            compare_today_btn("ics_region", "ics")
+                              _ICS_SRC, _hl_icsr, _bd_icsr, _ext_icsr, ctype="ics")
 
         # ── Chart 2 : ICS Attack Rate by Industry ──────────────────────────────────
         with ics_col2:
@@ -2851,8 +2872,7 @@ with _tab_ics:
             st.markdown(insight_box(_hl_icsi, _bd_icsi), unsafe_allow_html=True)
             open_analysis_btn("ics_industry", fig_ics_industry,
                               "ICS Attack Rate by Industry Sector (Q2 2025)",
-                              _ICS_SRC, _hl_icsi, _bd_icsi, _ext_icsi)
-            compare_today_btn("ics_industry", "ics")
+                              _ICS_SRC, _hl_icsi, _bd_icsi, _ext_icsi, ctype="ics")
 
         ics_col3, ics_col4 = st.columns(2, gap="large")
 
@@ -2915,8 +2935,7 @@ with _tab_ics:
             st.markdown(insight_box(_hl_icsh, _bd_icsh), unsafe_allow_html=True)
             open_analysis_btn("ics_hist", fig_ics_hist,
                               "Global ICS Attack Rate Trend (2022 to 2025)",
-                              _ICS_SRC, _hl_icsh, _bd_icsh, _ext_icsh)
-            compare_today_btn("ics_hist", "ics")
+                              _ICS_SRC, _hl_icsh, _bd_icsh, _ext_icsh, ctype="ics")
 
         # ── Chart 4 : Threat Delivery Pathways ─────────────────────────────────────
         with ics_col4:
@@ -2970,8 +2989,7 @@ with _tab_ics:
             st.markdown(insight_box(_hl_icss, _bd_icss), unsafe_allow_html=True)
             open_analysis_btn("ics_sources", fig_ics_src,
                               "How Threats Reach Industrial Systems (2024 to 2025)",
-                              _ICS_SRC, _hl_icss, _bd_icss, _ext_icss)
-            compare_today_btn("ics_sources", "ics")
+                              _ICS_SRC, _hl_icss, _bd_icss, _ext_icss, ctype="ics")
 
         # ─────────────────────────────────────────
         # CONTRIBUTORS
@@ -3210,8 +3228,7 @@ with _tab_guides:
                                 config={"displayModeBar": False, "scrollZoom": False})
                 open_analysis_btn(f"ps_{fkey}", fig, title,
                                   "Verizon Data Breach Investigations Report 2025",
-                                  ahl, abody, aext)
-                compare_today_btn(f"ps_{fkey}", _ps_ctype)
+                                  ahl, abody, aext, ctype=_ps_ctype)
 
     # ─────────────────────────────────────────
     # ADVANCED — For Information Technology & Security Professionals
@@ -3417,8 +3434,7 @@ with _tab_guides:
                                 config={"displayModeBar": False, "scrollZoom": False})
                 open_analysis_btn(f"adv_{fkey}", fig, title,
                                   "Verizon Data Breach Investigations Report 2025 · Kaspersky Industrial Control Systems Cyber Emergency Response Team Q2 2025",
-                                  ahl, abody, aext)
-                compare_today_btn(f"adv_{fkey}", _adv_ctype)
+                                  ahl, abody, aext, ctype=_adv_ctype)
     # ─────────────────────────────────────────
 
 # ─────────────────────────────────────────
@@ -3625,7 +3641,7 @@ with _tab_about:
 <div style="background:linear-gradient(135deg,#eff6ff 0%,#f0fdf4 100%);
             border:1px solid #bfdbfe;border-radius:16px;
             padding:2rem 2.4rem;margin-bottom:1.6rem;">
-  <p style="font-size:1.15rem;{_p}margin-bottom:0.8rem;">&#x1F6E1;&#xFE0F; What Is CyberSignals?</p>
+  <p style="font-size:1.15rem;{_p}margin-bottom:0.8rem;">{_SHIELD_SVG} What Is CyberSignals?</p>
   <p style="{_p}margin-bottom:0.7rem;">
     Think of CyberSignals like a neighbourhood watch report, but for the internet.
     Every day, criminals try to break into computers, steal personal information, and extort businesses.
