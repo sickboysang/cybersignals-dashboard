@@ -1574,17 +1574,20 @@ with _tab_home:
     z-index: 2;
     padding: 2.2rem 2.8rem 2rem 2.8rem;
     display: flex;
+    flex-direction: column;
     align-items: center;
-    gap: 2rem;
+    justify-content: center;
+    text-align: center;
+    gap: 1rem;
 }
 .cs-banner-shield {
     position: relative;
     flex-shrink: 0;
 }
 .cs-banner-shield-icon {
-    font-size: 4rem;
-    line-height: 1;
-    filter: drop-shadow(0 0 18px rgba(37,99,235,0.7));
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 .cs-banner-shield-ring {
     position: absolute;
@@ -1642,11 +1645,21 @@ with _tab_home:
   <div class="cs-banner-content">
     <div class="cs-banner-shield">
       <div class="cs-banner-shield-ring"></div>
-      <div class="cs-banner-shield-icon">🛡️</div>
+      <div class="cs-banner-shield-icon">
+        <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" style="filter:drop-shadow(0 0 18px rgba(37,99,235,0.7));">
+          <path d="M32 4L8 14v18c0 13.25 10.2 25.6 24 28 13.8-2.4 24-14.75 24-28V14L32 4z" fill="url(#shield-grad)" stroke="rgba(147,197,253,0.6)" stroke-width="1.5"/>
+          <path d="M22 32l7 7 13-13" stroke="#ffffff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+          <defs>
+            <linearGradient id="shield-grad" x1="32" y1="4" x2="32" y2="60" gradientUnits="userSpaceOnUse">
+              <stop offset="0%" stop-color="#3b82f6"/>
+              <stop offset="100%" stop-color="#1d4ed8"/>
+            </linearGradient>
+          </defs>
+        </svg>
+      </div>
     </div>
     <div class="cs-banner-text">
-      <h2>Cyber Risk Intelligence Dashboard</h2>
-      <p>Real-world breach data from 22,052 incidents translated into clear visuals — sector risk, attack methods, stolen data, and what to do about it.</p>
+      <h2>CyberSignals</h2>
     </div>
   </div>
 </div>
@@ -3233,7 +3246,7 @@ with _tab_guides:
       </p>
       <h2 style="margin:0 0 0.6rem 0;font-size:1.7rem;font-weight:800;color:{_dk_text};
                  font-family:'Inter',sans-serif;border:none;padding:0;margin-top:0;">
-        2025 Threat Intelligence: A Data-Driven View
+        Threat Intelligence: A Data-Driven View
       </h2>
       <p style="margin:0;font-size:1rem;color:{_dk_muted};font-family:'Inter',sans-serif;line-height:1.7;">
         A closer look at the data, breach patterns, attack vectors, and regional threat trends, visualised for anyone who wants the full picture.
