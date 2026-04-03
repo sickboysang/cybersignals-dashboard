@@ -1697,10 +1697,11 @@ with _tab_home:
             padding:2rem 2.4rem 1.6rem 2.4rem;margin-bottom:1.4rem;
             box-shadow:0 2px 12px rgba(37,99,235,0.07);">
   <h1 style="margin:0 0 0.6rem 0;font-size:1.75rem;font-weight:600;color:#0f172a;
-             font-family:'Inter',sans-serif;line-height:1.2;letter-spacing:-0.01em;">
+             font-family:'Inter',sans-serif;line-height:1.2;letter-spacing:-0.01em;
+             text-align:center;">
     Understanding the Cyber Threat Landscape
   </h1>
-  <p style="margin:0 0 1.4rem 0;font-size:0.93rem;color:#475569;font-family:'Inter',sans-serif;line-height:1.65;max-width:780px;">
+  <p style="margin:0 0 1.4rem 0;font-size:0.93rem;color:#475569;font-family:'Inter',sans-serif;line-height:1.65;text-align:center;max-width:100%;">
     Two 2025 threat intelligence reports translated into clear visuals covering sector risk, attack methods, stolen data, and what to do about it.
   </p>
   <div style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:1.4rem;">
