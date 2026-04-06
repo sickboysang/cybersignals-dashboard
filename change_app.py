@@ -1,4 +1,5 @@
 import os
+import base64
 import datetime
 from PIL import Image as _PILImage
 _brand_pil_raw = _PILImage.open(os.path.join(os.path.dirname(__file__), "image.png"))
@@ -39,6 +40,12 @@ _SHIELD_SVG = (
     'stroke-linecap="round" stroke-linejoin="round"/>'
     '</svg>'
 )
+
+_HOME_BANNER_PATH = os.path.join(os.path.dirname(__file__), "homepage-banner-clean.png")
+with open(_HOME_BANNER_PATH, "rb") as _banner_file:
+    _HOME_BANNER_URL = "data:image/png;base64," + base64.b64encode(
+        _banner_file.read()
+    ).decode("ascii")
 
 # DESIGN TOKENS — light mode
 # ─────────────────────────────────────────
@@ -1597,16 +1604,16 @@ with _tab_home:
     margin-bottom: 1.4rem;
     min-height: 200px;
     background:
-        radial-gradient(ellipse 60% 80% at 50% 40%, rgba(0,0,0,0.5) 0%, transparent 70%),
-        url('https://images.unsplash.com/photo-1573164713988-8665fc963095?w=1920&q=90') center/cover no-repeat;
+        linear-gradient(90deg, rgba(2,6,23,0.34) 0%, rgba(2,6,23,0.2) 36%, rgba(2,6,23,0.1) 100%),
+        url('{_HOME_BANNER_URL}') center/cover no-repeat;
     box-shadow: 0 4px 32px rgba(0,0,0,0.18);
 }}
 .cs-banner-grid {{
     position: absolute; inset: 0;
     background-image:
-        linear-gradient(rgba(37,99,235,0.12) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(37,99,235,0.12) 1px, transparent 1px);
-    background-size: 40px 40px;
+        linear-gradient(rgba(56,189,248,0.08) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(56,189,248,0.08) 1px, transparent 1px);
+    background-size: 52px 52px;
 }}
 .cs-banner-glow {{
     position: absolute;
