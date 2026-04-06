@@ -464,7 +464,7 @@ div[role="dialog"] .stMarkdown p {{
     color: {TEXT} !important;
 }}
 
-/* ── FULL CHART ANALYSIS BUTTON ── */
+/* ── PRIMARY BUTTONS (default blue — e.g. Compare to Today) ── */
 button[kind="primary"],
 [data-testid="stButton"] button[kind="primary"],
 .stButton > button[kind="primary"],
@@ -530,6 +530,17 @@ components.html("""
         parentDoc.querySelectorAll(collapseBtnSel).forEach(function(btn) {
             btn.removeAttribute('title');
             btn.setAttribute('aria-label', '');
+        });
+        // Style "Full Chart Analysis" buttons grey, leave all others unchanged
+        parentDoc.querySelectorAll('button').forEach(function(btn) {
+            if (btn.innerText.trim() === 'Full Chart Analysis') {
+                btn.style.setProperty('background-color', '#64748b', 'important');
+                btn.style.setProperty('color', '#ffffff', 'important');
+                btn.style.setProperty('box-shadow', '0 1px 4px rgba(0,0,0,0.15)', 'important');
+                var p = btn.querySelector('p'); if (p) p.style.setProperty('color', '#ffffff', 'important');
+                btn.onmouseenter = function() { btn.style.setProperty('background-color', '#475569', 'important'); };
+                btn.onmouseleave = function() { btn.style.setProperty('background-color', '#64748b', 'important'); };
+            }
         });
     }
     clean();
@@ -1585,7 +1596,9 @@ with _tab_home:
     overflow: hidden;
     margin-bottom: 1.4rem;
     min-height: 200px;
-    background: linear-gradient(135deg, #0a1628 0%, #0d2137 40%, #0f2d4a 70%, #0a2240 100%);
+    background:
+        radial-gradient(ellipse 60% 80% at 50% 40%, rgba(0,0,0,0.5) 0%, transparent 70%),
+        url('https://images.unsplash.com/photo-1573164713988-8665fc963095?w=1920&q=90') center/cover no-repeat;
     box-shadow: 0 4px 32px rgba(0,0,0,0.18);
 }}
 .cs-banner-grid {{
@@ -1637,41 +1650,8 @@ with _tab_home:
     border: none !important;
     padding: 0 !important;
 }}
-.cs-banner-text p {{
-    margin: 0 !important;
-    font-size: 0.95rem !important;
-    color: #93c5fd !important;
-    font-family: 'Inter', sans-serif !important;
-    line-height: 1.6 !important;
-    max-width: 560px;
-}}
-.cs-banner-badge {{
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    margin-top: 0.75rem;
-    background: rgba(37,99,235,0.2);
-    border: 1px solid rgba(37,99,235,0.4);
-    border-radius: 20px;
-    padding: 4px 12px;
-    font-size: 0.72rem;
-    font-weight: 600;
-    color: #93c5fd;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    font-family: 'Inter', sans-serif;
-}}
-.cs-banner-dot {{
-    width: 7px; height: 7px;
-    background: #22c55e;
-    border-radius: 50%;
-    box-shadow: 0 0 6px #22c55e;
-}}
 </style>
 <div class="cs-banner-wrap">
-  <div class="cs-banner-grid"></div>
-  <div class="cs-banner-glow"></div>
-  <div class="cs-banner-glow2"></div>
   <div class="cs-banner-content">
     <div class="cs-banner-icon">
       <svg width="90" height="90" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -1687,6 +1667,54 @@ with _tab_home:
     </div>
     <div class="cs-banner-text">
       <h2>CyberSignals</h2>
+    </div>
+  </div>
+</div>
+        <!-- Bar chart inside panel -->
+        <rect x="145" y="72" width="7" height="20" rx="1" fill="rgba(59,130,246,0.7)"/>
+        <rect x="155" y="62" width="7" height="30" rx="1" fill="rgba(34,197,94,0.7)"/>
+        <rect x="165" y="67" width="7" height="25" rx="1" fill="rgba(239,68,68,0.6)"/>
+        <rect x="175" y="56" width="7" height="36" rx="1" fill="rgba(59,130,246,0.5)"/>
+        <!-- Shield on top-right of screen -->
+        <path d="M155 38 L144 42.5 v7 c0 5 3.5 9.5 11 10.5 7.5-1 11-5.5 11-10.5 v-7 L155 38z" fill="url(#shield-fill)" stroke="rgba(147,197,253,0.5)" stroke-width="1"/>
+        <path d="M150 48 l3.5 3.5 6.5-6.5" stroke="#ffffff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <!-- Network nodes outside monitor -->
+        <!-- Node top-left -->
+        <circle cx="22" cy="30" r="7" fill="rgba(37,99,235,0.25)" stroke="rgba(59,130,246,0.7)" stroke-width="1.5"/>
+        <circle cx="22" cy="30" r="3" fill="#3b82f6"/>
+        <!-- Node bottom-left -->
+        <circle cx="18" cy="110" r="7" fill="rgba(37,99,235,0.25)" stroke="rgba(59,130,246,0.7)" stroke-width="1.5"/>
+        <circle cx="18" cy="110" r="3" fill="#3b82f6"/>
+        <!-- Node top-right -->
+        <circle cx="238" cy="28" r="7" fill="rgba(239,68,68,0.2)" stroke="rgba(239,68,68,0.7)" stroke-width="1.5"/>
+        <circle cx="238" cy="28" r="3" fill="#ef4444"/>
+        <!-- Node bottom-right -->
+        <circle cx="242" cy="112" r="7" fill="rgba(34,197,94,0.2)" stroke="rgba(34,197,94,0.7)" stroke-width="1.5"/>
+        <circle cx="242" cy="112" r="3" fill="#22c55e"/>
+        <!-- Node far right mid -->
+        <circle cx="248" cy="68" r="6" fill="rgba(124,58,237,0.2)" stroke="rgba(124,58,237,0.7)" stroke-width="1.5"/>
+        <circle cx="248" cy="68" r="2.5" fill="#7c3aed"/>
+        <!-- Connection lines from nodes to monitor -->
+        <line x1="29" y1="30" x2="60" y2="40" stroke="rgba(59,130,246,0.35)" stroke-width="1" stroke-dasharray="4 3"/>
+        <line x1="25" y1="110" x2="60" y2="100" stroke="rgba(59,130,246,0.35)" stroke-width="1" stroke-dasharray="4 3"/>
+        <line x1="231" y1="28" x2="200" y2="38" stroke="rgba(239,68,68,0.35)" stroke-width="1" stroke-dasharray="4 3"/>
+        <line x1="235" y1="112" x2="200" y2="100" stroke="rgba(34,197,94,0.35)" stroke-width="1" stroke-dasharray="4 3"/>
+        <line x1="242" y1="68" x2="200" y2="68" stroke="rgba(124,58,237,0.35)" stroke-width="1" stroke-dasharray="4 3"/>
+        <!-- Lock icon bottom-left of monitor -->
+        <rect x="68" y="118" width="18" height="14" rx="2.5" fill="rgba(37,99,235,0.3)" stroke="rgba(59,130,246,0.6)" stroke-width="1"/>
+        <path d="M72 118 v-3.5 a5 5 0 0 1 10 0 v3.5" stroke="rgba(59,130,246,0.6)" stroke-width="1.2" fill="none"/>
+        <circle cx="77" cy="124" r="2" fill="rgba(147,197,253,0.8)"/>
+        <defs>
+          <linearGradient id="screen-glow" x1="68" y1="28" x2="192" y2="107" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stop-color="rgba(37,99,235,0.08)"/>
+            <stop offset="100%" stop-color="rgba(124,58,237,0.04)"/>
+          </linearGradient>
+          <linearGradient id="shield-fill" x1="155" y1="38" x2="155" y2="58" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stop-color="#3b82f6"/>
+            <stop offset="100%" stop-color="#1d4ed8"/>
+          </linearGradient>
+        </defs>
+      </svg>
     </div>
   </div>
 </div>
